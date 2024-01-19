@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Shark Tooth Tracker</string>
+    <string name="title_activity_main">Shark Tooth Tracker</string>
+    <string name="package_name">com.lewis.sharktoothtracker</string>
+    <string name="custom_url_scheme">com.lewis.sharktoothtracker</string>
+</resources>

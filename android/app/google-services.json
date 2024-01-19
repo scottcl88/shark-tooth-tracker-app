@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "403064580432",
+    "project_id": "shark-tooth-tracker",
+    "storage_bucket": "shark-tooth-tracker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403064580432:android:de7ea49d6d5eaae5a8a455",
+        "android_client_info": {
+          "package_name": "com.lewis.sharktoothtracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "403064580432-nsa2hifil1336qd0pt9n9644fddafelp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lewis.sharktoothtracker",
+            "certificate_hash": "89c2642f7979dfe754c7c9d21407876213408a56"
+          }
+        },
+        {
+          "client_id": "403064580432-ms9l3obm1qoj3vg5g93t5lsdja28938l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyLf9wWEauaJ6q4_Q_7F8muaUInCo2MlE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "403064580432-ms9l3obm1qoj3vg5g93t5lsdja28938l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
