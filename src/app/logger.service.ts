@@ -1,5 +1,5 @@
 /**
-Copyright 2023 Scott Lewis, All rights reserved.
+Copyright 2024 Scott Lewis, All rights reserved.
 **/
 import { Injectable } from '@angular/core';
 import { Account } from './_models';
@@ -27,6 +27,7 @@ export class LoggerService {
         forwardErrorsToLogs: true,
         sessionSampleRate: 100,
         version: this.package.version,
+        service: this.package.name,
         env: "prod"
       });
     } else {
@@ -36,6 +37,7 @@ export class LoggerService {
         forwardErrorsToLogs: true,
         sessionSampleRate: 100,
         version: this.package.version,
+        service: this.package.name,
         env: "dev"
       })
     }

@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  enableAuth: false,
+  enableAuth: true,
   API_BASE_URL: "https://localhost:7080",
   googleApiKey: "AIzaSyAlY0c2jCPpKyTm5S4RGoxVZL5Nj3jZrI8",
   firebaseConfig: {

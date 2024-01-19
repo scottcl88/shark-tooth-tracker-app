@@ -1,0 +1,26 @@
+<!--
+Copyright 2024 Scott Lewis, All rights reserved.
+-->
+<div class="content-container">
+  <ion-content>
+    <div class="content">
+      <div class="logo-container">
+        <img src="assets/icon/favicon-196x196.png" alt="Logo" class="logo">
+        <h1>Shark Tooth Tracker</h1>
+      </div>
+      <div class="button-container">
+        <button type="button" class="login-btn google" (click)="signInWithGoogle()">
+          Sign in with Google
+        </button>
+      </div>
+      <!-- <div class="button-container mb-1">
+        <button type="button" class="login-btn apple" (click)="signInWithApple()">
+          Sign in with Apple
+        </button>
+      </div> -->
+      <div class="button-container">
+        <a type="button" (click)="dismiss(true)">Continue as guest</a>
+      </div>
+    </div>
+  </ion-content>
+</div>

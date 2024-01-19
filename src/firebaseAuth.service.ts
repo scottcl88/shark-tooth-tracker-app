@@ -1,5 +1,5 @@
 /**
-Copyright 2023 Scott Lewis, All rights reserved.
+Copyright 2024 Scott Lewis, All rights reserved.
 **/
 import { Injectable, NgZone } from '@angular/core';
 import {
@@ -10,7 +10,7 @@ import {
 } from '@capacitor-firebase/authentication';
 import { Capacitor } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApp } from 'firebase/app';
 import { lastValueFrom, Observable, ReplaySubject, take } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { getDatabase, ref, set, child, get, update, onValue, push, DatabaseReference } from "firebase/database";
@@ -50,53 +50,25 @@ export class FirebaseAuthService {
       const app = initializeApp(environment.firebaseConfig);
 
       if (environment.production) {
-        const appCheck = initializeAppCheck(app, {
-          provider: new ReCaptchaV3Provider('6Le0RvUmAAAAANtROg21O8U5uIcmPWsph0HuNLqw'),
-          isTokenAutoRefreshEnabled: true
-        });
+        // const appCheck = initializeAppCheck(app, {
+        //   provider: new ReCaptchaV3Provider('6Le0RvUmAAAAANtROg21O8U5uIcmPWsph0HuNLqw'),
+        //   isTokenAutoRefreshEnabled: true
+        // });
       }
 
       if (Capacitor.isNativePlatform()) {
+        console.log("capacitor is native platform")
         initializeAuth(app, {
           persistence: indexedDBLocalPersistence
         });
       } else {
-        getAuth();
+        console.log("capacitor is not native, getAuth")
+        getAuth();        
       }
-
-      this.remoteConfig = getRemoteConfig(app);
-      this.remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
-      this.remoteConfig.defaultConfig = {
-        "RestoreGooglePlaySaveFlag": true,
-        "MinLogLevel": 1,
-        "ForwardConsoleLogsEnabled": false
-      };
-
-      fetchAndActivate(this.remoteConfig)
-        .then(() => {
-          console.debug("fetchAndActivate finished");
-        })
-        .catch((err) => {
-          this.logger.error("Error on firebase fetchAndActivate: " + err + " ||| " + JSON.stringify(err), err);
-        });
+      console.log("Firebase service finished initializing");
     } catch (err: any) {
       this.logger.error("Error on firebase initialize: " + err + " ||| " + JSON.stringify(err), err);
     }
-  }
-
-  public async getRestoreGooglePlaySaveFlag() {
-    const restoreGooglePlaySaveFlag = getValue(this.remoteConfig, "RestoreGooglePlaySaveFlag").asBoolean();
-    return restoreGooglePlaySaveFlag;
-  }
-
-  public async getMinLogLevel() {
-    const minLogLevel = getValue(this.remoteConfig, "MinLogLevel").asNumber();
-    return minLogLevel;
-  }
-
-  public async getForwardConsoleLogsEnabled() {
-    const forwardConsoleLogsEnabled = getValue(this.remoteConfig, "ForwardConsoleLogsEnabled").asBoolean();
-    return forwardConsoleLogsEnabled;
   }
 
   public async checkRedirectResult(): Promise<void> {
@@ -132,7 +104,13 @@ export class FirebaseAuthService {
     const result = await FirebaseAuthentication.getIdToken(options);
     return result.token;
   }
-
+  private initializeAppIfNecessary() {
+    try {
+      return getApp();
+    } catch {
+      return initializeApp(environment.firebaseConfig);
+    }
+  }
   public async signIn(platform: string = ""): Promise<SignInResult> {
     if (!environment.enableAuth) {
       console.debug("environment enableAuth is false");
@@ -147,6 +125,8 @@ export class FirebaseAuthService {
         platform = info.platform;
       }
 
+      const app = this.initializeAppIfNecessary();
+            
       let result: SignInResult;
       if (platform == "ios") {
         result = await this.signInWithApple();
@@ -155,7 +135,7 @@ export class FirebaseAuthService {
       }
 
       const credential = GoogleAuthProvider.credential(result.credential?.idToken);
-      const auth = getAuth();
+      const auth = getAuth(app);
       await signInWithCredential(auth, credential);
       this.currentUserSubject.next(result.user);
 
@@ -174,11 +154,6 @@ export class FirebaseAuthService {
         accountStorage.userId = currentUser?.uid ?? "";
         accountStorage.photoUrl = currentUser?.photoUrl ?? "";
         await this.storageService.setAccount(accountStorage);
-
-        if (currentUser?.uid) {
-          const analytics = getAnalytics();
-          setUserId(analytics, currentUser.uid);
-        }
       }
 
       this.currentUser = (await FirebaseAuthentication.getCurrentUser()).user;
