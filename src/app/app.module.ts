@@ -13,12 +13,14 @@ import { StorageService } from './storage.service';
 import { FirebaseAuthService } from 'src/firebaseAuth.service';
 import { LoggerService } from './logger.service';
 import { appInitializer } from './_helpers';
+import { DateFnsModule } from 'ngx-date-fns';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(),
+    IonicModule.forRoot(),    
+    DateFnsModule.forRoot(),
     AppRoutingModule,
     IonicStorageModule.forRoot({
       driverOrder: [cordovaSQLiteDriver._driver, Drivers.IndexedDB, Drivers.LocalStorage]

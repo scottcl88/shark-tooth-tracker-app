@@ -1,0 +1,60 @@
+<!--
+Copyright 2024 Scott Lewis, All rights reserved.
+-->
+<ion-content class="container">
+  <div id="container" style="text-align: center;">
+    <div style="margin-bottom: 30px;margin-top: 10px;">
+      <div style="text-align: left !important;position: absolute;">
+        <ion-button *ngIf="isNew" (click)="dismiss(false, false)" fill="clear" color="dark">
+          <ion-icon name="chevron-back-sharp"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="!isNew" (click)="dismiss(false, true)" fill="clear" color="dark">
+          <ion-icon name="chevron-back-sharp"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+    <div>
+      <div class="image-container">
+        <ion-img [src]="imageUrl" alt="Gold Plate" (ionError)="onImageError()"
+          *ngIf="!imageFailed" class="found-image" style="margin-left: auto; margin-right: auto;"></ion-img>
+      </div>
+      <h3 id="stateName">Add A Tooth</h3>
+      <button (click)="takePicture()">Take Picture</button>
+      <hr>
+      <div class="section-container rare">
+        <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
+          class="description-label">What kind of
+          tooth did you find?</ion-label>
+        <ion-text class="rare-example">e.g.: Color, Size, Type, etc.</ion-text>
+        <div class="description-input">
+          <ion-input (ionChange)="descriptionChange($event)" aria-label="What kind of plate did you find?"
+            placeholder="Description" class="rare-description-textarea" [value]="description"></ion-input>
+          <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
+        </div>
+      </div>
+      <hr>
+      <p style="font-weight: bold; margin-top: 20px;">
+        <span style="display: inline-flex; align-items: center;">
+          <ion-icon name="calendar-outline" style="font-size: 24px; margin-right: 10px;"></ion-icon>
+          <ion-datetime-button datetime="datetime"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime id="datetime"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </span>
+      </p>
+      <p style="font-weight: bold; margin-top: 10px;" *ngIf="location && location?.state">
+        <ion-icon name="location-outline" style="font-size: 24px; margin-right: 6px;"></ion-icon> in
+        {{location.state}}
+      </p>
+      <hr class="vehicle-divider" />
+    </div>
+    <ion-button *ngIf="isNew" (click)="dismiss(false, true)" color="primary" expand="block" fill="solid"
+      style="margin-left: 20px; margin-right: 20px; ">I Found It!
+    </ion-button>
+    <ion-button *ngIf="!isNew" (click)="confirmDeleteState()" color="primary" expand="block" fill="outline"
+      style="margin-left: 20px; margin-right: 20px; margin-bottom: 10px;"><ion-text color="dark">Delete</ion-text>
+    </ion-button>
+  </div>
+</ion-content>

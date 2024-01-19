@@ -27,6 +27,7 @@
     "@capacitor-firebase/app": "^5.3.0",
     "@capacitor-firebase/authentication": "^5.3.0",
     "@capacitor/app": "5.0.6",
+    "@capacitor/camera": "^5.0.8",
     "@capacitor/core": "5.6.0",
     "@capacitor/haptics": "5.0.6",
     "@capacitor/keyboard": "5.0.7",
@@ -39,6 +40,7 @@
     "firebase": "^10.7.2",
     "ionicons": "^7.0.0",
     "localforage-cordovasqlitedriver": "^1.8.0",
+    "ngx-date-fns": "^11.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
