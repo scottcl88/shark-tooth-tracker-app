@@ -3,8 +3,20 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
-};
+  production: false,
+  enableAuth: false,
+  API_BASE_URL: "https://localhost:7080",
+  googleApiKey: "AIzaSyAlY0c2jCPpKyTm5S4RGoxVZL5Nj3jZrI8",
+  firebaseConfig: {
+    apiKey: "AIzaSyBRDTBIiPMYYBvp6bIOsPXf-Id9uXkLh4M",
+    authDomain: "shark-tooth-tracker.firebaseapp.com",
+    projectId: "shark-tooth-tracker",
+    storageBucket: "shark-tooth-tracker.appspot.com",
+    messagingSenderId: "403064580432",
+    appId: "1:403064580432:web:40288c628e26a1e8a8a455",
+    measurementId: "G-C5TN65XBDG"
+  }
+}
 
 /*
  * For easier debugging in development mode, you can import the following file
