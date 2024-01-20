@@ -15,11 +15,13 @@ Copyright 2024 Scott Lewis, All rights reserved.
     </div>
     <div>
       <div class="image-container">
-        <ion-img [src]="imageUrl" alt="Gold Plate" (ionError)="onImageError()"
-          *ngIf="!imageFailed" class="found-image" style="margin-left: auto; margin-right: auto;"></ion-img>
+        <ion-img [src]="imageUrl" alt="Gold Plate" (ionError)="onImageError()" *ngIf="!imageFailed" class="found-image"
+          style="margin-left: auto; margin-right: auto;"></ion-img>
       </div>
       <h3 id="stateName">Add A Tooth</h3>
-      <button (click)="takePicture()">Take Picture</button>
+      <ion-button *ngIf="isNew" (click)="takePicture()" color="primary" expand="block" fill="solid"
+        style="margin-left: 20px; margin-right: 20px; ">Take Picture
+      </ion-button>
       <hr>
       <div class="section-container rare">
         <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
