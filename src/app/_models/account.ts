@@ -9,6 +9,7 @@
     email: string;
     isAnonymous: boolean;
     isVerified: boolean;
+    recordLocationOption: string;
     hasSeenDisclaimer: boolean;
     providerId: string;
     tenantId: string | null;

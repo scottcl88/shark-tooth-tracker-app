@@ -15,7 +15,7 @@ Copyright 2024 Scott Lewis, All rights reserved.
     </div>
     <div>
       <div class="image-container">
-        <ion-img [src]="imageUrl" alt="Gold Plate" (ionError)="onImageError()" *ngIf="!imageFailed" class="found-image"
+        <ion-img [src]="imageUrl" alt="Picture of tooth" (ionError)="onImageError()" *ngIf="!imageFailed" class="found-image"
           style="margin-left: auto; margin-right: auto;"></ion-img>
       </div>
       <h3 id="stateName">Add A Tooth</h3>
@@ -46,9 +46,9 @@ Copyright 2024 Scott Lewis, All rights reserved.
           </ion-modal>
         </span>
       </p>
-      <p style="font-weight: bold; margin-top: 10px;" *ngIf="location && location?.state">
+      <p style="font-weight: bold; margin-top: 10px;" *ngIf="location" (click)="openMap()">
         <ion-icon name="location-outline" style="font-size: 24px; margin-right: 6px;"></ion-icon> in
-        {{location.state}}
+        {{location.city}}, {{location.state}}
       </p>
       <hr class="vehicle-divider" />
     </div>

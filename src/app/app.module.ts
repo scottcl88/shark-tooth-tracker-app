@@ -14,6 +14,8 @@ import { FirebaseAuthService } from 'src/firebaseAuth.service';
 import { LoggerService } from './logger.service';
 import { appInitializer } from './_helpers';
 import { DateFnsModule } from 'ngx-date-fns';
+import { GeocodeService } from './geocode.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,6 +24,7 @@ import { DateFnsModule } from 'ngx-date-fns';
     IonicModule.forRoot(),    
     DateFnsModule.forRoot(),
     AppRoutingModule,
+    HttpClientModule,
     IonicStorageModule.forRoot({
       driverOrder: [cordovaSQLiteDriver._driver, Drivers.IndexedDB, Drivers.LocalStorage]
     }),    
@@ -31,7 +34,7 @@ import { DateFnsModule } from 'ngx-date-fns';
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [StorageService, FirebaseAuthService, LoggerService] },
+    { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [StorageService, FirebaseAuthService, LoggerService, GeocodeService] },
   ],
   bootstrap: [AppComponent],
 })

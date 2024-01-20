@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   enableAuth: false,
-  API_BASE_URL: "https://localhost:7080",
-  googleApiKey: "AIzaSyAlY0c2jCPpKyTm5S4RGoxVZL5Nj3jZrI8",
+  API_BASE_URL: "",
+  googleApiKey: "AIzaSyDPhoPstqzWL0b7hLEWcECfnxFt-r9Kpes",
   firebaseConfig: {
     apiKey: "AIzaSyBRDTBIiPMYYBvp6bIOsPXf-Id9uXkLh4M",
     authDomain: "shark-tooth-tracker.firebaseapp.com",

@@ -4,6 +4,8 @@ import { FirebaseAuthService } from 'src/firebaseAuth.service';
 import { ModalSignInPage } from './modal-signin/modal-signin.page';
 import { StorageService } from './storage.service';
 import { ModalController } from '@ionic/angular';
+import { Camera, CameraResultType } from '@capacitor/camera';
+import { ModalViewToothPage } from './modal-view-tooth/modal-view-tooth.page';
 
 @Component({
   selector: 'app-root',
@@ -28,8 +30,39 @@ export class AppComponent implements OnInit {
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();
-    if(data.continueAsGuest){
+    if (data.continueAsGuest) {
       await this.storageService.setDisableLogin(true);
+    }
+  }
+
+  async takePicture() {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Uri
+      });
+
+      // image.webPath will contain a path that can be set as an image src.
+      // You can access the original file using image.path, which can be
+      // passed to the Filesystem API to read the raw data of the image,
+      // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
+      var imageUrl = image.webPath;
+
+      // Can be set to the src of an image now
+      //this.imageUrl = imageUrl ?? "";
+
+      const modal = await this.modalController.create({
+        component: ModalViewToothPage,
+        componentProps: {
+          imageUrl: imageUrl
+        },
+      });
+      await modal.present();
+      const { data } = await modal.onDidDismiss();
+
+    } catch (err) {
+      console.error("takePicture error: ", err);
     }
   }
 }

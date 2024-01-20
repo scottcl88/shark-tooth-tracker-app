@@ -9,6 +9,10 @@ import { Account, CoordinatesPositionModel } from '../_models';
 import { StorageService } from '../storage.service';
 import { LoggerService } from '../logger.service';
 import { Camera, CameraResultType } from '@capacitor/camera';
+import { Geolocation } from '@capacitor/geolocation';
+import { GeocodeService } from '../geocode.service';
+import { GoogleMap } from '@capacitor/google-maps';
+import { ModalMapPage } from '../modal-map/modal-map.page';
 
 
 @Component({
@@ -41,7 +45,7 @@ export class ModalViewToothPage implements OnInit {
 
 
   constructor(private logger: LoggerService, private modalController: ModalController, private alertController: AlertController,
-    public toastController: ToastController,
+    public toastController: ToastController, private geocodeService: GeocodeService,
     private coreUtilService: CoreUtilService, private storageService: StorageService) {
   }
 
@@ -57,10 +61,62 @@ export class ModalViewToothPage implements OnInit {
     prefersDark.addEventListener('change', (mediaQuery) => this.toggleDarkTheme(mediaQuery.matches));
 
     this.toggleDarkTheme(prefersDark.matches);
+
+    await this.recordLocation();
   }
 
   async ngAfterViewInit() {
     this.isLoaded = true;
+  }
+
+  async openMap() {
+    console.log("openMap: ", this.location);
+    const modal = await this.modalController.create({
+      component: ModalMapPage,
+      componentProps: {
+        location: this.location
+      },
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    if (this.location) {
+      this.location.latitude = data.latitude;
+      this.location.longitude = data.longitude;
+    }
+  }
+
+  async recordLocation() {
+    console.log("RecordLocation started");
+    let hasLocationPermission = await this.coreUtilService.hasLocationPermission();
+    if (hasLocationPermission && (this.account.recordLocationOption != "never")) {
+      try {
+        const coordinates = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+        let model = new CoordinatesPositionModel();
+        model.init(coordinates.coords);
+        if (coordinates) {
+          this.location = (coordinates as any) ?? new CoordinatesPositionModel();
+          if (this.location) {
+            this.location.latitude == model.latitude;
+            this.location.longitude = model.longitude;
+
+            this.location.latitudeText = model.latitude?.toPrecision(5) ?? "";
+            this.location.longitudeText = model.longitude?.toPrecision(5) ?? "";
+            this.location.locationHref = `https://www.google.com/maps?q=${this.location.latitudeText},${this.location.longitudeText}`;
+
+            let geocodeResult = await this.geocodeService.getStateName(model.latitude ?? 0, model.longitude ?? 0);
+            this.location.city = geocodeResult.city;
+            this.location.state = geocodeResult.state;
+          }
+        } else {
+          this.location = null;
+        }
+      } catch (err: any) {
+        this.logger.error(`recordLocation-getCurrentPosition 1 err`, err);
+        await this.coreUtilService.presentToastError("Please enable location services");
+      }
+    } else {
+
+    }
   }
 
   // Add or remove the "dark" class on the document body
