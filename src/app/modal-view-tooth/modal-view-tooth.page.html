@@ -18,7 +18,8 @@ Copyright 2024 Scott Lewis, All rights reserved.
         <ion-img [src]="imageUrl" alt="Picture of tooth" (ionError)="onImageError()" *ngIf="!imageFailed" class="found-image"
           style="margin-left: auto; margin-right: auto;"></ion-img>
       </div>
-      <h3 id="stateName">Add A Tooth</h3>
+      <h3 id="stateName" *ngIf="isNew">Add A Tooth</h3>
+      <h3 id="stateName" *ngIf="!isNew">Edit Tooth</h3>
       <ion-button *ngIf="isNew" (click)="takePicture()" color="primary" expand="block" fill="solid"
         style="margin-left: 20px; margin-right: 20px; ">Take Picture
       </ion-button>

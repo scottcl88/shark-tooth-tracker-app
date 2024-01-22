@@ -12,6 +12,99 @@
       <ion-title size="large">Profile</ion-title>
     </ion-toolbar>
   </ion-header>
-
-  <app-explore-container name="Profile page"></app-explore-container>
+  <div id="container">
+    <div *ngIf="isAuthenticated" style="text-align: center; display: inline-block; margin-bottom: 20px;">
+      <ion-avatar slot="start"
+        style="margin-left: auto; margin-right: auto; margin-bottom: 10px;width: 35px;height: 35px;">
+        <ion-img alt="Player avatar" [src]="imageUrl" id="profileImage"></ion-img>
+      </ion-avatar>
+      <ion-label id="profileName">{{name}}</ion-label>
+      <ion-label id="profileEmail">{{email}}</ion-label>
+    </div>
+    <div *ngIf="!isAuthenticated">
+      <img src="../../assets/Portrait_Placeholder.png" alt="profile placeholder picture" id="placeholderImage" />
+    </div>
+    <div class="container">
+      <ion-item class="clear-item" style="margin-top: 20px; margin-bottom: 20px;" lines="none">
+        <ion-label>
+          Allow Location
+        </ion-label>
+        <ion-select interface="popover" toggleIcon="chevron-down" expandedIcon="chevron-up"
+          aria-label="record location option" placeholder="Option" id="locationSelect"
+          [value]="account?.recordLocationOption ?? 'neverAllow'" (ionChange)="recordLocationChange($event)">
+          <ion-select-option value="alwaysAllow">Always</ion-select-option>
+          <ion-select-option value="neverAllow">Never</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item class="clear-item" style="margin-top: 20px; margin-bottom: 20px;" lines="none" *ngIf="showContactCheck">
+        <ion-checkbox id="contactCheckbox" labelPlacement="end" (ionChange)="contactCheckOnChange($event)"
+          [value]="contactCheck" [checked]="contactCheck">Can we contact you to get feedback?</ion-checkbox>
+      </ion-item>
+      <div style="margin-bottom: 20px;">
+        <!-- <ion-item class="clear-item" style="margin-top: 20px;" lines="full" (click)="goToHelp()">
+          <ion-button fill="clear" color="dark"><ion-icon name="help-circle-outline" slot="start"></ion-icon>
+            Help
+          </ion-button>
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+        </ion-item> -->
+        <div class="margin-spacer"></div>
+        <ion-item class="clear-item" lines="full" (click)="goToData()">
+          <ion-button fill="clear" color="dark">
+            Manage Data
+          </ion-button>
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+        </ion-item>
+        <div class="margin-spacer"></div>
+        <ion-item class="clear-item" style="margin-top: 20px;" lines="full" (click)="showDisclaimer()">
+          <ion-button fill="clear" color="dark">
+            Disclaimer
+          </ion-button>
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+        </ion-item>
+        <div class="margin-spacer"></div>
+        <ion-item class="clear-item" style="margin-top: 20px;" lines="full" (click)="goToPrivacyPolicy()">
+          <ion-button fill="clear" color="dark">
+            Privacy Policy
+          </ion-button>
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+        </ion-item>
+        <div class="margin-spacer"></div>
+        <ion-item class="clear-item" lines="full" (click)="goToTermsOfUse()">
+          <ion-button fill="clear" color="dark">
+            Terms of Use
+          </ion-button>
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+        </ion-item>
+        <div class="margin-spacer"></div>
+        <ion-item class="clear-item" lines="full" (click)="goToCookiePolicy()">
+          <ion-button fill="clear" color="dark">
+            Cookie Policy
+          </ion-button>
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+        </ion-item>
+        <div class="margin-spacer"></div>
+        <!-- <ion-item class="clear-item" lines="full" (click)="goToCredits()">
+          <ion-button fill="clear" color="dark">
+            Credits
+          </ion-button>
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+        </ion-item> -->
+      </div>
+    </div>
+    <div *ngIf="!isAuthenticated" class="text-center">
+      <ion-button fill="outline" expand="block" color="primary" (click)="signIn()"
+        style="font-size: 20px; margin-left: 20px; margin-right: 20px;">
+        <ion-text color="dark">Sign In</ion-text>
+      </ion-button>
+    </div>
+    <div *ngIf="isAuthenticated">
+      <ion-button fill="outline" expand="block" color="primary" (click)="confirmLogout()"
+        style="font-size: 20px; margin-left: 20px; margin-right: 20px;">
+        <ion-text color="dark">Sign Out</ion-text>
+      </ion-button>
+    </div>
+    <div style="margin-top: 30px;margin-bottom: 10px;">
+      <p>Version {{package.version}}</p>
+    </div>
+  </div>
 </ion-content>

@@ -1,0 +1,139 @@
+/**
+Copyright 2024 Scott Lewis, All rights reserved.
+**/
+ion-label {
+    font-weight: bold;
+  }
+  .rate-button {
+    margin-right: 15px;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .link-item {
+      --background: #121212;
+    }
+  }
+  @media (prefers-color-scheme: light) {
+    .link-item {
+      --background: #e5e5e5;
+    }
+  }
+  #container {
+    text-align: center;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 40px;
+  }
+  
+  #container strong {
+    font-size: 20px;
+    line-height: 26px;
+  }
+  
+  #container p {
+    font-size: 16px;
+    line-height: 22px;
+    color: #8c8c8c;
+    margin: 0;
+  }
+  
+  #container a {
+    text-decoration: none;
+  }
+  
+  .margin-spacer {
+    margin-top: 20px;
+  }
+  
+  hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .maps-input {
+    border: none !important;
+    height: 36px;
+    font-size: 16px;
+    background: transparent !important;
+    width: 100% !important;
+  
+    &:focus {
+      border: none !important;
+      outline: none !important;
+    }
+    &:focus-visible {
+      border: none !important;
+      outline: none !important;
+    }
+    &:active {
+      border: none !important;
+      outline: none !important;
+    }
+    &::after {
+      border: none !important;
+      outline: none !important;
+    }
+    &::before {
+      border: none !important;
+      outline: none !important;
+    }
+  }
+  .address-input {
+    border-radius: 4px;
+    border: 1px solid var(--primary-color, #00c2ff);
+    display: flex;
+    @media (prefers-color-scheme: dark) {
+      background: #2b2b2b;
+    }
+    width: 100%;
+    // flex-direction: column;
+    align-items: self-end;
+    padding: 10px;
+  
+    input {
+      //font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 24px; /* 150% */
+      letter-spacing: 0.15px;
+    }
+  }
+  #locationSelect {
+    width: max-content;
+    --border-color: var(--primary-color);
+    min-height: 44px;
+  }
+  #profileName {
+    color: var(--Dark-Blue, #227692);
+    font-family: "License Plate Font";
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 1.2px;
+    display: block;
+  }
+  #profileEmail {
+    color: var(--Dark-Blue, #227692);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px; /* 133.333% */
+    letter-spacing: 0.5px;
+  }
+  #profileImage {
+    max-height: 35px;
+    max-width: 35px;
+    border-radius: 35px;
+  }
+  #placeholderImage {
+    max-height: 35px;
+    border-radius: 35px;
+  }
+  
+  #contactCheckbox {
+    //margin-top: 15px;
+    // margin-bottom: 15px;
+    font-size: 13px;
+  }
+  

@@ -47,6 +47,18 @@ export class CoreUtilService {
     this.isLoadingShown = true;
   }
 
+  async presentDisclaimerAlert() {
+    const alert = await this.alertController.create({
+      header: 'Disclaimer',
+      message: `The user assumes all responsibility and liability for any and
+      all consequences resulting from the use of this app or its features while operating a motor vehicle.`,
+      buttons: ['OK'],
+      cssClass: "topZindex"
+    });
+
+    await alert.present();
+  }
+
   dismissLoading() {
     this.loadingElement?.dismiss();
     this.isLoadingShown = false;

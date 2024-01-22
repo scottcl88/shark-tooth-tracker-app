@@ -11,6 +11,8 @@
     isVerified: boolean;
     recordLocationOption: string;
     hasSeenDisclaimer: boolean;
+    disableOfflineAlert: boolean;
+    canContact: boolean;
     providerId: string;
     tenantId: string | null;
     photoUrl: string | null;

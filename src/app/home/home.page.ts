@@ -29,7 +29,8 @@ export class HomePage implements OnInit {
         imageUrl: tooth.photoUrl,
         description: tooth.description,
         foundDate: tooth.foundDate,
-        location: tooth.location
+        location: tooth.location,
+        isNew: false
       },
     });
     await modal.present();
@@ -51,6 +52,7 @@ export class HomePage implements OnInit {
     const modal = await this.modalController.create({
       component: ModalViewToothPage,
       componentProps: {
+        isNew: true
       },
     });
     await modal.present();
