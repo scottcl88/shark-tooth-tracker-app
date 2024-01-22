@@ -28,7 +28,6 @@ export class ModalViewToothPage implements OnInit {
   public imageUrl: string;
   public imageFailed: boolean = false;
   public isoDate: string;
-  public notes: string;
   public description: string;
   public location?: CoordinatesPositionModel | null;
   public foundDateTime?: Date;
@@ -160,6 +159,12 @@ export class ModalViewToothPage implements OnInit {
     this.description = value;
   }
 
+  foundDateChange(e: any) {
+    console.log("foundDateChange: ", e);
+    let value = e.detail.value;
+    this.foundDateTime = value;
+  }
+
   async confirmDeleteState() {
     const alert = await this.alertController.create({
       header: 'Delete Plate',
@@ -194,7 +199,11 @@ export class ModalViewToothPage implements OnInit {
   async dismiss(removed: boolean, saved: boolean) {
     await this.modalController.dismiss({
       removed: removed,
-      saved: saved
+      saved: saved,
+      imageUrl: this.imageUrl,
+      description: this.description,
+      foundDateTime: this.foundDateTime,
+      location: this.location,
     });
   }
 }

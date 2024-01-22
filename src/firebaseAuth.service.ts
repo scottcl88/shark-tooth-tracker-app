@@ -194,15 +194,15 @@ export class FirebaseAuthService {
     await FirebaseAuthentication.signOut();
   }
 
-  public async doSaveGamesToFirebase(dataObj: any) {
+  public async doSaveTeethToFirebase(dataObj: any) {
     try {
       this.currentUser = (await FirebaseAuthentication.getCurrentUser()).user;
       const db = getDatabase();
       const updates: any = {};
-      updates[`users/${this.currentUser?.uid}/games`] = dataObj;
+      updates[`users/${this.currentUser?.uid}/teeth`] = dataObj;
       await update(ref(db), updates);
     } catch (err) {
-      console.error("doSaveGamesToFirebase in firebaseAuth: ", err);
+      console.error("doSaveTeethToFirebase in firebaseAuth: ", err);
     }
   }
 
@@ -218,35 +218,11 @@ export class FirebaseAuthService {
     }
   }
 
-  public async doUpdateGroupToFirebase(groupId: string, group: any) {
-    const db = getDatabase();
-    const updates: any = {};
-    updates[`groups/${groupId}`] = group;
-    await update(ref(db), updates);
-  }
-
-  public async doAddGroupToFirebase(group: any): Promise<string | null> {
-    this.currentUser = (await FirebaseAuthentication.getCurrentUser()).user;
-    const db = getDatabase();
-
-    // Get a key for a new Group.
-    const newGroupKey = push(child(ref(db), 'groups')).key;
-
-    // Write the new Group's data
-    const updates: any = {};
-    updates[`groups/${newGroupKey}`] = group;
-    updates[`users/${this.currentUser?.uid}/groups/${newGroupKey}`] = true;
-
-    update(ref(db), updates);
-
-    return newGroupKey;
-  }
-
   public async deleteUser() {
     await FirebaseAuthentication.deleteUser();
   }
 
-  public async loadGame() {
+  public async loadCollection() {
     return new Promise<any>(async (resolve: any) => {
       this.currentUser = (await FirebaseAuthentication.getCurrentUser()).user;
       const dbRef = ref(getDatabase());
@@ -256,48 +232,9 @@ export class FirebaseAuthService {
         }
         resolve(this.loadedData);
       }).catch((error) => {
-        this.logger.error("Error on firebase loadGame: " + error + " ||| " + JSON.stringify(error), error);
+        this.logger.error("Error on firebase loadCollection: " + error + " ||| " + JSON.stringify(error), error);
         resolve(this.loadedData);
       });
-    });
-  }
-
-  public async loadGroups() {
-    return new Promise<any>(async (resolve: any) => {
-      this.currentUser = (await FirebaseAuthentication.getCurrentUser()).user;
-      const dbRef = ref(getDatabase());
-      get(child(dbRef, `users/${this.currentUser?.uid}/groups`)).then((snapshot) => {
-        if (snapshot.exists()) {
-          this.loadedData = snapshot.val();
-        }
-        resolve(this.loadedData);
-      }).catch((error) => {
-        this.logger.error("Error on firebase loadGame: " + error + " ||| " + JSON.stringify(error), error);
-        resolve(this.loadedData);
-      });
-    });
-  }
-
-  public async loadGroup(groupId: string) {
-    return new Promise<any>(async (resolve: any) => {
-      this.currentUser = (await FirebaseAuthentication.getCurrentUser()).user;
-      const dbRef = ref(getDatabase());
-      get(child(dbRef, `groups/${groupId}`)).then((snapshot) => {
-        if (snapshot.exists()) {
-          this.loadedData = snapshot.val();
-        }
-        resolve(this.loadedData);
-      }).catch((error) => {
-        this.logger.error("Error on firebase loadGame: " + error + " ||| " + JSON.stringify(error), error);
-        resolve(this.loadedData);
-      });
-    });
-  }
-
-  public async listenToChanges() {
-    const starCountRef = ref(getDatabase(), `groups/${this.currentUser?.uid}`);
-    onValue(starCountRef, (snapshot) => {
-      const data = snapshot.val();
     });
   }
 }

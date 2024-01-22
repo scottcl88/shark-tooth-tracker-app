@@ -10,6 +10,7 @@ export const environment = {
   firebaseConfig: {
     apiKey: "AIzaSyBRDTBIiPMYYBvp6bIOsPXf-Id9uXkLh4M",
     authDomain: "shark-tooth-tracker.firebaseapp.com",
+    databaseURL: "https://shark-tooth-tracker-default-rtdb.firebaseio.com",
     projectId: "shark-tooth-tracker",
     storageBucket: "shark-tooth-tracker.appspot.com",
     messagingSenderId: "403064580432",

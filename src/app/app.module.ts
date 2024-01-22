@@ -16,6 +16,7 @@ import { appInitializer } from './_helpers';
 import { DateFnsModule } from 'ngx-date-fns';
 import { GeocodeService } from './geocode.service';
 import { HttpClientModule } from '@angular/common/http';
+import { CollectionService } from './collection.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -34,7 +35,7 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [StorageService, FirebaseAuthService, LoggerService, GeocodeService] },
+    { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [StorageService, FirebaseAuthService, CollectionService, LoggerService, GeocodeService] },
   ],
   bootstrap: [AppComponent],
 })

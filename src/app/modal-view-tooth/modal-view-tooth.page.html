@@ -41,7 +41,7 @@ Copyright 2024 Scott Lewis, All rights reserved.
           <ion-datetime-button datetime="datetime"></ion-datetime-button>
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
-              <ion-datetime id="datetime"></ion-datetime>
+              <ion-datetime id="datetime" [showDefaultButtons]="true" [value]="foundDateTime" (ionChange)="foundDateChange($event)"></ion-datetime>
             </ng-template>
           </ion-modal>
         </span>
