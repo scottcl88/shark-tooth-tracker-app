@@ -1,0 +1,19 @@
+<!--
+Copyright 2024 Scott Lewis, All rights reserved.
+-->
+<ion-content>
+  <div style="text-align: left !important;">
+    <ion-button (click)="dismiss(false)" fill="clear" color="dark">
+      <ion-icon name="close-outline"></ion-icon>
+    </ion-button>
+  </div>
+  <ion-item>
+    <ion-label position="stacked">Email</ion-label>
+    <ion-input type="email" #inputText (ionChange)="inputOnChange($event)" [autofocus]="true" [value]="email"></ion-input>
+    <ion-note color="danger" *ngIf="disabled && !email" style="font-size: 14px;">Email is required</ion-note>
+  </ion-item>
+  <p style="margin-left: 15px;">Enter an email to send your data.</p>
+  <div style="display: block; margin-top: 15px;">
+    <ion-button (click)="dismiss(true)" expand="block" [disabled]="disabled">Send</ion-button>
+  </div>
+</ion-content>

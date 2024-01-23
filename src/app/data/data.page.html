@@ -1,0 +1,24 @@
+<!--
+Copyright 2024 Scott Lewis, All rights reserved.
+-->
+<ion-content>
+  <div style="text-align: left !important;position: absolute;">
+    <ion-button (click)="goBack()" fill="clear" color="dark">
+      <ion-icon name="chevron-back-sharp"></ion-icon>
+    </ion-button>
+  </div>
+  <h4 style="text-align: center;">Data</h4>
+  <ion-item button (click)="showEmailModal()" lines="full">
+    <ion-label color="secondary">
+      Export Data
+    </ion-label>
+    <ion-icon name="cloud-upload-outline" style="font-size: 24px;height: 48px;"></ion-icon>
+  </ion-item>
+  <ion-item-divider lines="full"></ion-item-divider>
+  <ion-item button (click)="confirmDelete()" lines="full">
+    <ion-label color="danger">
+      Delete Data
+    </ion-label>
+    <ion-icon name="trash-outline" style="font-size: 24px;height: 48px;"></ion-icon>
+  </ion-item>
+</ion-content>
