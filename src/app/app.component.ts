@@ -4,7 +4,7 @@ import { FirebaseAuthService } from 'src/firebaseAuth.service';
 import { ModalSignInPage } from './modal-signin/modal-signin.page';
 import { StorageService } from './storage.service';
 import { ModalController } from '@ionic/angular';
-import { Camera, CameraResultType } from '@capacitor/camera';
+import { Camera, CameraDirection, CameraResultType } from '@capacitor/camera';
 import { ModalViewToothPage } from './modal-view-tooth/modal-view-tooth.page';
 import { Subscription } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
@@ -21,8 +21,7 @@ export class AppComponent implements OnInit {
   async ngOnInit() {
     this.routerEventSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        console.log("event router: ", event);
-        if (event.url == "/tabs/home" || event.url == "/tabs/profile") {
+        if (event.url == "/tabs/home" || event.url == "/tabs/profile" || event.url == "/tabs" || event.url == "/" || event.url == "") {
           this.showPhotoFab = true;
         } else {
           this.showPhotoFab = false;
@@ -53,15 +52,17 @@ export class AppComponent implements OnInit {
     try {
       const image = await Camera.getPhoto({
         quality: 90,
-        allowEditing: true,
-        resultType: CameraResultType.Uri
+        resultType: CameraResultType.DataUrl,
+        height: 150,
+        width: 350,
+        direction: CameraDirection.Rear,
       });
 
       // image.webPath will contain a path that can be set as an image src.
       // You can access the original file using image.path, which can be
       // passed to the Filesystem API to read the raw data of the image,
       // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-      var imageUrl = image.webPath;
+      var imageUrl = image.dataUrl;
 
       // Can be set to the src of an image now
       //this.imageUrl = imageUrl ?? "";

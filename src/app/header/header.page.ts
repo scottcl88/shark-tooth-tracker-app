@@ -20,7 +20,7 @@ export class HeaderPage implements OnInit, OnDestroy {
   constructor(private router: Router){}
 
   async goToProfile() {
-    await this.router.navigate(['/profile']);
+    await this.router.navigate(['/tabs/profile']);
   }
 
   async ngOnInit() {

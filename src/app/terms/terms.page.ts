@@ -17,6 +17,6 @@ export class TermsPage {
   constructor(private router: Router){}
 
   async goToProfile() {
-    await this.router.navigate(['/profile']);
+    await this.router.navigate(['/tabs/profile']);
   }
 }

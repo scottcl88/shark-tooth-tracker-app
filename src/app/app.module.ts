@@ -22,7 +22,7 @@ import { CollectionService } from './collection.service';
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(),    
+    IonicModule.forRoot({ innerHTMLTemplatesEnabled: true }),
     DateFnsModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,

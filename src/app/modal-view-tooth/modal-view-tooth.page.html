@@ -14,14 +14,17 @@ Copyright 2024 Scott Lewis, All rights reserved.
       </div>
     </div>
     <div>
+      <h3 id="stateName" *ngIf="isNew">Add A Tooth</h3>
+      <h3 id="stateName" *ngIf="!isNew">Edit Tooth</h3>
       <div class="image-container">
         <ion-img [src]="imageUrl" alt="Picture of tooth" (ionError)="onImageError()" *ngIf="!imageFailed" class="found-image"
           style="margin-left: auto; margin-right: auto;"></ion-img>
       </div>
-      <h3 id="stateName" *ngIf="isNew">Add A Tooth</h3>
-      <h3 id="stateName" *ngIf="!isNew">Edit Tooth</h3>
       <ion-button *ngIf="isNew" (click)="takePicture()" color="primary" expand="block" fill="solid"
         style="margin-left: 20px; margin-right: 20px; ">Take Picture
+      </ion-button>
+      <ion-button *ngIf="!isNew" (click)="takePicture()" color="primary" expand="block" fill="solid"
+        style="margin-left: 20px; margin-right: 20px; ">Take New Picture
       </ion-button>
       <hr>
       <div class="section-container rare">
@@ -42,7 +45,7 @@ Copyright 2024 Scott Lewis, All rights reserved.
           <ion-datetime-button datetime="datetime"></ion-datetime-button>
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
-              <ion-datetime id="datetime" [showDefaultButtons]="true" [value]="foundDateTime" (ionChange)="foundDateChange($event)"></ion-datetime>
+              <ion-datetime id="datetime" [showDefaultButtons]="true" [value]="isoDate" (ionChange)="foundDateChange($event)"></ion-datetime>
             </ng-template>
           </ion-modal>
         </span>

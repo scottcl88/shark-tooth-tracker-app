@@ -33,6 +33,7 @@ export class StorageService {
     await this.storage.remove('userPhoneNumber');
     await this.storage.remove('account');
     await this.storage.remove("games");
+    await this.storage.remove("teeth");
     this.deleteAllCookies();
   }
 

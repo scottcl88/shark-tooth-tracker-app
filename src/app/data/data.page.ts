@@ -109,14 +109,6 @@ export class DataPage implements OnInit, OnDestroy {
     }
   }
 
-  async homeStateChange(e: any) {
-    // this.account.homeStateId = e.detail.value;
-    this.storageService.setAccount(this.account);
-    if (this.isAuthenticated) {
-      await this.firebaseAuthService.doSaveProfileToFirebase(this.account);
-    }
-  }
-
   async recordLocation() {
     if (this.isAuthenticated) {
       await this.firebaseAuthService.doSaveProfileToFirebase(this.account);

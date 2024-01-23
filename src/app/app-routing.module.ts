@@ -23,10 +23,6 @@ const routes: Routes = [
     loadChildren: () => import('./cookie-policy/cookie-policy.module').then(m => m.CookiePolicyPageModule)
   },
   {
-    path: 'profile',
-    loadChildren: () => import('./profile/profile.module').then(m => m.ProfilePageModule)
-  },
-  {
     path: 'data',
     loadChildren: () => import('./data/data.module').then(m => m.DataPageModule)
   }

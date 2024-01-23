@@ -17,7 +17,8 @@
   </ion-button>
   <div *ngFor="let tooth of this.allTeeth; index as i;">
     <ion-card (click)="editTooth(tooth)">
-      <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
+      <!-- <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" /> -->
+      <img alt="Picture of tooth" [src]="tooth.photoUrl" class="cardPhoto"/>
       <ion-card-header>
         <ion-card-title>
           {{tooth.foundDate | dfnsFormat: 'MMMM d \'at\' h:mm a' }}

@@ -8,7 +8,7 @@ import { CoreUtilService } from '../core-utils';
 import { Account, CoordinatesPositionModel } from '../_models';
 import { StorageService } from '../storage.service';
 import { LoggerService } from '../logger.service';
-import { Camera, CameraResultType } from '@capacitor/camera';
+import { Camera, CameraDirection, CameraResultType } from '@capacitor/camera';
 import { Geolocation } from '@capacitor/geolocation';
 import { GeocodeService } from '../geocode.service';
 import { GoogleMap } from '@capacitor/google-maps';
@@ -30,7 +30,7 @@ export class ModalViewToothPage implements OnInit {
   public isoDate: string;
   public description: string;
   public location?: CoordinatesPositionModel | null;
-  public foundDateTime?: Date;
+  public foundDateTime: Date = new Date();
   public isDirty: boolean = false;
   public isLoaded: boolean = false;
 
@@ -61,6 +61,8 @@ export class ModalViewToothPage implements OnInit {
 
     this.toggleDarkTheme(prefersDark.matches);
 
+    this.isoDate = this.foundDateTime.toISOString();
+
     await this.recordLocation();
   }
 
@@ -78,9 +80,22 @@ export class ModalViewToothPage implements OnInit {
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();
-    if (this.location) {
-      this.location.latitude = data.latitude;
-      this.location.longitude = data.longitude;
+    console.log("openMap closed: ", data)
+    if (data && data.location) {
+      if (this.location == null) {
+        //same location, ignore
+        return;
+      }
+      this.location.latitude = data.location.latitude;
+      this.location.longitude = data.location.longitude;
+
+      this.location.latitudeText = data.location.latitude?.toPrecision(5) ?? "";
+      this.location.longitudeText = data.location.longitude?.toPrecision(5) ?? "";
+      this.location.locationHref = `https://www.google.com/maps?q=${this.location.latitudeText},${this.location.longitudeText}`;
+
+      let geocodeResult = await this.geocodeService.getStateName(data.location.latitude ?? 0, data.location.longitude ?? 0);
+      this.location.city = geocodeResult.city;
+      this.location.state = geocodeResult.state;
     }
   }
 
@@ -95,7 +110,7 @@ export class ModalViewToothPage implements OnInit {
         if (coordinates) {
           this.location = (coordinates as any) ?? new CoordinatesPositionModel();
           if (this.location) {
-            this.location.latitude == model.latitude;
+            this.location.latitude = model.latitude;
             this.location.longitude = model.longitude;
 
             this.location.latitudeText = model.latitude?.toPrecision(5) ?? "";
@@ -137,15 +152,17 @@ export class ModalViewToothPage implements OnInit {
     try {
       const image = await Camera.getPhoto({
         quality: 90,
-        allowEditing: true,
-        resultType: CameraResultType.Uri
+        resultType: CameraResultType.DataUrl,
+        height: 150,
+        width: 350,
+        direction: CameraDirection.Rear,
       });
 
       // image.webPath will contain a path that can be set as an image src.
       // You can access the original file using image.path, which can be
       // passed to the Filesystem API to read the raw data of the image,
       // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-      var imageUrl = image.webPath;
+      var imageUrl = image.dataUrl;
 
       // Can be set to the src of an image now
       this.imageUrl = imageUrl ?? "";
@@ -162,7 +179,7 @@ export class ModalViewToothPage implements OnInit {
   foundDateChange(e: any) {
     console.log("foundDateChange: ", e);
     let value = e.detail.value;
-    this.foundDateTime = value;
+    this.foundDateTime = value;    
   }
 
   async confirmDeleteState() {

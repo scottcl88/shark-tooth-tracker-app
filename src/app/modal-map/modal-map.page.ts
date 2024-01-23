@@ -40,7 +40,7 @@ export class ModalMapPage implements OnInit {
           lat: this.location?.latitude ?? 0,//33.6,
           lng: this.location?.longitude ?? 0,//-117.9,
         },
-        zoom: 8, // The initial zoom level to be rendered by the map
+        zoom: 15, // The initial zoom level to be rendered by the map
       },
     });
 
@@ -54,7 +54,7 @@ export class ModalMapPage implements OnInit {
         lng: this.location?.longitude ?? 0,//-117.9,
       }
     });
-
+    console.log("markerId: ", this.markerId);
     // Move the map programmatically
     // await newMap.setCamera({
     //   coordinate: {
@@ -62,11 +62,6 @@ export class ModalMapPage implements OnInit {
     //     lng: this.location?.longitude ?? 0,//-117.9,
     //   }
     // });
-
-    // Handle marker click
-    await newMap.setOnMarkerClickListener((event) => {
-      console.log("OnMarkerClick: ", event);
-    });
 
     await newMap.setOnMapClickListener(async (event) => {
       console.log("OnMapClick: ", event);
@@ -79,6 +74,7 @@ export class ModalMapPage implements OnInit {
       });
       this.location.latitude = event.latitude;
       this.location.longitude = event.longitude;
+      console.log("location set: ", this.location);
     });
   }
 
