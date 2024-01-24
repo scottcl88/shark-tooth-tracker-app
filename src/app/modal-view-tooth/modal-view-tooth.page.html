@@ -17,7 +17,7 @@ Copyright 2024 Scott Lewis, All rights reserved.
       <h3 id="stateName" *ngIf="isNew">Add A Tooth</h3>
       <h3 id="stateName" *ngIf="!isNew">Edit Tooth</h3>
       <div class="image-container">
-        <ion-img [src]="imageUrl" alt="Picture of tooth" (ionError)="onImageError()" *ngIf="!imageFailed"
+        <ion-img [src]="imageUrl" alt="Picture of tooth" (ionError)="onImageError()" *ngIf="!imageFailed && imageUrl"
           class="found-image"></ion-img>
       </div>
       <ion-button *ngIf="isNew" (click)="takePicture()" color="primary" expand="block" fill="solid"
