@@ -21,6 +21,7 @@ export class HomePage implements OnInit {
   }
 
   async editTooth(tooth: ToothModel) {
+    console.log("editTooth: ", tooth);
     const modal = await this.modalController.create({
       component: ModalViewToothPage,
       componentProps: {
@@ -35,16 +36,8 @@ export class HomePage implements OnInit {
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();
-    if (data && data.saved) {
-      let newTooth = new ToothModel(tooth);
-      newTooth.photoUrl = data.imageUrl;
-      newTooth.description = data.description;
-      newTooth.foundDate = data.foundDateTime;
-      newTooth.location = data.location;
-      newTooth.modifiedDate = new Date();
-      await this.collectionService.saveTooth(newTooth);
-      this.allTeeth = await this.collectionService.getTeeth();
-      console.log("AllTeeth: ", this.allTeeth)
+    if (data) {
+      await this.saveTooth(data);
     }
   }
 
@@ -58,16 +51,28 @@ export class HomePage implements OnInit {
     await modal.present();
     const { data } = await modal.onDidDismiss();
     if (data && data.saved) {
-      let newTooth = new ToothModel();
-      newTooth.toothId = this.collectionService.getNewToothId();
-      newTooth.createdDate = new Date();
-      newTooth.photoUrl = data.imageUrl;
-      newTooth.description = data.description;
-      newTooth.foundDate = data.foundDateTime;
-      newTooth.location = data.location;
-      await this.collectionService.addTooth(newTooth);
-      this.allTeeth = await this.collectionService.getTeeth();
-      console.log("AllTeeth: ", this.allTeeth)
+      await this.saveTooth(data);
     }
+  }
+
+  private async saveTooth(data: any) {
+    let newTooth = new ToothModel();
+    newTooth.createdDate = new Date();
+    newTooth.photoUrl = data.imageUrl;
+    newTooth.description = data.description;
+    newTooth.foundDate = data.foundDate;
+    newTooth.location = data.location;
+    if(data.removed){
+      newTooth.deletedDate = new Date();
+    }
+    if (data.toothId && data.toothId > 0) {
+      newTooth.toothId = data.toothId;
+      await this.collectionService.saveTooth(newTooth);
+    } else {
+      newTooth.toothId = this.collectionService.getNewToothId();
+      await this.collectionService.addTooth(newTooth);
+    }
+    this.allTeeth = await this.collectionService.getTeeth();
+    console.log("AllTeeth: ", this.allTeeth);
   }
 }

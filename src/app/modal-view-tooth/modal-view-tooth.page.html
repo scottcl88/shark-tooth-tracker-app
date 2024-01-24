@@ -17,8 +17,8 @@ Copyright 2024 Scott Lewis, All rights reserved.
       <h3 id="stateName" *ngIf="isNew">Add A Tooth</h3>
       <h3 id="stateName" *ngIf="!isNew">Edit Tooth</h3>
       <div class="image-container">
-        <ion-img [src]="imageUrl" alt="Picture of tooth" (ionError)="onImageError()" *ngIf="!imageFailed" class="found-image"
-          style="margin-left: auto; margin-right: auto;"></ion-img>
+        <ion-img [src]="imageUrl" alt="Picture of tooth" (ionError)="onImageError()" *ngIf="!imageFailed"
+          class="found-image"></ion-img>
       </div>
       <ion-button *ngIf="isNew" (click)="takePicture()" color="primary" expand="block" fill="solid"
         style="margin-left: 20px; margin-right: 20px; ">Take Picture
@@ -31,7 +31,7 @@ Copyright 2024 Scott Lewis, All rights reserved.
         <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
           class="description-label">What kind of
           tooth did you find?</ion-label>
-        <ion-text class="rare-example">e.g.: Color, Size, Type, etc.</ion-text>
+        <ion-text class="rare-example" slot="start">e.g.: Color, Size, Type, etc.</ion-text>
         <div class="description-input">
           <ion-input (ionChange)="descriptionChange($event)" aria-label="What kind of plate did you find?"
             placeholder="Description" class="rare-description-textarea" [value]="description"></ion-input>
@@ -45,12 +45,13 @@ Copyright 2024 Scott Lewis, All rights reserved.
           <ion-datetime-button datetime="datetime"></ion-datetime-button>
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
-              <ion-datetime id="datetime" [showDefaultButtons]="true" [value]="isoDate" (ionChange)="foundDateChange($event)"></ion-datetime>
+              <ion-datetime id="datetime" [showDefaultButtons]="true" [value]="isoDate"
+                (ionChange)="foundDateChange($event)"></ion-datetime>
             </ng-template>
           </ion-modal>
         </span>
       </p>
-      <p style="font-weight: bold; margin-top: 10px;" *ngIf="location" (click)="openMap()">
+      <p style="font-weight: bold; margin-top: 15px;" *ngIf="location" (click)="openMap()">
         <ion-icon name="location-outline" style="font-size: 24px; margin-right: 6px;"></ion-icon> in
         {{location.city}}, {{location.state}}
       </p>
@@ -60,7 +61,8 @@ Copyright 2024 Scott Lewis, All rights reserved.
       style="margin-left: 20px; margin-right: 20px; ">I Found It!
     </ion-button>
     <ion-button *ngIf="!isNew" (click)="confirmDeleteState()" color="primary" expand="block" fill="outline"
-      style="margin-left: 20px; margin-right: 20px; margin-bottom: 10px;"><ion-text color="dark">Delete</ion-text>
+      style="margin-left: 20px; margin-right: 20px; margin-bottom: 10px;margin-top: 25px;"><ion-text
+        color="dark">Delete</ion-text>
     </ion-button>
   </div>
 </ion-content>

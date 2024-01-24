@@ -13,7 +13,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import { GeocodeService } from '../geocode.service';
 import { GoogleMap } from '@capacitor/google-maps';
 import { ModalMapPage } from '../modal-map/modal-map.page';
-
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-modal-view-tooth',
@@ -30,9 +30,11 @@ export class ModalViewToothPage implements OnInit {
   public isoDate: string;
   public description: string;
   public location?: CoordinatesPositionModel | null;
-  public foundDateTime: Date = new Date();
+  public foundDate: Date = new Date();
   public isDirty: boolean = false;
   public isLoaded: boolean = false;
+  public autoTakePic: boolean = false;
+  public toothId: number;
 
   public theme: string = "dark";
 
@@ -49,6 +51,7 @@ export class ModalViewToothPage implements OnInit {
   }
 
   async ngOnInit() {
+    console.log("")
     this.account = await this.storageService.getAccount() ?? new Account();
 
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -61,9 +64,18 @@ export class ModalViewToothPage implements OnInit {
 
     this.toggleDarkTheme(prefersDark.matches);
 
-    this.isoDate = this.foundDateTime.toISOString();
+    // this.isoDate = this.foundDate.toISOString();
+
+    let options: any = {timezone: Intl.DateTimeFormat().resolvedOptions().timeZone};
+    const formattedDate = format(this.foundDate, "yyyy-MM-dd'T'HH:mm:ssXXX", options);
+    console.log("formattedDate: ",formattedDate);
+    this.isoDate = formattedDate;
 
     await this.recordLocation();
+
+    if (this.autoTakePic) {
+      await this.takePicture();
+    }
   }
 
   async ngAfterViewInit() {
@@ -102,7 +114,7 @@ export class ModalViewToothPage implements OnInit {
   async recordLocation() {
     console.log("RecordLocation started");
     let hasLocationPermission = await this.coreUtilService.hasLocationPermission();
-    if (hasLocationPermission && (this.account.recordLocationOption != "never")) {
+    if (hasLocationPermission && this.account.recordLocationOption != "neverAllow") {
       try {
         const coordinates = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
         let model = new CoordinatesPositionModel();
@@ -128,8 +140,6 @@ export class ModalViewToothPage implements OnInit {
         this.logger.error(`recordLocation-getCurrentPosition 1 err`, err);
         await this.coreUtilService.presentToastError("Please enable location services");
       }
-    } else {
-
     }
   }
 
@@ -151,10 +161,10 @@ export class ModalViewToothPage implements OnInit {
   async takePicture() {
     try {
       const image = await Camera.getPhoto({
-        quality: 90,
+        quality: 100,
         resultType: CameraResultType.DataUrl,
-        height: 150,
-        width: 350,
+        // height: 150,
+        // width: 350,
         direction: CameraDirection.Rear,
       });
 
@@ -179,7 +189,8 @@ export class ModalViewToothPage implements OnInit {
   foundDateChange(e: any) {
     console.log("foundDateChange: ", e);
     let value = e.detail.value;
-    this.foundDateTime = value;    
+    this.foundDate = new Date(value);
+    console.log("new foundDate: ", this.foundDate);
   }
 
   async confirmDeleteState() {
@@ -217,9 +228,10 @@ export class ModalViewToothPage implements OnInit {
     await this.modalController.dismiss({
       removed: removed,
       saved: saved,
+      toothId: this.toothId,
       imageUrl: this.imageUrl,
-      description: this.description,
-      foundDateTime: this.foundDateTime,
+      description: this.description ?? "",
+      foundDate: this.foundDate,
       location: this.location,
     });
   }

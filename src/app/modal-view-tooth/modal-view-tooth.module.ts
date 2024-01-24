@@ -21,7 +21,8 @@ import { ModalMapPageModule } from '../modal-map/modal-map.module';
     IonicModule,
     HeaderModule,    
     DateFnsModule,
-    ModalMapPageModule
+    ModalMapPageModule,
+    
   ],
   declarations: [ModalViewToothPage],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
