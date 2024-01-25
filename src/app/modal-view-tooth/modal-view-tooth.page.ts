@@ -11,7 +11,6 @@ import { LoggerService } from '../logger.service';
 import { Camera, CameraDirection, CameraResultType } from '@capacitor/camera';
 import { Geolocation } from '@capacitor/geolocation';
 import { GeocodeService } from '../geocode.service';
-import { GoogleMap } from '@capacitor/google-maps';
 import { ModalMapPage } from '../modal-map/modal-map.page';
 import { format } from 'date-fns';
 
@@ -97,8 +96,7 @@ export class ModalViewToothPage implements OnInit {
     console.log("openMap closed: ", data)
     if (data && data.saved && data.location) {
       if (this.location == null) {
-        //same location, ignore
-        return;
+        this.location = new CoordinatesPositionModel();
       }
       this.location.latitude = data.location.latitude;
       this.location.longitude = data.location.longitude;

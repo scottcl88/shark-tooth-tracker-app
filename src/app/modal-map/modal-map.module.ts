@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ModalMapPage } from './modal-map.page';
 import { HeaderModule } from '../header/header.module';
+import { GoogleMapsModule } from '@angular/google-maps';
 
 @NgModule({
   imports: [
@@ -14,6 +15,7 @@ import { HeaderModule } from '../header/header.module';
     FormsModule,
     IonicModule,
     HeaderModule,
+    GoogleMapsModule
   ],
   declarations: [ModalMapPage],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
