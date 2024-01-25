@@ -15,6 +15,7 @@ import { Device } from "@capacitor/device";
 import { ModalSignInPage } from "./modal-signin/modal-signin.page";
 import { GeocodeService } from "./geocode.service";
 import { ToothModel } from "./_models/toothModel";
+import { Subject } from "rxjs";
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,10 @@ import { ToothModel } from "./_models/toothModel";
 export class CollectionService {
 
   private allTeeth: ToothModel[] = [];
+  
+  private allTeethSubject = new Subject<Array<any>>();
+  public allTeeth$ = this.allTeethSubject.asObservable();
+
   private hasLoaded: boolean = false;
   private hasLoadedLicensePlates: boolean = false;
   private isAuthenticated: boolean = false;
@@ -104,6 +109,11 @@ export class CollectionService {
     });
   }
 
+  updateTeethSubject() {
+    let result = this.allTeeth.filter(x => x.deletedDate == null);
+    this.allTeethSubject.next(result);
+  }
+
   getNewToothId() {
     let largestToothId = 0;
     this.allTeeth?.forEach(g => {
@@ -128,7 +138,7 @@ export class CollectionService {
 
     console.debug("Adding tooth: ", tooth);
     this.allTeeth.push(tooth);
-
+    this.updateTeethSubject();
     await this.doSave();
   }
 
@@ -159,6 +169,7 @@ export class CollectionService {
       return;
     }
     this.allTeeth[foundToothIndex] = tooth;
+    this.updateTeethSubject();
 
     await this.doSave(doDismissLoading);
   }
@@ -206,6 +217,7 @@ export class CollectionService {
         let newTooth = new ToothModel(g);
         newTooth.init(g);
         this.allTeeth.push(newTooth);
+        this.updateTeethSubject();
       });
     }
   }
@@ -239,12 +251,14 @@ export class CollectionService {
                 let newTooth = new ToothModel(g);
                 newTooth.init(g);
                 this.allTeeth.push(newTooth);
+                this.updateTeethSubject();
               });
             } else {
               collectionData.teeth.forEach((g: any) => {
                 let newTooth = new ToothModel(g);
                 newTooth.init(g);
                 this.allTeeth.push(newTooth);
+                this.updateTeethSubject();
               });
             }
           }

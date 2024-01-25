@@ -30,6 +30,8 @@ export class ModalMapPage implements OnInit {
     console.log("Location for onMap: ", this.location);
     const mapRef: any = document.getElementById('map');
 
+    let zoom = this.location ? 15 : 4;
+
     const newMap = await GoogleMap.create({
       id: 'my-map', // Unique identifier for this map instance
       element: mapRef, // reference to the capacitor-google-map element
@@ -38,13 +40,14 @@ export class ModalMapPage implements OnInit {
         center: {
           // The initial position to be rendered by the map
           lat: this.location?.latitude ?? 0,//33.6,
-          lng: this.location?.longitude ?? 0,//-117.9,
-        },
-        zoom: 15, // The initial zoom level to be rendered by the map
+          lng: this.location?.longitude ?? 0,//-117.9,          
+        },        
+        zoom: zoom, // The initial zoom level to be rendered by the map
       },
+      
     });
-
-    newMap.enableCurrentLocation(true);
+    
+    //newMap.enableCurrentLocation(true);
     newMap.enableTouch();
 
     // Add a marker to the map
@@ -65,23 +68,23 @@ export class ModalMapPage implements OnInit {
 
     await newMap.setOnMapClickListener(async (event) => {
       console.log("OnMapClick: ", event);
-      newMap.removeMarker(this.markerId);
-      this.markerId = await newMap.addMarker({
-        coordinate: {
-          lat: event.latitude ?? 0,//33.6,
-          lng: event.longitude ?? 0,//-117.9,
-        }
-      });
       this.location.latitude = event.latitude;
       this.location.longitude = event.longitude;
-      console.log("location set: ", this.location);
+      await newMap.removeMarker(this.markerId);
+      this.markerId = await newMap.addMarker({
+        coordinate: {
+          lat: this.location?.latitude ?? 0,//33.6,
+          lng: this.location?.longitude ?? 0,//-117.9,
+        }
+      });
     });
   }
 
-  dismiss() {
+  dismiss(saved: boolean) {
     // using the injected ModalController this page
     // can "dismiss" itself and optionally pass back data
     this.modalController.dismiss({
+      saved: saved,
       location: this.location
     });
   }

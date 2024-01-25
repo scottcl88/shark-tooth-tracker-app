@@ -8,6 +8,8 @@ import { Camera, CameraDirection, CameraResultType } from '@capacitor/camera';
 import { ModalViewToothPage } from './modal-view-tooth/modal-view-tooth.page';
 import { Subscription } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
+import { ToothModel } from './_models/toothModel';
+import { CollectionService } from './collection.service';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +19,7 @@ import { NavigationEnd, Router } from '@angular/router';
 export class AppComponent implements OnInit {
   public showPhotoFab: boolean = true;
   public routerEventSubscription: Subscription;
-  constructor(public router: Router, private firebaseAuthService: FirebaseAuthService, private storageService: StorageService, private modalController: ModalController) { }
+  constructor(public router: Router, private firebaseAuthService: FirebaseAuthService, private collectionService: CollectionService, private storageService: StorageService, private modalController: ModalController) { }
   async ngOnInit() {
     this.routerEventSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -58,9 +60,25 @@ export class AppComponent implements OnInit {
       });
       await modal.present();
       const { data } = await modal.onDidDismiss();
-
+      if (data && data.saved) {
+        console.log("App component adding tooth: ", data);
+        await this.addTooth(data);
+        await this.router.navigate(['/tabs/home']);
+      }
     } catch (err) {
       console.error("takePicture error: ", err);
     }
+  }
+  private async addTooth(data: any) {
+    let newTooth = new ToothModel();
+    newTooth.createdDate = new Date();
+    newTooth.photoUrl = data.imageUrl;
+    newTooth.description = data.description;
+    newTooth.foundDate = data.foundDate;
+    newTooth.location = data.location;
+    newTooth.toothId = this.collectionService.getNewToothId();
+    await this.collectionService.addTooth(newTooth);
+    //this.allTeeth = await this.collectionService.getTeeth();
+    //console.log("AllTeeth: ", this.allTeeth);
   }
 }

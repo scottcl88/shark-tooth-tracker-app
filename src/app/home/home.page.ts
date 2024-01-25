@@ -1,23 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ModalViewToothPageModule } from '../modal-view-tooth/modal-view-tooth.module';
 import { ModalViewToothPage } from '../modal-view-tooth/modal-view-tooth.page';
 import { CollectionService } from '../collection.service';
 import { ToothModel } from '../_models/toothModel';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss']
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
 
+  private teethSubscription: Subscription;
   public allTeeth: ToothModel[] = [];
 
   constructor(private modalController: ModalController, private collectionService: CollectionService) { }
 
   async ngOnInit() {
     this.allTeeth = await this.collectionService.getTeeth();
+    this.teethSubscription = this.collectionService.allTeeth$.subscribe((updatedTeeth) => {
+      this.allTeeth = updatedTeeth;
+    });
+  }
+
+  ngOnDestroy() {
+    this.teethSubscription.unsubscribe();
   }
 
   async editTooth(tooth: ToothModel) {
@@ -31,7 +40,7 @@ export class HomePage implements OnInit {
         description: tooth.description,
         foundDate: tooth.foundDate,
         location: tooth.location,
-        isNew: false
+        isNew: false,
       },
     });
     await modal.present();
@@ -45,7 +54,8 @@ export class HomePage implements OnInit {
     const modal = await this.modalController.create({
       component: ModalViewToothPage,
       componentProps: {
-        isNew: true
+        isNew: true,
+        autoTakePic: true,
       },
     });
     await modal.present();
@@ -72,7 +82,5 @@ export class HomePage implements OnInit {
       newTooth.toothId = this.collectionService.getNewToothId();
       await this.collectionService.addTooth(newTooth);
     }
-    this.allTeeth = await this.collectionService.getTeeth();
-    console.log("AllTeeth: ", this.allTeeth);
   }
 }

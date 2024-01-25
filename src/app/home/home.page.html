@@ -13,7 +13,7 @@
     </ion-toolbar>
   </ion-header>
   <ion-button (click)="addTooth()" color="primary" expand="block" fill="solid"
-    style="margin-left: 20px; margin-right: 20px; ">Add Tooth
+    style="margin-left: 20px; margin-right: 20px; margin-top: 10px; margin-bottom: 15px;"><ion-icon name="camera" slot="start"></ion-icon> Add Tooth
   </ion-button>
   <div *ngFor="let tooth of this.allTeeth; index as i;">
     <ion-card (click)="editTooth(tooth)">

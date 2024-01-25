@@ -66,12 +66,14 @@ export class ModalViewToothPage implements OnInit {
 
     // this.isoDate = this.foundDate.toISOString();
 
-    let options: any = {timezone: Intl.DateTimeFormat().resolvedOptions().timeZone};
+    let options: any = { timezone: Intl.DateTimeFormat().resolvedOptions().timeZone };
     const formattedDate = format(this.foundDate, "yyyy-MM-dd'T'HH:mm:ssXXX", options);
-    console.log("formattedDate: ",formattedDate);
+    console.log("formattedDate: ", formattedDate);
     this.isoDate = formattedDate;
 
-    await this.recordLocation();
+    if (this.isNew) {
+      await this.recordLocation();
+    }
 
     if (this.autoTakePic) {
       await this.takePicture();
@@ -93,7 +95,7 @@ export class ModalViewToothPage implements OnInit {
     await modal.present();
     const { data } = await modal.onDidDismiss();
     console.log("openMap closed: ", data)
-    if (data && data.location) {
+    if (data && data.saved && data.location) {
       if (this.location == null) {
         //same location, ignore
         return;
