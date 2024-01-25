@@ -11,9 +11,8 @@ Copyright 2024 Scott Lewis, All rights reserved.
       </div>
     </div>
     <div class="content">
-      <h2 style="position: fixed; margin-left: 30px;
-      margin-top: 50px;">Where did you find the tooth?</h2>
-      <google-map [options]="mapOptions" id="map" height="400px" width="250px" style="position: fixed;" (mapClick)="mapClick($event)">
+      <h2 class="map-header">Where did you find the tooth?</h2>
+      <google-map [options]="mapOptions" id="map" height="400px" width="300px" style="position: fixed;" (mapClick)="mapClick($event)">
         <map-marker [position]="markerPosition" [options]="markerOptions"></map-marker>
       </google-map>
       <div class="button-container">
