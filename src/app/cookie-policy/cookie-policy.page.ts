@@ -17,7 +17,7 @@ export class CookiePolicyPage implements OnInit {
   constructor(private router: Router) { }
 
   async ngOnInit() {
-    window.open("https://app.termly.io/document/cookie-policy/986e0fc9-2bc1-4b41-8856-9f2e24a9e10b");
+    //window.open("https://app.termly.io/document/cookie-policy/986e0fc9-2bc1-4b41-8856-9f2e24a9e10b", "_self");
   }
 
   async goToProfile() {

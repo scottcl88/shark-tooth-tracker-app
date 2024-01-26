@@ -19,22 +19,30 @@ import { CollectionService } from './collection.service';
 export class AppComponent implements OnInit {
   public showPhotoFab: boolean = true;
   public routerEventSubscription: Subscription;
+  public isAuthenticated: boolean = false;
   constructor(public router: Router, private firebaseAuthService: FirebaseAuthService, private collectionService: CollectionService, private storageService: StorageService, private modalController: ModalController) { }
   async ngOnInit() {
-    this.routerEventSubscription = this.router.events.subscribe((event) => {
+    this.routerEventSubscription = this.router.events.subscribe(async (event) => {
       if (event instanceof NavigationEnd) {
         if (event.url == "/tabs/home" || event.url == "/tabs/profile" || event.url == "/tabs" || event.url == "/" || event.url == "") {
           this.showPhotoFab = true;
         } else {
           this.showPhotoFab = false;
         }
+        if (event.url != "/cookie-policy" && event.url != "/privacy-policy" && event.url != "/terms-of-use") {
+          this.isAuthenticated = (await this.firebaseAuthService.isAuthenticated());
+          await this.doSignIn();
+        }
       }
     });
-    await this.doSignIn();
   }
   async doSignIn() {
     if (!environment.enableAuth) {
       console.debug("environment enableAuth is false");
+      return;
+    }
+    if (this.isAuthenticated) {
+      console.debug("already authenticated, skipping login");
       return;
     }
     console.log("doSignIn called");

@@ -17,7 +17,7 @@ export class TermsPage implements OnInit{
   constructor(private router: Router){}
 
   async ngOnInit() {
-    window.open("https://app.termly.io/document/terms-of-service/dbc767f1-cfaf-4bf2-b023-0edd89489b11");
+    //window.open("https://app.termly.io/document/terms-of-service/dbc767f1-cfaf-4bf2-b023-0edd89489b11", "_self");
   }
   async goToProfile() {
     await this.router.navigate(['/tabs/profile']);

@@ -16,7 +16,7 @@ export class PrivacyPolicyPage implements OnInit{
 
   constructor(private router: Router){}
   async ngOnInit() {
-    window.open("https://app.termly.io/document/privacy-policy/245c3211-d4cd-449f-920a-54e76ff2367b");
+    //window.open("https://app.termly.io/document/privacy-policy/245c3211-d4cd-449f-920a-54e76ff2367b", "_self");
   }
 
   async goToProfile() {
