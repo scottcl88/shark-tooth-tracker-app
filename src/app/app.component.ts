@@ -30,8 +30,11 @@ export class AppComponent implements OnInit {
           this.showPhotoFab = false;
         }
         if (event.url != "/cookie-policy" && event.url != "/privacy-policy" && event.url != "/terms-of-use") {
-          this.isAuthenticated = (await this.firebaseAuthService.isAuthenticated());
-          await this.doSignIn();
+          let disableLogin = await this.storageService.getDisableLogin();
+          if (!disableLogin) {
+            this.isAuthenticated = (await this.firebaseAuthService.isAuthenticated());
+            await this.doSignIn();
+          }
         }
       }
     });
