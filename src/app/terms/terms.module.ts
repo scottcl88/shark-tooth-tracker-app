@@ -11,6 +11,7 @@ import { TermsPageRoutingModule } from './terms-routing.module';
 
 import { TermsPage } from './terms.page';
 import { HeaderModule } from '../header/header.module';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { HeaderModule } from '../header/header.module';
     IonicModule,    
     ReactiveFormsModule,
     TermsPageRoutingModule,
-    HeaderModule
+    HeaderModule,
+    PdfViewerModule
   ],
   declarations: [TermsPage],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
