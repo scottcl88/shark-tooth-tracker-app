@@ -30,11 +30,7 @@ export class AppComponent implements OnInit {
           this.showPhotoFab = false;
         }
         if (event.url != "/cookie-policy" && event.url != "/privacy-policy" && event.url != "/terms-of-use") {
-          let disableLogin = await this.storageService.getDisableLogin();
-          if (!disableLogin) {
-            this.isAuthenticated = (await this.firebaseAuthService.isAuthenticated());
-            await this.doSignIn();
-          }
+          await this.doSignIn();
         }
       }
     });
@@ -44,11 +40,16 @@ export class AppComponent implements OnInit {
       console.debug("environment enableAuth is false");
       return;
     }
+    let disableLogin = await this.storageService.getDisableLogin();
+    if (disableLogin) {
+      console.debug("disableLogin is true, skipping login");
+      return;
+    }
+    this.isAuthenticated = (await this.firebaseAuthService.isAuthenticated());
     if (this.isAuthenticated) {
       console.debug("already authenticated, skipping login");
       return;
     }
-    console.log("doSignIn called");
     const modal = await this.modalController.create({
       component: ModalSignInPage,
       componentProps: {

@@ -18,7 +18,7 @@
         style="margin-left: auto; margin-right: auto; margin-bottom: 10px;width: 35px;height: 35px;">
         <ion-img alt="Player avatar" [src]="imageUrl" id="profileImage"></ion-img>
       </ion-avatar>
-      <ion-label id="profileName">{{name}}</ion-label>
+      <!-- <ion-label id="profileName">{{name}}</ion-label> -->
       <ion-label id="profileEmail">{{email}}</ion-label>
     </div>
     <div *ngIf="!isAuthenticated">
@@ -36,10 +36,10 @@
           <ion-select-option value="neverAllow">Never</ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item class="clear-item" style="margin-top: 20px; margin-bottom: 20px;" lines="none" *ngIf="showContactCheck">
+      <!-- <ion-item class="clear-item" style="margin-top: 20px; margin-bottom: 20px;" lines="none" *ngIf="showContactCheck">
         <ion-checkbox id="contactCheckbox" labelPlacement="end" (ionChange)="contactCheckOnChange($event)"
           [value]="contactCheck" [checked]="contactCheck">Can we contact you to get feedback?</ion-checkbox>
-      </ion-item>
+      </ion-item> -->
       <div style="margin-bottom: 20px;">
         <!-- <ion-item class="clear-item" style="margin-top: 20px;" lines="full" (click)="goToHelp()">
           <ion-button fill="clear" color="dark"><ion-icon name="help-circle-outline" slot="start"></ion-icon>

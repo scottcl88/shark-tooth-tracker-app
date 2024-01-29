@@ -13,12 +13,12 @@ Copyright 2024 Scott Lewis, All rights reserved.
           Sign in with Google
         </button>
       </div>
-      <!-- <div class="button-container mb-1">
+      <div class="button-container mb-2" *ngIf="platform === 'ios'">
         <button type="button" class="login-btn apple" (click)="signInWithApple()">
           Sign in with Apple
         </button>
-      </div> -->
-      <div class="button-container">
+      </div>
+      <div class="button-container mb-2">
         <a type="button" (click)="dismiss(true)">Continue as guest</a>
       </div>
     </div>

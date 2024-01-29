@@ -50,10 +50,10 @@ export class FirebaseAuthService {
       const app = initializeApp(environment.firebaseConfig);
 
       if (environment.production) {
-        // const appCheck = initializeAppCheck(app, {
-        //   provider: new ReCaptchaV3Provider('6Le0RvUmAAAAANtROg21O8U5uIcmPWsph0HuNLqw'),
-        //   isTokenAutoRefreshEnabled: true
-        // });
+        const appCheck = initializeAppCheck(app, {
+          provider: new ReCaptchaV3Provider('6LeOZ2ApAAAAACGGMZ-HOdIhrftZuB23M90b93s8'),
+          isTokenAutoRefreshEnabled: true
+        });
       }
 
       if (Capacitor.isNativePlatform()) {
@@ -63,7 +63,7 @@ export class FirebaseAuthService {
         });
       } else {
         console.log("capacitor is not native, getAuth")
-        getAuth();        
+        getAuth();
       }
       console.log("Firebase service finished initializing");
     } catch (err: any) {
@@ -88,10 +88,18 @@ export class FirebaseAuthService {
   public async isAuthenticated(): Promise<boolean> {
     return new Promise<boolean>(async (resolve: any) => {
       if (this.currentUser) {
-        this.currentUser = (await FirebaseAuthentication.getCurrentUser()).user;
-        if (this.currentUser) {
-          resolve(true);
-        } else {
+        try {
+          let currentUserResult = await FirebaseAuthentication.getCurrentUser();
+          console.log("Firebase isAuthenticated currentUserResult: ", JSON.stringify(currentUserResult));
+          this.currentUser = currentUserResult.user;
+          console.log("Firebase isAuthenticated current user set: ", JSON.stringify(this.currentUser));
+          if (this.currentUser) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        } catch (err) {
+          console.log("Firebase isAuthenticated getCurrentUser error: ", err, JSON.stringify(err));
           resolve(false);
         }
       } else {
@@ -125,8 +133,6 @@ export class FirebaseAuthService {
         platform = info.platform;
       }
 
-      const app = this.initializeAppIfNecessary();
-            
       let result: SignInResult;
       if (platform == "ios") {
         result = await this.signInWithApple();
@@ -135,7 +141,7 @@ export class FirebaseAuthService {
       }
 
       const credential = GoogleAuthProvider.credential(result.credential?.idToken);
-      const auth = getAuth(app);
+      const auth = getAuth();
       await signInWithCredential(auth, credential);
       this.currentUserSubject.next(result.user);
 
@@ -143,8 +149,10 @@ export class FirebaseAuthService {
       let accountStorage: Account = await this.storageService.get("account");
       if (accountStorage == null) {
         accountStorage = new Account();
+        console.log("accountStorage is being created new from signin in firebase");
       }
       if (accountStorage) {
+        console.log("accountStorage is being set from signin in firebase");
         accountStorage.email = currentUser?.email ?? "";
         accountStorage.isVerified = currentUser?.emailVerified ?? false;
         accountStorage.name = currentUser?.displayName ?? "";
@@ -157,9 +165,11 @@ export class FirebaseAuthService {
       }
 
       this.currentUser = (await FirebaseAuthentication.getCurrentUser()).user;
+      console.log("Firebase Signin current user set: ", JSON.stringify(this.currentUser));
       return result;
 
     } catch (err: any) {
+      console.log("Error on firebase signIn: ", err);
       this.logger.error("Error on firebase signIn: " + err + " ||| " + JSON.stringify(err), err);
     }
     return {} as SignInResult;
@@ -196,10 +206,12 @@ export class FirebaseAuthService {
 
   public async doSaveTeethToFirebase(dataObj: any) {
     try {
+      //remove all undefined and replace with null; stringify and parse does this
+      let goodJsonObj = JSON.parse(JSON.stringify(dataObj));
       this.currentUser = (await FirebaseAuthentication.getCurrentUser()).user;
       const db = getDatabase();
       const updates: any = {};
-      updates[`users/${this.currentUser?.uid}/teeth`] = dataObj;
+      updates[`users/${this.currentUser?.uid}/teeth`] = goodJsonObj;
       await update(ref(db), updates);
     } catch (err) {
       console.error("doSaveTeethToFirebase in firebaseAuth: ", err);

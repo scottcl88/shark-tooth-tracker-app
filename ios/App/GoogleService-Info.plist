@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>403064580432-ufoof7nli7ta81ppld4o1810r0ffkal5.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.403064580432-ufoof7nli7ta81ppld4o1810r0ffkal5</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>403064580432-nsa2hifil1336qd0pt9n9644fddafelp.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyArJOHvKqTSw2gWc0IMqxPyEMM4LE-oYOI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>403064580432</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.lewis.sharktoothtracker</string>
+	<key>PROJECT_ID</key>
+	<string>shark-tooth-tracker</string>
+	<key>STORAGE_BUCKET</key>
+	<string>shark-tooth-tracker.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:403064580432:ios:197b66cd88b684bea8a455</string>
+	<key>DATABASE_URL</key>
+	<string>https://shark-tooth-tracker-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

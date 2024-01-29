@@ -51,7 +51,7 @@ export class StorageService {
     let disableLogin = await this.storage.get('disableLogin');
     if (!disableLogin) {
       let preferenceValue = (await Preferences.get({ key: "disableLogin" })).value;
-      if (preferenceValue == "true") {
+      if (preferenceValue == "true" || preferenceValue?.toLocaleLowerCase() == "true") {
         disableLogin = true;
       }
     }
