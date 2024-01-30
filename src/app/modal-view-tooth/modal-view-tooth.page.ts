@@ -13,6 +13,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import { GeocodeService } from '../geocode.service';
 import { ModalMapPage } from '../modal-map/modal-map.page';
 import { format } from 'date-fns';
+import { decode } from "base64-arraybuffer";
 
 @Component({
   selector: 'app-modal-view-tooth',
@@ -25,6 +26,7 @@ export class ModalViewToothPage implements OnInit {
 
   public isNew: boolean = true;
   public imageUrl: string;
+  public imageData: any;
   public imageFailed: boolean = false;
   public isoDate: string;
   public description: string;
@@ -162,7 +164,7 @@ export class ModalViewToothPage implements OnInit {
     try {
       const image = await Camera.getPhoto({
         quality: 100,
-        resultType: CameraResultType.DataUrl,
+        resultType: CameraResultType.Uri,
         // height: 150,
         // width: 350,
         direction: CameraDirection.Rear,
@@ -172,14 +174,49 @@ export class ModalViewToothPage implements OnInit {
       // You can access the original file using image.path, which can be
       // passed to the Filesystem API to read the raw data of the image,
       // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-      var imageUrl = image.dataUrl;
+      this.imageData = image;
+     // let image64 = await this.readAsBase64(image.webPath);
+      // const blob = new Blob([new Uint8Array(decode(image64))], {
+      //   type: `image/${image.format}`,
+      // });
 
-      // Can be set to the src of an image now
-      this.imageUrl = imageUrl ?? "";
+
+      
+      let photoPath: any = image.webPath;
+      const response = await fetch(photoPath);
+      const blob = await response.blob();
+      // const rawData = atob(image64);
+      // const bytes = new Array(rawData.length);
+      // for (var x = 0; x < rawData.length; x++) {
+      //   bytes[x] = rawData.charCodeAt(x);
+      // }
+      // const arr = new Uint8Array(bytes);
+      // const blob = new Blob([arr], { type: `image/${image.format}` });
+      this.imageData = image.path ?? "";//blob;
+      this.imageUrl = image.webPath ?? "";
+
+      console.log("ImageUrl set: ", image.webPath, this.imageData, image);
     } catch (err) {
       console.error("takePicture error: ", err);
     }
   }
+
+  // private async readAsBase64(cameraPhoto: any) {
+  //   const response = await fetch(cameraPhoto);
+  //   const blob = await response.blob();
+  //   return await this.convertBlobToBase64(blob) as string;
+  // }
+
+  // convertBlobToBase64 = (blob: Blob) =>
+  //   new Promise(
+  //     (resolve, reject) => {
+  //       const reader = new FileReader;
+  //       reader.onerror = reject;
+  //       reader.onload = () => {
+  //         resolve(reader.result);
+  //       };
+  //       reader.readAsDataURL(blob);
+  //     });
 
   descriptionChange(e: any) {
     let value = e.detail.value;
@@ -230,6 +267,7 @@ export class ModalViewToothPage implements OnInit {
       saved: saved,
       toothId: this.toothId,
       imageUrl: this.imageUrl,
+      imageData: this.imageData,
       description: this.description ?? "",
       foundDate: this.foundDate,
       location: this.location,

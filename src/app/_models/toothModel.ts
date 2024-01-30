@@ -28,6 +28,7 @@ export class ToothModel {
 
     toothId: number;
     photoUrl: string;
+    imageData: any;
     description: string;
     foundDate: Date;
     location: CoordinatesPositionModel | null;

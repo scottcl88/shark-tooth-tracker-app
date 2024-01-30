@@ -72,6 +72,7 @@ export class HomePage implements OnInit, OnDestroy {
     newTooth.description = data.description;
     newTooth.foundDate = data.foundDate;
     newTooth.location = data.location;
+    newTooth.imageData = data.imageData;
     if(data.removed){
       newTooth.deletedDate = new Date();
     }

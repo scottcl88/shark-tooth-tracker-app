@@ -22,6 +22,8 @@ import { Account } from './app/_models';
 import { LoggerService } from './app/logger.service';
 import { getAnalytics, setUserId, setUserProperties } from "firebase/analytics";
 import { Device } from '@capacitor/device';
+import { FirebaseStorage } from '@capacitor-firebase/storage';
+import { ToothModel } from './app/_models/toothModel';
 
 @Injectable({
   providedIn: 'root',
@@ -202,6 +204,67 @@ export class FirebaseAuthService {
 
   public async signOut(): Promise<void> {
     await FirebaseAuthentication.signOut();
+  }
+
+  public async getToothImage(tooth: ToothModel): Promise<string> {
+    return new Promise(async (resolve, reject) => {
+      console.log("uploadToothImage_Web tooth: ", tooth);
+      let result = await FirebaseStorage.getDownloadUrl(
+        {
+          path: `users/${this.currentUser?.uid}/teeth/${tooth.toothId}`,
+        }
+      );
+      resolve(result.downloadUrl);
+    });
+  }
+
+  public async uploadToothImage_Web(tooth: ToothModel): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      console.log("uploadToothImage_Web tooth: ", tooth);
+      await FirebaseStorage.uploadFile(
+        {
+          path: `users/${this.currentUser?.uid}/teeth/${tooth.toothId}`,
+          blob: tooth.imageData,
+          // metadata: {
+          //   contentType: tooth.imageData.format
+          // }
+        },
+        (event, error) => {
+          console.log("FirebaseStorage uploadFile result: ", event, error);
+          if (error) {
+            reject(error);
+          } else if (event?.completed) {
+            resolve();
+          }
+        }
+      );
+    });
+  }
+
+  public async uploadToothImage(tooth: ToothModel): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      console.log("uploadToothImage tooth: ", tooth.imageData);
+      await FirebaseStorage.uploadFile(
+        {
+          path: `users/${this.currentUser?.uid}/teeth/${tooth.toothId}`,
+          uri: tooth.imageData,
+          metadata: {
+            contentType: "image/png",
+            customMetadata: {
+              foo: 'bar',
+            },
+          }
+        },
+        (event, error) => {
+          console.log("FirebaseStorage uploadFile result: ", event, error);
+          if (error) {
+            reject(error);
+          } else if (event?.completed) {
+            resolve();
+          }
+        }
+      );
+    });
   }
 
   public async doSaveTeethToFirebase(dataObj: any) {

@@ -85,6 +85,7 @@ export class AppComponent implements OnInit {
     let newTooth = new ToothModel();
     newTooth.createdDate = new Date();
     newTooth.photoUrl = data.imageUrl;
+    newTooth.imageData = data.imageData;
     newTooth.description = data.description;
     newTooth.foundDate = data.foundDate;
     newTooth.location = data.location;

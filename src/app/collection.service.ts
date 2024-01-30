@@ -23,7 +23,7 @@ import { Subject } from "rxjs";
 export class CollectionService {
 
   private allTeeth: ToothModel[] = [];
-  
+
   private allTeethSubject = new Subject<Array<any>>();
   public allTeeth$ = this.allTeethSubject.asObservable();
 
@@ -139,6 +139,8 @@ export class CollectionService {
     console.debug("Adding tooth: ", tooth);
     this.allTeeth.push(tooth);
     this.updateTeethSubject();
+
+    await this.saveImage(tooth);
     await this.doSave();
   }
 
@@ -156,7 +158,7 @@ export class CollectionService {
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();
-    if(data.continueAsGuest){
+    if (data.continueAsGuest) {
       await this.storageService.setDisableLogin(true);
     }
   }
@@ -171,7 +173,22 @@ export class CollectionService {
     this.allTeeth[foundToothIndex] = tooth;
     this.updateTeethSubject();
 
+    await this.saveImage(tooth);
     await this.doSave(doDismissLoading);
+  }
+
+  async saveImage(tooth: ToothModel) {
+    if (this.platform.is("android") || this.platform.is("ios")) {
+      await this.firebaseAuthService.uploadToothImage(tooth);
+    } else {
+      await this.firebaseAuthService.uploadToothImage_Web(tooth);
+    }
+    let downloadUrl = await this.firebaseAuthService.getToothImage(tooth);
+    let foundTooth = this.allTeeth.find(x => x.toothId == tooth.toothId);
+    if (foundTooth) {
+      foundTooth.photoUrl = downloadUrl;
+    }
+    console.log("Done saving image. DownloadUrl: ", downloadUrl);
   }
 
   private async doSave(doDismissLoading: boolean = true) {
@@ -247,16 +264,20 @@ export class CollectionService {
           if (collectionData && collectionData.teeth) {
             if (collectionData.teeth.data && (typeof collectionData.teeth.data === 'string' || collectionData.teeth.data instanceof String)) {
               let parseObj = JSON.parse(collectionData.teeth.data);
-              parseObj.forEach((g: any) => {
+              parseObj.forEach(async (g: any) => {
                 let newTooth = new ToothModel(g);
                 newTooth.init(g);
+                let downloadUrl = await this.firebaseAuthService.getToothImage(newTooth);
+                newTooth.photoUrl = downloadUrl;
                 this.allTeeth.push(newTooth);
                 this.updateTeethSubject();
               });
             } else {
-              collectionData.teeth.forEach((g: any) => {
+              collectionData.teeth.forEach(async (g: any) => {
                 let newTooth = new ToothModel(g);
                 newTooth.init(g);
+                let downloadUrl = await this.firebaseAuthService.getToothImage(newTooth);
+                newTooth.photoUrl = downloadUrl;
                 this.allTeeth.push(newTooth);
                 this.updateTeethSubject();
               });
