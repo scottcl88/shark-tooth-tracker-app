@@ -9,6 +9,7 @@ import { CollectionService } from '../collection.service';
 import { FirebaseAuthService } from 'src/firebaseAuth.service';
 import { LoggerService } from '../logger.service';
 import { Router } from '@angular/router';
+import { Geolocation } from '@capacitor/geolocation';
 
 @Component({
   selector: 'app-profile',
@@ -171,8 +172,18 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
   async recordLocationChange(e: any) {
+    if (e.detail.value == "alwaysAllow") {
+      let hasLocationPermission = await this.coreUtilService.hasLocationPermission();
+      if (!hasLocationPermission) {
+        let permissionStatus = await Geolocation.requestPermissions();
+        if (permissionStatus.coarseLocation != "granted" && permissionStatus.location != "granted") {
+          await this.coreUtilService.presentToastError("Please allow location permissions to enable this feature");
+          return;
+        }
+      }
+    }
     this.account.recordLocationOption = e.detail.value;
-    this.storageService.setAccount(this.account);
+    await this.storageService.setAccount(this.account);
     if (this.isAuthenticated) {
       await this.firebaseAuthService.doSaveProfileToFirebase(this.account);
     }

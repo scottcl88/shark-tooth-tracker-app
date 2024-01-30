@@ -52,7 +52,7 @@ Copyright 2024 Scott Lewis, All rights reserved.
           </ion-modal>
         </span>
       </p>
-      <p style="font-weight: bold; margin-top: 15px;" *ngIf="location" (click)="openMap()">
+      <p style="font-weight: bold; margin-top: 15px;" *ngIf="location && location.city && location.state" (click)="openMap()">
         <ion-icon name="location-outline" style="font-size: 24px; margin-right: 6px;"></ion-icon> in
         {{location.city}}, {{location.state}}
       </p>

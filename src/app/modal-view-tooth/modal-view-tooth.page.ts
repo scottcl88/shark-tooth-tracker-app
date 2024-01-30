@@ -2,7 +2,7 @@
 Copyright 2024 Scott Lewis, All rights reserved.
 **/
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AlertController, IonDatetime, ModalController, ToastController } from '@ionic/angular';
+import { AlertController, IonDatetime, ModalController, Platform, ToastController } from '@ionic/angular';
 import { environment } from 'src/environments/environment';
 import { CoreUtilService } from '../core-utils';
 import { Account, CoordinatesPositionModel } from '../_models';
@@ -14,6 +14,7 @@ import { GeocodeService } from '../geocode.service';
 import { ModalMapPage } from '../modal-map/modal-map.page';
 import { format } from 'date-fns';
 import { decode } from "base64-arraybuffer";
+import { Device } from '@capacitor/device';
 
 @Component({
   selector: 'app-modal-view-tooth',
@@ -47,7 +48,7 @@ export class ModalViewToothPage implements OnInit {
 
 
   constructor(private logger: LoggerService, private modalController: ModalController, private alertController: AlertController,
-    public toastController: ToastController, private geocodeService: GeocodeService,
+    public toastController: ToastController, private geocodeService: GeocodeService, private platform: Platform,
     private coreUtilService: CoreUtilService, private storageService: StorageService) {
   }
 
@@ -121,6 +122,7 @@ export class ModalViewToothPage implements OnInit {
         const coordinates = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
         let model = new CoordinatesPositionModel();
         model.init(coordinates.coords);
+        console.debug("coordinates set: ", JSON.stringify(model));
         if (coordinates) {
           this.location = (coordinates as any) ?? new CoordinatesPositionModel();
           if (this.location) {
@@ -137,11 +139,14 @@ export class ModalViewToothPage implements OnInit {
           }
         } else {
           this.location = null;
+          this.logger.error(`recordLocation-getCurrentPosition 2 error. Coordinates are null`);
         }
       } catch (err: any) {
         this.logger.error(`recordLocation-getCurrentPosition 1 err`, err);
         await this.coreUtilService.presentToastError("Please enable location services");
       }
+    } else {
+      console.debug("Location not recorded since its not allowed by user. ", hasLocationPermission, this.account.recordLocationOption);
     }
   }
 
@@ -175,24 +180,15 @@ export class ModalViewToothPage implements OnInit {
       // passed to the Filesystem API to read the raw data of the image,
       // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
       this.imageData = image;
-     // let image64 = await this.readAsBase64(image.webPath);
-      // const blob = new Blob([new Uint8Array(decode(image64))], {
-      //   type: `image/${image.format}`,
-      // });
 
-
-      
-      let photoPath: any = image.webPath;
-      const response = await fetch(photoPath);
-      const blob = await response.blob();
-      // const rawData = atob(image64);
-      // const bytes = new Array(rawData.length);
-      // for (var x = 0; x < rawData.length; x++) {
-      //   bytes[x] = rawData.charCodeAt(x);
-      // }
-      // const arr = new Uint8Array(bytes);
-      // const blob = new Blob([arr], { type: `image/${image.format}` });
-      this.imageData = image.path ?? "";//blob;
+      if (this.platform.is("ios") || this.platform.is("android")) {
+        let photoPath: any = image.webPath;
+        const response = await fetch(photoPath);
+        const blob = await response.blob();
+        this.imageData = blob;
+      } else {
+        this.imageData = image.path ?? "";//blob;
+      }
       this.imageUrl = image.webPath ?? "";
 
       console.log("ImageUrl set: ", image.webPath, this.imageData, image);
