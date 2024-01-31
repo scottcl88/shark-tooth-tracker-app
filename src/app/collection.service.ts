@@ -170,6 +170,8 @@ export class CollectionService {
       this.logger.error("Could not find tooth");
       return;
     }
+    await this.coreUtilService.presentLoading("Saving");
+
     this.allTeeth[foundToothIndex] = tooth;
     this.updateTeethSubject();
 
@@ -178,22 +180,29 @@ export class CollectionService {
   }
 
   async saveImage(tooth: ToothModel) {
-    if (this.platform.is("android") || this.platform.is("ios")) {
-      await this.firebaseAuthService.uploadToothImage(tooth);
-    } else {
-      await this.firebaseAuthService.uploadToothImage_Web(tooth);
+    if (this.isAuthenticated) {
+      let deviceInfo = await Device.getInfo();
+      console.log("saveImage called on platform: ", deviceInfo.platform);
+      try {
+        if (deviceInfo.platform == "ios" || deviceInfo.platform == "android") {
+          await this.firebaseAuthService.uploadToothImage(tooth);
+        } else {
+          await this.firebaseAuthService.uploadToothImage_Web(tooth);
+        }
+        let downloadUrl = await this.firebaseAuthService.getToothImage(tooth);
+        let foundTooth = this.allTeeth.find(x => x.toothId == tooth.toothId);
+        if (foundTooth) {
+          foundTooth.photoUrl = downloadUrl;
+        }
+        console.log("Done saving image. DownloadUrl: ", downloadUrl);
+      } catch (err: any) {
+        this.logger.error("Error saving image: ", err);
+      }
     }
-    let downloadUrl = await this.firebaseAuthService.getToothImage(tooth);
-    let foundTooth = this.allTeeth.find(x => x.toothId == tooth.toothId);
-    if (foundTooth) {
-      foundTooth.photoUrl = downloadUrl;
-    }
-    console.log("Done saving image. DownloadUrl: ", downloadUrl);
   }
 
   private async doSave(doDismissLoading: boolean = true) {
-    await this.coreUtilService.presentLoading("Saving");
-
+    console.log("doSave called");
     let teethJson: any[] = [];
     // this.allTeeth.forEach(x => teethJson.push(x.toJSON()));
     let dataStr = JSON.stringify(this.allTeeth);

@@ -15,6 +15,9 @@ export class HomePage implements OnInit, OnDestroy {
 
   private teethSubscription: Subscription;
   public allTeeth: ToothModel[] = [];
+  public sortArray: string[] = ["Date Found"];
+  public currentSort: number = 0;
+  public listSortType: string = "dateFound";
 
   constructor(private modalController: ModalController, private collectionService: CollectionService) { }
 
@@ -23,10 +26,37 @@ export class HomePage implements OnInit, OnDestroy {
     this.teethSubscription = this.collectionService.allTeeth$.subscribe((updatedTeeth) => {
       this.allTeeth = updatedTeeth;
     });
+    this.reorderList();
   }
 
   ngOnDestroy() {
     this.teethSubscription.unsubscribe();
+  }
+
+  reorderList(doNext: boolean = true) {
+    console.log("reorder list")
+    if (doNext) {
+      this.currentSort++;
+    }
+    if (this.currentSort >= this.sortArray.length + 1) {
+      this.currentSort = 0;
+    }
+    this.sortList();
+  }
+
+  listSortTypeChange(e: any) {
+    let type = e.detail.value;
+    this.listSortType = type;
+    this.sortList();
+  }
+
+  sortList(doNext: boolean = true) {
+    if (this.listSortType == "dateFound" && this.currentSort == 0) {
+      this.allTeeth.sort((a, b) => (new Date(a.foundDate).getTime()) - (new Date(b.foundDate).getTime()));
+    }
+    else if (this.listSortType == "dateFound" && this.currentSort == 1) {
+      this.allTeeth.sort((a, b) => (new Date(b.foundDate).getTime()) - (new Date(a.foundDate).getTime()));
+    }
   }
 
   async editTooth(tooth: ToothModel) {
@@ -73,7 +103,7 @@ export class HomePage implements OnInit, OnDestroy {
     newTooth.foundDate = data.foundDate;
     newTooth.location = data.location;
     newTooth.imageData = data.imageData;
-    if(data.removed){
+    if (data.removed) {
       newTooth.deletedDate = new Date();
     }
     if (data.toothId && data.toothId > 0) {

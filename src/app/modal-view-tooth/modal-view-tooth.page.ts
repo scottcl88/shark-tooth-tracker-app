@@ -181,17 +181,20 @@ export class ModalViewToothPage implements OnInit {
       // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
       this.imageData = image;
 
-      if (this.platform.is("ios") || this.platform.is("android")) {
+      // console.log("Image result: ", JSON.stringify(image));
+
+      let deviceInfo = await Device.getInfo();
+      if (deviceInfo.platform == "web") {
         let photoPath: any = image.webPath;
         const response = await fetch(photoPath);
         const blob = await response.blob();
         this.imageData = blob;
       } else {
-        this.imageData = image.path ?? "";//blob;
+        this.imageData = image.path ?? "";
       }
       this.imageUrl = image.webPath ?? "";
 
-      console.log("ImageUrl set: ", image.webPath, this.imageData, image);
+      //console.log("ImageUrl set: ", image.webPath, this.imageData, image);
     } catch (err) {
       console.error("takePicture error: ", err);
     }

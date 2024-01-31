@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  enableAuth: true,
+  enableAuth: false,
   API_BASE_URL: "https://licenseplateapi.azurewebsites.net",
   googleApiKey: "AIzaSyDPhoPstqzWL0b7hLEWcECfnxFt-r9Kpes",
   firebaseConfig: {

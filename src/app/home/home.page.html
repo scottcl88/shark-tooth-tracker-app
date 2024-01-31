@@ -16,9 +16,22 @@
     style="margin-left: 20px; margin-right: 20px; margin-top: 10px; margin-bottom: 15px;"><ion-icon name="camera"
       slot="start"></ion-icon> Add Tooth
   </ion-button>
+  <div *ngIf="allTeeth">
+    <h5 style="text-align: center;">{{allTeeth.length}} {{allTeeth.length === 1 ? 'tooth' : 'teeth'}} collected</h5>
+    <div style="display: flex; align-items: center; margin-left: 10px;" *ngIf="this.allTeeth.length > 1">
+      <ion-icon name="arrow-down" style="font-size: 25px;margin-right: 10px;" (click)="reorderList()" *ngIf="currentSort === 1"></ion-icon>
+      <ion-icon name="arrow-up" style="font-size: 25px;margin-right: 10px;" (click)="reorderList()" *ngIf="currentSort === 0"></ion-icon>
+      <ion-text>Date Found</ion-text>
+      <!-- <ion-select interface="popover" toggleIcon="chevron-down-sharp" expandedIcon="chevron-up-sharp" aria-label="name"
+      placeholder="Name" style="width: max-content;" [value]="listSortType" id="sortSelect"
+      (ionChange)="listSortTypeChange($event)">
+      <ion-select-option value="name">Name</ion-select-option>
+      <ion-select-option value="dateFound">Date Found</ion-select-option>
+    </ion-select> -->
+    </div>
+  </div>
   <div *ngFor="let tooth of this.allTeeth; index as i;">
     <ion-card (click)="editTooth(tooth)">
-      <!-- <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" /> -->
       <img alt="Picture of tooth" [src]="tooth.photoUrl" class="cardPhoto" *ngIf="tooth.photoUrl" />
       <ion-card-header>
         <ion-card-title>

@@ -208,7 +208,6 @@ export class FirebaseAuthService {
 
   public async getToothImage(tooth: ToothModel): Promise<string> {
     return new Promise(async (resolve, reject) => {
-      console.log("uploadToothImage_Web tooth: ", tooth);
       let result = await FirebaseStorage.getDownloadUrl(
         {
           path: `users/${this.currentUser?.uid}/teeth/${tooth.toothId}`,
@@ -220,50 +219,58 @@ export class FirebaseAuthService {
 
   public async uploadToothImage_Web(tooth: ToothModel): Promise<void> {
     return new Promise(async (resolve, reject) => {
-      console.log("uploadToothImage_Web tooth: ", tooth);
-      await FirebaseStorage.uploadFile(
-        {
-          path: `users/${this.currentUser?.uid}/teeth/${tooth.toothId}`,
-          blob: tooth.imageData,
-          // metadata: {
-          //   contentType: tooth.imageData.format
-          // }
-        },
-        (event, error) => {
-          console.log("FirebaseStorage uploadFile result: ", event, error);
-          if (error) {
-            reject(error);
-          } else if (event?.completed) {
-            resolve();
+      try {
+        await FirebaseStorage.uploadFile(
+          {
+            path: `users/${this.currentUser?.uid}/teeth/${tooth.toothId}`,
+            blob: tooth.imageData,
+            // metadata: {
+            //   contentType: tooth.imageData.format
+            // }
+          },
+          (event, error) => {
+            console.log("FirebaseStorage uploadFile result: ", event, error);
+            if (error) {
+              reject(error);
+            } else if (event?.completed) {
+              resolve();
+            }
           }
-        }
-      );
+        );
+      } catch (err) {
+        console.error("Error with uploadToothImage_Web: ", err);
+        reject(err);
+      }
     });
   }
 
   public async uploadToothImage(tooth: ToothModel): Promise<void> {
     return new Promise(async (resolve, reject) => {
-      console.log("uploadToothImage tooth: ", tooth.imageData);
-      await FirebaseStorage.uploadFile(
-        {
-          path: `users/${this.currentUser?.uid}/teeth/${tooth.toothId}`,
-          uri: tooth.imageData,
-          metadata: {
-            contentType: "image/png",
-            customMetadata: {
-              foo: 'bar',
-            },
+      try {
+        await FirebaseStorage.uploadFile(
+          {
+            path: `users/${this.currentUser?.uid}/teeth/${tooth.toothId}`,
+            uri: tooth.imageData,
+            metadata: {
+              contentType: "image/png",
+              customMetadata: {
+                foo: 'bar',
+              },
+            }
+          },
+          (event, error) => {
+            console.log("FirebaseStorage uploadFile result: ", event, error);
+            if (error) {
+              reject(error);
+            } else if (event?.completed) {
+              resolve();
+            }
           }
-        },
-        (event, error) => {
-          console.log("FirebaseStorage uploadFile result: ", event, error);
-          if (error) {
-            reject(error);
-          } else if (event?.completed) {
-            resolve();
-          }
-        }
-      );
+        );
+      } catch (err) {
+        console.error("Error with uploadFile: ", err);
+        reject(err);
+      }
     });
   }
 
