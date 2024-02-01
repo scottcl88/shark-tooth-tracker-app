@@ -39,9 +39,9 @@
         <ion-card-title>
           {{tooth.foundDate | dfnsFormat: 'MMMM d \'at\' h:mm a' }}
         </ion-card-title>
-        <ion-card-subtitle *ngIf="tooth.location  && tooth.location.city && tooth.location.state">{{tooth.location?.city
+        <ion-card-subtitle *ngIf="!tooth.showEditLocation && tooth.location  && tooth.location.city && tooth.location.state">{{tooth.location?.city
           ?? ""}}, {{tooth.location?.state ?? ""}}</ion-card-subtitle>
-        <ion-card-subtitle *ngIf="!tooth.location && tooth.locationText">{{tooth.locationText}}</ion-card-subtitle>
+        <ion-card-subtitle *ngIf="tooth.showEditLocation && tooth.locationText">{{tooth.locationText}}</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
         {{tooth.description}}

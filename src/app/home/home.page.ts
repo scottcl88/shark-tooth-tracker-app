@@ -26,7 +26,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.teethSubscription = this.collectionService.allTeeth$.subscribe((updatedTeeth) => {
       this.allTeeth = updatedTeeth;
     });
-    this.reorderList();
+    this.reorderList(false);
   }
 
   ngOnDestroy() {
@@ -76,6 +76,7 @@ export class HomePage implements OnInit, OnDestroy {
         foundDate: tooth.foundDate,
         location: tooth.location,
         locationText: tooth.locationText,
+        showEditLocation: tooth.showEditLocation,
         isNew: false,
       },
     });
@@ -109,6 +110,7 @@ export class HomePage implements OnInit, OnDestroy {
     newTooth.foundDate = data.foundDate;
     newTooth.location = data.location;
     newTooth.locationText = data.locationText;
+    newTooth.showEditLocation = data.showEditLocation;
     newTooth.imageData = data.imageData;
     if (data.removed) {
       newTooth.deletedDate = new Date();

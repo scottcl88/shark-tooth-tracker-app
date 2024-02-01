@@ -20,6 +20,7 @@ export class ToothModel {
             this.foundDate = _data["foundDate"] ? new Date(_data["foundDate"].toString()) : <any>null;
             this.location = _data["location"] !== undefined ? _data["location"] : <any>null;
             this.locationText = _data["locationText"] !== undefined ? _data["locationText"] : <any>null;
+            this.showEditLocation = _data["showEditLocation"] !== undefined ? _data["showEditLocation"] : <any>null;
 
             this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>null;
             this.modifiedDate = _data["modifiedDate"] ? new Date(_data["modifiedDate"].toString()) : <any>null;
@@ -35,6 +36,7 @@ export class ToothModel {
     foundDate: Date;
     location: CoordinatesPositionModel | null;
     locationText: string;
+    showEditLocation: boolean;//used to undo the location
 
     createdDate: Date | null;
     modifiedDate: Date | null;

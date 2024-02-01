@@ -24,3 +24,158 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+
+
+:root {
+    --primary-color: #00c2ff;
+    --primary-light-color: #ddeff4;
+    --secondary-color: #ffba68;
+    --Dark-Blue: #227692;
+
+    @media (prefers-color-scheme: dark) {
+        --primary-box-shadow: 0px 2px 8px 0px rgb(61 61 61 / 75%);
+
+        --grey-color: #878787;
+    }
+    @media (prefers-color-scheme: light) {
+        --primary-box-shadow: 0px 2px 8px 0px rgba(86, 85, 85, 0.2);
+
+        --grey-color: #666;
+    }
+    .grey-color {
+        color: var(--grey-color);
+    }
+}
+ion-alert {
+    --backdrop-opacity: 0.62 !important;
+}
+.transparent-modal {
+    .modal-wrapper {
+        --background: rgba(44, 39, 45, 0.2);
+    }
+}
+body {
+    font-family: "Roboto" sans-serif;
+    background-color: #f8f8f8 !important;
+}
+
+.danger {
+    color: var(--ion-color-danger, #eb445a) !important;
+}
+
+ion-alert.topZindex {
+    z-index: 99999 !important;
+}
+hr {
+    //background: var(--secondary-color) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    .clear-item-list {
+        --background: #121212;
+    }
+
+    .clear-item {
+        --background: #121212;
+    }
+}
+
+button.alert-button.alert-button-danger {
+    color: var(--ion-color-danger);
+}
+
+// ion-modal {
+//     height: 30%;
+//     width: 60%;
+//     margin: auto;
+//     ion-content {
+//     }
+// }
+ion-card-title {
+    font-size: 14px !important;
+}
+
+.centered-tour-element {
+    position: fixed;
+    right: 0;
+    bottom: 40%;
+    @media screen and (max-height: 710px) {
+        bottom: 50%;
+    }
+    @media screen and (max-height: 650px) {
+        bottom: 55%;
+    }
+    @media screen and (max-height: 525px) {
+        bottom: 65%;
+    }
+}
+.opacity-3 {
+    opacity: 0.3 !important;
+}
+ion-button {
+    min-height: 44px !important;
+    text-transform: capitalize !important;
+}
+
+ion-select {
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+ion-select::part(icon) {
+    opacity: 1;
+    width: 30px;
+    margin-left: 10px;
+    @media (prefers-color-scheme: dark) {
+        color: white;
+    }
+    color: black;
+}
+
+ion-modal#feedback-modal {
+    --border-radius: 6px;
+    --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+    flex-shrink: 0;
+}
+
+ion-modal#feedback-modal .wrapper {
+    margin-bottom: 10px;
+}
+/* Set text color of the entire app for iOS only */
+.ios {
+    ion-modal#feedback-modal > .ion-page {
+        padding-top: calc(var(--ion-safe-area-top) + 15px) !important;
+    }
+    ion-modal > .ion-page {
+        padding-top: calc(var(--ion-safe-area-top) + 10px) !important;
+        padding-bottom: calc(var(--ion-safe-area-bottom) + 10px) !important;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    ion-modal {
+        --width: 800px;
+        --height: 700px;
+    }
+}
+
+
+ion-tabs {
+    margin-top: var(--ion-safe-area-top) !important;
+    margin-bottom: var(--ion-safe-area-bottom) !important;
+    padding-bottom: var(--ion-safe-area-bottom) !important;
+}
+
+ion-tab-bar.ios {
+    padding-bottom: calc(var(--ion-safe-area-bottom) + 20px) !important;
+}
+
+textarea#notesInput {
+    border: 1px solid var(--primary-color);
+    padding: 5px;
+    height: 75px;
+    @media (prefers-color-scheme: dark) {
+        background: #2b2b2b;
+    }
+}

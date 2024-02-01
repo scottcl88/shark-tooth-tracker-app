@@ -38,6 +38,7 @@ export class ModalViewToothPage implements OnInit {
   public isLoaded: boolean = false;
   public autoTakePic: boolean = false;
   public toothId: number;
+  public showEditLocation: boolean = false;
 
   public theme: string = "dark";
 
@@ -76,10 +77,14 @@ export class ModalViewToothPage implements OnInit {
 
     if (this.isNew) {
       await this.recordLocation();
+      this.showEditLocation = this.location ? false : true;
     }
-
     if (this.autoTakePic) {
       await this.takePicture();
+    }
+
+    if(!this.showEditLocation && !this.location){
+      this.showEditLocation = true;
     }
   }
 
@@ -110,8 +115,8 @@ export class ModalViewToothPage implements OnInit {
       this.location.locationHref = `https://www.google.com/maps?q=${this.location.latitudeText},${this.location.longitudeText}`;
 
       let geocodeResult = await this.geocodeService.getStateName(data.location.latitude ?? 0, data.location.longitude ?? 0);
-      this.location.city = geocodeResult.city;
-      this.location.state = geocodeResult.state;
+      this.location.city = geocodeResult.city ?? "Unknown";
+      this.location.state = geocodeResult.state ?? "Unknown";
     }
   }
 
@@ -142,13 +147,14 @@ export class ModalViewToothPage implements OnInit {
             this.location.locationHref = `https://www.google.com/maps?q=${this.location.latitudeText},${this.location.longitudeText}`;
 
             let geocodeResult = await this.geocodeService.getStateName(model.latitude ?? 0, model.longitude ?? 0);
-            this.location.city = geocodeResult.city;
-            this.location.state = geocodeResult.state;
+            this.location.city = geocodeResult.city ?? "Unknown";
+            this.location.state = geocodeResult.state ?? "Unknown";
           }
         } else {
           this.location = null;
           this.logger.error(`recordLocation-getCurrentPosition 2 error. Coordinates are null`);
         }
+        this.showEditLocation = this.location ? false : true;
       } catch (err: any) {
         this.logger.error(`recordLocation-getCurrentPosition 1 err`, err);
         await this.coreUtilService.presentToastError("Please enable location services");
@@ -227,7 +233,13 @@ export class ModalViewToothPage implements OnInit {
   //     });
 
   editLocation() {
-    this.location = null;
+    // this.location = null;
+    this.showEditLocation = true;
+  }
+
+  undoLocation() {
+    // this.locationText = "";
+    this.showEditLocation = false;
   }
 
   descriptionChange(e: any) {
@@ -288,7 +300,8 @@ export class ModalViewToothPage implements OnInit {
       description: this.description ?? "",
       foundDate: this.foundDate,
       location: this.location,
-      locationText: this.locationText
+      locationText: this.locationText,
+      showEditLocation: this.showEditLocation
     });
   }
 }

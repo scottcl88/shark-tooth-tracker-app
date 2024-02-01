@@ -89,7 +89,8 @@ export class AppComponent implements OnInit {
     newTooth.description = data.description;
     newTooth.foundDate = data.foundDate;
     newTooth.location = data.location;
-    newTooth.locationText = data.locationText;
+    newTooth.locationText = data.locationText;    
+    newTooth.showEditLocation = data.showEditLocation;
     newTooth.toothId = this.collectionService.getNewToothId();
     await this.collectionService.addTooth(newTooth);
     //this.allTeeth = await this.collectionService.getTeeth();
