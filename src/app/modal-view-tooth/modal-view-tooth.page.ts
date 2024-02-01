@@ -31,6 +31,7 @@ export class ModalViewToothPage implements OnInit {
   public imageFailed: boolean = false;
   public isoDate: string;
   public description: string;
+  public locationText: string;
   public location?: CoordinatesPositionModel | null;
   public foundDate: Date = new Date();
   public isDirty: boolean = false;
@@ -114,9 +115,16 @@ export class ModalViewToothPage implements OnInit {
     }
   }
 
-  async recordLocation() {
-    console.log("RecordLocation started");
+  async recordLocation(doRequestLocation: boolean = false) {
     let hasLocationPermission = await this.coreUtilService.hasLocationPermission();
+    if (doRequestLocation && !hasLocationPermission) {
+      let requestLocationPermission = await this.coreUtilService.requestLocationPermission();
+      if (!requestLocationPermission) {
+        this.coreUtilService.presentToastError("Please enable location services to record current location");
+        return;
+      }
+      hasLocationPermission = await this.coreUtilService.hasLocationPermission();
+    }
     if (hasLocationPermission && this.account.recordLocationOption != "neverAllow") {
       try {
         const coordinates = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
@@ -145,8 +153,9 @@ export class ModalViewToothPage implements OnInit {
         this.logger.error(`recordLocation-getCurrentPosition 1 err`, err);
         await this.coreUtilService.presentToastError("Please enable location services");
       }
-    } else {
-      console.debug("Location not recorded since its not allowed by user. ", hasLocationPermission, this.account.recordLocationOption);
+    }
+    else {
+      console.debug("Location not recorded since its not allowed by user in settings. ", hasLocationPermission, this.account.recordLocationOption);
     }
   }
 
@@ -217,9 +226,18 @@ export class ModalViewToothPage implements OnInit {
   //       reader.readAsDataURL(blob);
   //     });
 
+  editLocation() {
+    this.location = null;
+  }
+
   descriptionChange(e: any) {
     let value = e.detail.value;
     this.description = value;
+  }
+
+  locationChange(e: any) {
+    let value = e.detail.value;
+    this.locationText = value;
   }
 
   foundDateChange(e: any) {
@@ -270,6 +288,7 @@ export class ModalViewToothPage implements OnInit {
       description: this.description ?? "",
       foundDate: this.foundDate,
       location: this.location,
+      locationText: this.locationText
     });
   }
 }

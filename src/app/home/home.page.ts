@@ -70,6 +70,7 @@ export class HomePage implements OnInit, OnDestroy {
         description: tooth.description,
         foundDate: tooth.foundDate,
         location: tooth.location,
+        locationText: tooth.locationText,
         isNew: false,
       },
     });
@@ -102,6 +103,7 @@ export class HomePage implements OnInit, OnDestroy {
     newTooth.description = data.description;
     newTooth.foundDate = data.foundDate;
     newTooth.location = data.location;
+    newTooth.locationText = data.locationText;
     newTooth.imageData = data.imageData;
     if (data.removed) {
       newTooth.deletedDate = new Date();

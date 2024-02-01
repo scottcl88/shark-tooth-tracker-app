@@ -34,6 +34,20 @@ export class CoreUtilService {
     });
   }
 
+  async requestLocationPermission(): Promise<boolean> {
+    return new Promise(async (resolve: any) => {
+      try {
+        let permissionStatus = await Geolocation.requestPermissions();
+        if (permissionStatus.coarseLocation == "granted" || permissionStatus.location == "granted") {
+          resolve(true);
+        }
+        resolve(false);
+      } catch (err) {
+        resolve(false);
+      }
+    });
+  }
+
   async presentLoading(message: string = "Loading") {
     if (this.isLoadingShown) {
       return;

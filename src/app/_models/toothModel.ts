@@ -19,6 +19,7 @@ export class ToothModel {
             this.description = _data["description"] !== undefined ? _data["description"] : <any>null;
             this.foundDate = _data["foundDate"] ? new Date(_data["foundDate"].toString()) : <any>null;
             this.location = _data["location"] !== undefined ? _data["location"] : <any>null;
+            this.locationText = _data["locationText"] !== undefined ? _data["locationText"] : <any>null;
 
             this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>null;
             this.modifiedDate = _data["modifiedDate"] ? new Date(_data["modifiedDate"].toString()) : <any>null;
@@ -32,6 +33,7 @@ export class ToothModel {
     description: string;
     foundDate: Date;
     location: CoordinatesPositionModel | null;
+    locationText: string;
 
     createdDate: Date | null;
     modifiedDate: Date | null;
