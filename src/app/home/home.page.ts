@@ -59,6 +59,11 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
+  async imageError(e: any, tooth: ToothModel) {
+    console.log("ImageError: ", e, tooth);
+    tooth.hasImageError = true;
+  }
+
   async editTooth(tooth: ToothModel) {
     console.log("editTooth: ", tooth);
     const modal = await this.modalController.create({

@@ -34,7 +34,7 @@
   </div>
   <div *ngFor="let tooth of this.allTeeth; index as i;">
     <ion-card (click)="editTooth(tooth)">
-      <img alt="Picture of tooth" [src]="tooth.photoUrl" class="cardPhoto" *ngIf="tooth.photoUrl" />
+      <ion-img [src]="tooth.photoUrl" class="cardPhoto" *ngIf="tooth.photoUrl && !tooth.hasImageError" alt="Picture of tooth" (ionError)="imageError($event, tooth)"></ion-img>
       <ion-card-header>
         <ion-card-title>
           {{tooth.foundDate | dfnsFormat: 'MMMM d \'at\' h:mm a' }}

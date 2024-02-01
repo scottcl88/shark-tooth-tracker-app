@@ -30,6 +30,7 @@ export class ToothModel {
     toothId: number;
     photoUrl: string;
     imageData: any;
+    hasImageError: boolean;//used to hide image on error for home screen
     description: string;
     foundDate: Date;
     location: CoordinatesPositionModel | null;
