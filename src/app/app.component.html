@@ -1,6 +1,7 @@
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
-  <ion-fab slot="fixed" vertical="bottom" horizontal="center" (click)="takePicture()" *ngIf="showPhotoFab">
+  <ion-fab slot="fixed" vertical="bottom" horizontal="center" (click)="takePicture()" *ngIf="showPhotoFab"
+    class="photoFab">
     <ion-fab-button>
       <ion-icon name="camera"></ion-icon>
     </ion-fab-button>

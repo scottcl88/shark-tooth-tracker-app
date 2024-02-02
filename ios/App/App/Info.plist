@@ -33,6 +33,16 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Optional. Used to take or choose a picture of your found shark tooth.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Optional. Your location is used to mark where you found a shark tooth when added.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Optional. Your location is used to mark where you found a shark tooth when added.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Optional. Used to take and save a picture of your found shark tooth.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Optional. Used to choose a picture of your found shark tooth.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -41,30 +51,15 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+	<true/>
+	<key>UIStatusBarHidden</key>
+	<false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortrait</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Optional. Your location is used to mark where you found a shark tooth when added.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Optional. Your location is used to mark where you found a shark tooth when added.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Optional. Used to take or choose a picture of your found shark tooth.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Optional. Used to take and save a picture of your found shark tooth.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Optional. Used to choose a picture of your found shark tooth.</string>
 </dict>
 </plist>
