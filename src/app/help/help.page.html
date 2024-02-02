@@ -1,0 +1,45 @@
+<!--
+Copyright 2023 Scott Lewis, All rights reserved.
+-->
+<ion-content>
+  <div style="text-align: left !important;position: absolute;">
+    <ion-button (click)="goBack()" fill="clear" color="dark">
+      <ion-icon name="chevron-back-sharp"></ion-icon>
+    </ion-button>
+  </div>
+  <div id="container">
+    <!-- <h2>Tutorial</h2> -->
+    <!-- <ion-item class="clear-item" lines="full" (click)="startTutorial()">
+      <ion-button fill="clear" color="dark" slot="start" style="font-size: 14px;">
+        Show me how to play
+      </ion-button>
+      <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+    </ion-item> -->
+    <h2>FAQ</h2>
+    <ion-accordion-group>
+      <ion-accordion value="third" toggleIcon="chevron-down-outline" toggleIconSlot="end">
+        <ion-item slot="header" color="light">
+          <ion-label>Help! My game is gone!</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">Tap on the Home tab in the bottom menu to view all teeth collected. Make
+          sure
+          you are logged in by going to 'Profile' and click 'Sign In' at the bottom. You may also need to restart your
+          phone. If you are still missing data, contact support for further assistance at <a
+            href="mailto:support@sharktoothtracker.com">support&#64;sharktoothtracker.com</a>.</div>
+      </ion-accordion>
+      <ion-accordion value="second" toggleIcon="chevron-down-outline" toggleIconSlot="end">
+        <ion-item slot="header" color="light">
+          <ion-label>How do I delete a plate? </ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">Touch the tooth on the home page and swipe up and then tap 'Delete'.
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+    <p style="font-size: 14px;text-align: center;margin-top: 30px;">Don't see your question here? Feel free to reach
+      out.</p>
+    <ion-button fill="outline" expand="block" color="primary" (click)="contact()"
+      style="font-size: 20px; margin-left: 20px; margin-right: 20px;">
+      <ion-text color="dark">Contact Us</ion-text>
+    </ion-button>
+  </div>
+</ion-content>
