@@ -1,3 +1,4 @@
+<!-- eslint-disable @angular-eslint/template/eqeqeq -->
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
@@ -17,31 +18,28 @@
       slot="start"></ion-icon> Add Tooth
   </ion-button>
   <div *ngIf="allTeeth">
-    <h5 style="text-align: center;">{{allTeeth.length}} {{allTeeth.length === 1 ? 'tooth' : 'teeth'}} collected</h5>
+    <h5 style="text-align: center;">{{teethCount | number}} {{teethCount == 1 ? 'tooth' : 'teeth'}} collected</h5>
     <div style="display: flex; align-items: center; margin-left: 10px;" *ngIf="this.allTeeth.length > 1">
       <ion-icon name="arrow-down" style="font-size: 25px;margin-right: 10px;" (click)="reorderList()"
         *ngIf="currentSort === 1"></ion-icon>
       <ion-icon name="arrow-up" style="font-size: 25px;margin-right: 10px;" (click)="reorderList()"
         *ngIf="currentSort === 0"></ion-icon>
       <ion-text>Date Found</ion-text>
-      <!-- <ion-select interface="popover" toggleIcon="chevron-down-sharp" expandedIcon="chevron-up-sharp" aria-label="name"
-      placeholder="Name" style="width: max-content;" [value]="listSortType" id="sortSelect"
-      (ionChange)="listSortTypeChange($event)">
-      <ion-select-option value="name">Name</ion-select-option>
-      <ion-select-option value="dateFound">Date Found</ion-select-option>
-    </ion-select> -->
     </div>
   </div>
   <div *ngFor="let tooth of this.allTeeth; index as i;">
     <ion-card (click)="editTooth(tooth)">
-      <ion-img [src]="tooth.photoUrl" class="cardPhoto" *ngIf="tooth.photoUrl && !tooth.hasImageError" alt="Picture of tooth" (ionError)="imageError($event, tooth)"></ion-img>
+      <ion-img [src]="tooth.photoUrl" class="cardPhoto" *ngIf="tooth.photoUrl && !tooth.hasImageError"
+        alt="Picture of tooth" (ionError)="imageError($event, tooth)"></ion-img>
       <ion-card-header>
         <ion-card-title>
           {{tooth.foundDate | dfnsFormat: 'MMMM d \'at\' h:mm a' }}
         </ion-card-title>
-        <ion-card-subtitle *ngIf="!tooth.showEditLocation && tooth.location  && tooth.location.city && tooth.location.state">{{tooth.location?.city
+        <ion-card-subtitle
+          *ngIf="!tooth.showEditLocation && tooth.location  && tooth.location.city && tooth.location.state">{{tooth.location?.city
           ?? ""}}, {{tooth.location?.state ?? ""}}</ion-card-subtitle>
-        <ion-card-subtitle *ngIf="tooth.showEditLocation && tooth.locationText">{{tooth.locationText}}</ion-card-subtitle>
+        <ion-card-subtitle
+          *ngIf="tooth.showEditLocation && tooth.locationText">{{tooth.locationText}}</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
         {{tooth.description}}

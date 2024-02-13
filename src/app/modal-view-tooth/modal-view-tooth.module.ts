@@ -12,7 +12,6 @@ import { IonicModule } from '@ionic/angular';
 import { ModalViewToothPage } from './modal-view-tooth.page';
 import { HeaderModule } from '../header/header.module';
 import { DateFnsModule } from 'ngx-date-fns';
-import { ModalMapPageModule } from '../modal-map/modal-map.module';
 
 @NgModule({
   imports: [
@@ -20,9 +19,7 @@ import { ModalMapPageModule } from '../modal-map/modal-map.module';
     FormsModule,
     IonicModule,
     HeaderModule,    
-    DateFnsModule,
-    ModalMapPageModule,
-    
+    DateFnsModule,    
   ],
   declarations: [ModalViewToothPage],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]

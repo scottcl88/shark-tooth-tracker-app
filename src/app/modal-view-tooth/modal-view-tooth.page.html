@@ -27,6 +27,16 @@ Copyright 2024 Scott Lewis, All rights reserved.
         style="margin-left: 20px; margin-right: 20px; "><ion-icon name="camera" slot="start"></ion-icon> Retake Picture
       </ion-button>
       <hr>
+      <div class="section-container rare number">
+        <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
+          class="description-label">How many teeth did you find?</ion-label>
+        <div class="description-input">
+          <ion-input (ionChange)="teethCountChange($event)" aria-label="What kind of plate did you find?"
+            placeholder="# of teeth" class="rare-description-textarea" [value]="teethCount" type="number"></ion-input>
+          <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
+        </div>
+      </div>
+      <hr>
       <div class="section-container rare">
         <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
           class="description-label">What kind of
@@ -51,7 +61,8 @@ Copyright 2024 Scott Lewis, All rights reserved.
           </ion-modal>
         </span>
       </p>
-      <p style="font-weight: bold; margin-top: 15px;" *ngIf="!showEditLocation && location && location.city && location.state">
+      <p style="font-weight: bold; margin-top: 15px;"
+        *ngIf="!showEditLocation && location && location.city && location.state">
         <ion-icon name="location-outline" style="font-size: 24px; margin-right: 6px;"></ion-icon> in
         {{location.city}}, {{location.state}}
         <ion-icon name="pencil" slot="end" style="font-size: 20px;" (click)="editLocation()"
@@ -75,7 +86,8 @@ Copyright 2024 Scott Lewis, All rights reserved.
           (click)="recordLocation(true)"></ion-icon>
       </div>
       <div class="undo-button" (click)="undoLocation()" *ngIf="showEditLocation && location">
-        <ion-icon name="arrow-undo" slot="start"></ion-icon>Undo Location</div>
+        <ion-icon name="arrow-undo" slot="start"></ion-icon>Undo Location
+      </div>
       <hr class="vehicle-divider" />
     </div>
     <ion-button *ngIf="isNew" (click)="dismiss(false, true)" color="primary" expand="block" fill="solid"

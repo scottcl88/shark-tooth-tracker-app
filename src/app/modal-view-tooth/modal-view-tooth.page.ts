@@ -11,7 +11,6 @@ import { LoggerService } from '../logger.service';
 import { Camera, CameraDirection, CameraResultType } from '@capacitor/camera';
 import { Geolocation } from '@capacitor/geolocation';
 import { GeocodeService } from '../geocode.service';
-import { ModalMapPage } from '../modal-map/modal-map.page';
 import { format } from 'date-fns';
 import { decode } from "base64-arraybuffer";
 import { Device } from '@capacitor/device';
@@ -31,6 +30,7 @@ export class ModalViewToothPage implements OnInit {
   public imageFailed: boolean = false;
   public isoDate: string;
   public description: string;
+  public teethCount: number;
   public locationText: string;
   public location?: CoordinatesPositionModel | null;
   public foundDate: Date = new Date();
@@ -78,9 +78,14 @@ export class ModalViewToothPage implements OnInit {
     if (this.isNew) {
       await this.recordLocation();
       this.showEditLocation = this.location ? false : true;
+      this.teethCount = 1;
     }
     if (this.autoTakePic) {
       await this.takePicture();
+    }
+
+    if(!this.teethCount || this.teethCount < 1){
+      this.teethCount = 1;
     }
 
     if(!this.showEditLocation && !this.location){
@@ -90,34 +95,6 @@ export class ModalViewToothPage implements OnInit {
 
   async ngAfterViewInit() {
     this.isLoaded = true;
-  }
-
-  async openMap() {
-    console.log("openMap: ", this.location);
-    const modal = await this.modalController.create({
-      component: ModalMapPage,
-      componentProps: {
-        location: this.location
-      },
-    });
-    await modal.present();
-    const { data } = await modal.onDidDismiss();
-    console.log("openMap closed: ", data)
-    if (data && data.saved && data.location) {
-      if (this.location == null) {
-        this.location = new CoordinatesPositionModel();
-      }
-      this.location.latitude = data.location.latitude;
-      this.location.longitude = data.location.longitude;
-
-      this.location.latitudeText = data.location.latitude?.toPrecision(5) ?? "";
-      this.location.longitudeText = data.location.longitude?.toPrecision(5) ?? "";
-      this.location.locationHref = `https://www.google.com/maps?q=${this.location.latitudeText},${this.location.longitudeText}`;
-
-      let geocodeResult = await this.geocodeService.getStateName(data.location.latitude ?? 0, data.location.longitude ?? 0);
-      this.location.city = geocodeResult.city ?? "Unknown";
-      this.location.state = geocodeResult.state ?? "Unknown";
-    }
   }
 
   async recordLocation(doRequestLocation: boolean = false) {
@@ -242,6 +219,11 @@ export class ModalViewToothPage implements OnInit {
     this.showEditLocation = false;
   }
 
+  teethCountChange(e: any) {
+    let value = e.detail.value;
+    this.teethCount = value;
+  }
+
   descriptionChange(e: any) {
     let value = e.detail.value;
     this.description = value;
@@ -298,6 +280,7 @@ export class ModalViewToothPage implements OnInit {
       imageUrl: this.imageUrl,
       imageData: this.imageData,
       description: this.description ?? "",
+      teethCount: this.teethCount,
       foundDate: this.foundDate,
       location: this.location,
       locationText: this.locationText,

@@ -130,47 +130,6 @@ export class ProfilePage implements OnInit, OnDestroy {
     }
   }
 
-  async handleAddressChange(placeResult: google.maps.places.PlaceResult) {
-    this.invalidLocation = false;
-    console.log("handleAddressChange: ", placeResult);
-    // Extract the city name, state name, latitude, and longitude
-    const addressComponents = placeResult.address_components || [];
-
-    let city = '';
-    let state = '';
-    let latitude = 0;
-    let longitude = 0;
-
-    for (const component of addressComponents) {
-      const types = component.types || [];
-
-      if (types.includes('locality')) {
-        // City name
-        city = component.long_name;
-      } else if (types.includes('administrative_area_level_1')) {
-        // State name
-        state = component.long_name;
-      }
-    }
-
-    // Latitude and Longitude
-    if (placeResult.geometry && placeResult.geometry.location) {
-      latitude = placeResult.geometry.location.lat();
-      longitude = placeResult.geometry.location.lng();
-    }
-
-    if (!city || !state) {
-      this.invalidLocation = true;
-    } else {
-      this.hasValidLocation = true;
-    }
-
-    this.storageService.setAccount(this.account);
-    if (this.isAuthenticated) {
-      await this.firebaseAuthService.doSaveProfileToFirebase(this.account);
-    }
-  }
-
   async recordLocationChange(e: any) {
     if (e.detail.value == "alwaysAllow") {
       let hasLocationPermission = await this.coreUtilService.hasLocationPermission();

@@ -18,13 +18,21 @@ export class HomePage implements OnInit, OnDestroy {
   public sortArray: string[] = ["Date Found"];
   public currentSort: number = 0;
   public listSortType: string = "dateFound";
+  public teethCount: number = 0;
 
   constructor(private modalController: ModalController, private collectionService: CollectionService) { }
 
   async ngOnInit() {
     this.allTeeth = await this.collectionService.getTeeth();
+    this.allTeeth.forEach(tooth => {
+      this.teethCount += tooth.teethCount;
+    });
     this.teethSubscription = this.collectionService.allTeeth$.subscribe((updatedTeeth) => {
       this.allTeeth = updatedTeeth;
+      this.teethCount = 0;
+      this.allTeeth.forEach(tooth => {
+        this.teethCount += tooth.teethCount;
+      });
     });
     this.reorderList(false);
   }
@@ -73,6 +81,7 @@ export class HomePage implements OnInit, OnDestroy {
         createdDate: tooth.createdDate,
         imageUrl: tooth.photoUrl,
         description: tooth.description,
+        teethCount: tooth.teethCount,
         foundDate: tooth.foundDate,
         location: tooth.location,
         locationText: tooth.locationText,
@@ -107,6 +116,7 @@ export class HomePage implements OnInit, OnDestroy {
     newTooth.createdDate = new Date();
     newTooth.photoUrl = data.imageUrl;
     newTooth.description = data.description;
+    newTooth.teethCount = data.teethCount;
     newTooth.foundDate = data.foundDate;
     newTooth.location = data.location;
     newTooth.locationText = data.locationText;

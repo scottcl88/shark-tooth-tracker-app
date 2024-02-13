@@ -17,6 +17,7 @@ export class ToothModel {
             this.toothId = _data["toothId"] !== undefined ? _data["toothId"] : <any>null;
             this.photoUrl = _data["photoUrl"] !== undefined ? _data["photoUrl"] : <any>null;
             this.description = _data["description"] !== undefined ? _data["description"] : <any>null;
+            this.teethCount = _data["teethCount"] !== undefined ? _data["teethCount"] : <any>null;
             this.foundDate = _data["foundDate"] ? new Date(_data["foundDate"].toString()) : <any>null;
             this.location = _data["location"] !== undefined ? _data["location"] : <any>null;
             this.locationText = _data["locationText"] !== undefined ? _data["locationText"] : <any>null;
@@ -33,6 +34,7 @@ export class ToothModel {
     imageData: any;
     hasImageError: boolean;//used to hide image on error for home screen
     description: string;
+    teethCount: number;
     foundDate: Date;
     location: CoordinatesPositionModel | null;
     locationText: string;
