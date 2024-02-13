@@ -24,6 +24,9 @@ import { getAnalytics, setUserId, setUserProperties } from "firebase/analytics";
 import { Device } from '@capacitor/device';
 import { FirebaseStorage } from '@capacitor-firebase/storage';
 import { ToothModel } from './app/_models/toothModel';
+import { Functions } from '@angular/fire/functions';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { EmailGameDataRequest } from './app/api';
 
 @Injectable({
   providedIn: 'root',
@@ -269,6 +272,20 @@ export class FirebaseAuthService {
         );
       } catch (err) {
         console.error("Error with uploadFile: ", err);
+        reject(err);
+      }
+    });
+  }
+
+  public async callEmailDataFunction(request: EmailGameDataRequest): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const functions = getFunctions(getApp(), "us-central1");
+        const sendExportDataEmail = httpsCallable(functions, 'sendExportDataEmail', { limitedUseAppCheckTokens: true });
+        await sendExportDataEmail(request);        
+        resolve();
+      } catch (err) {
+        console.error("Error with callEmailDataFunction 2: ", err);
         reject(err);
       }
     });

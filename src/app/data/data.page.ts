@@ -277,26 +277,18 @@ export class DataPage implements OnInit, OnDestroy {
 
   async exportData(email: string) {
     this.logger.info(`ExportData called for email: ${email}`);
-    let gameClient = new GameClient(this.httpClient, environment.API_BASE_URL);
     let request = new EmailGameDataRequest();
     request.email = email;
     let account = await this.storageService.getAccount();
     let allTeeth = await this.collectionService.getTeeth();
     let exportData = { profile: account, collection: allTeeth };
     request.jsonData = JSON.stringify(exportData);
-    gameClient.emailGameData(request).subscribe({
-      next: (res: any) => {
-        console.debug("Sent email", res);
-        if (res) {
-          this.coreUtilService.presentToastSuccess("Email sent");
-        } else {
-          this.coreUtilService.presentToastError();
-          this.logger.errorWithContext(`profile-exportData-emailGameData res error: `, request);
-        }
-      }, error: (err: any) => {
-        this.logger.error(`profile-exportData-retrieved emailGameData error: ` + JSON.stringify(err), err);
-        this.coreUtilService.presentToastError();
-      }
+
+    this.firebaseAuthService.callEmailDataFunction(request).then((res: any) => {
+      this.coreUtilService.presentToastSuccess("Email sent");
+    }).catch((err: any) => {
+      this.logger.error(`profile-exportData-retrieved emailGameData error: ` + JSON.stringify(err), err);
+      this.coreUtilService.presentToastError();
     });
   }
 }

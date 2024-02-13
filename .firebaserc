@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "shark-tooth-tracker"
+  },
+  "targets": {
+    "shark-tooth-tracker": {
+      "hosting": {
+        "app": [
+          "shark-tooth-tracker"
+        ]
+      }
+    }
   }
 }
