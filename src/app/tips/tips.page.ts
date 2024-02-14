@@ -9,14 +9,14 @@ import { StorageService } from '../storage.service';
 import { Location } from '@angular/common';
 
 @Component({
-  selector: 'app-help',
-  templateUrl: './help.page.html',
-  styleUrls: ['./help.page.scss'],
+  selector: 'app-tips',
+  templateUrl: './tips.page.html',
+  styleUrls: ['./tips.page.scss'],
 })
-export class HelpPage {
+export class TipsPage {
   public account: Account;
 
-  constructor(private coreUtilService: CoreUtilService, private router: Router, private storageService: StorageService, 
+  constructor(private coreUtilService: CoreUtilService, private storageService: StorageService, 
     private location: Location){}
 
   async startTutorial() {    
@@ -24,10 +24,6 @@ export class HelpPage {
     // this.coreUtilService.showTour();
   }
 
-  async goToTips() {
-    console.log("goToTips");
-    this.router.navigate(['/tips']);
-  }
   goBack() {
     this.location.back();
   }

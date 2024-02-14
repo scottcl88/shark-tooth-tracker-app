@@ -5,6 +5,7 @@ import { ModalViewToothPage } from '../modal-view-tooth/modal-view-tooth.page';
 import { CollectionService } from '../collection.service';
 import { ToothModel } from '../_models/toothModel';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +21,7 @@ export class HomePage implements OnInit, OnDestroy {
   public listSortType: string = "dateFound";
   public teethCount: number = 0;
 
-  constructor(private modalController: ModalController, private collectionService: CollectionService) { }
+  constructor(private modalController: ModalController, private router: Router, private collectionService: CollectionService) { }
 
   async ngOnInit() {
     this.allTeeth = await this.collectionService.getTeeth();
@@ -97,6 +98,11 @@ export class HomePage implements OnInit, OnDestroy {
     if (data) {
       await this.saveTooth(data);
     }
+  }
+
+  async goToTips() {
+    console.log("goToTips");
+    this.router.navigate(['/tips']);
   }
 
   async addTooth() {
