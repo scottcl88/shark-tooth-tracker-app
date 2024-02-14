@@ -39,6 +39,9 @@ export class ModalViewToothPage implements OnInit {
   public autoTakePic: boolean = false;
   public toothId: number;
   public showEditLocation: boolean = false;
+  public searchTime: string;
+  public beachName: string;
+  public beachAccess: string;
 
   public theme: string = "dark";
 
@@ -224,6 +227,21 @@ export class ModalViewToothPage implements OnInit {
     this.teethCount = value;
   }
 
+  searchTimeChange(e: any){
+   let value = e.detail.value;
+   this.searchTime = value;
+  }
+
+  beachAccessChange(e: any){
+    let value = e.detail.value;
+    this.beachAccess = value;
+  }
+
+  beachNameChange(e: any){
+    let value = e.detail.value;
+    this.beachName = value;
+  }
+
   descriptionChange(e: any) {
     let value = e.detail.value;
     this.description = value;
@@ -284,7 +302,10 @@ export class ModalViewToothPage implements OnInit {
       foundDate: this.foundDate,
       location: this.location,
       locationText: this.locationText,
-      showEditLocation: this.showEditLocation
+      showEditLocation: this.showEditLocation,
+      searchTime: this.searchTime,
+      beachName: this.beachName,
+      beachAccess: this.beachAccess
     });
   }
 }

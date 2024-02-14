@@ -87,6 +87,9 @@ export class HomePage implements OnInit, OnDestroy {
         locationText: tooth.locationText,
         showEditLocation: tooth.showEditLocation,
         isNew: false,
+        searchTime: tooth.searchTime,
+        beachName: tooth.beachName,
+        beachAccess: tooth.beachAccess,
       },
     });
     await modal.present();
@@ -122,6 +125,9 @@ export class HomePage implements OnInit, OnDestroy {
     newTooth.locationText = data.locationText;
     newTooth.showEditLocation = data.showEditLocation;
     newTooth.imageData = data.imageData;
+    newTooth.searchTime = data.searchTime;
+    newTooth.beachName = data.beachName;
+    newTooth.beachAccess = data.beachAccess;
     if (data.removed) {
       newTooth.deletedDate = new Date();
     }
