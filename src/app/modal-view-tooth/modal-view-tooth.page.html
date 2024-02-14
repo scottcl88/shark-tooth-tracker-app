@@ -36,26 +36,6 @@ Copyright 2024 Scott Lewis, All rights reserved.
           <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
         </div>
       </div>
-      <div class="section-container rare">
-        <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
-          class="description-label">How long were you searching?</ion-label>
-        <div class="description-input">
-          <ion-input (ionChange)="searchTimeChange($event)" aria-label="What kind of plate did you find?"
-            placeholder="Length of time" class="rare-description-textarea" [value]="searchTime" type="text"></ion-input>
-          <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
-        </div>
-      </div>
-      <div class="section-container rare">
-        <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
-          class="description-label">What kind of
-          tooth did you find? (Optional)</ion-label>
-        <ion-text class="rare-example" slot="start">e.g.: Color, Size, Type, etc.</ion-text>
-        <div class="description-input">
-          <ion-input (ionChange)="descriptionChange($event)" aria-label="What kind of plate did you find?"
-            placeholder="Description" class="rare-description-textarea" [value]="description"></ion-input>
-          <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
-        </div>
-      </div>
       <p style="font-size: 12px; font-weight: 400; margin-top: 10px; margin-bottom: -10px;">Found on </p>
       <p style="font-weight: bold; margin-top: 20px;">
         <span style="display: inline-flex; align-items: center;">
@@ -93,25 +73,56 @@ Copyright 2024 Scott Lewis, All rights reserved.
         <ion-icon name="arrow-undo" slot="start"></ion-icon>Undo Location
       </div>
       <hr class="vehicle-divider" />
-      <div class="section-container rare">
-        <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
-          class="description-label">Beach Name</ion-label>
-        <div class="description-input">
-          <ion-input (ionChange)="beachNameChange($event)" aria-label="What kind of plate did you find?"
-            placeholder="Beach Name" class="rare-description-textarea" [value]="beachName" type="text"></ion-input>
-          <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
-        </div>
-      </div>
-      <div class="section-container rare">
-        <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
-          class="description-label">Beach Access / Mile Number</ion-label>
-        <div class="description-input">
-          <ion-input (ionChange)="beachAccessChange($event)" aria-label="What kind of plate did you find?"
-            placeholder="Access or Mile Number" class="rare-description-textarea" [value]="beachAccess"
-            type="text"></ion-input>
-          <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
-        </div>
-      </div>
+      <ion-accordion-group expand="inset">
+        <ion-accordion value="first">
+          <ion-item slot="header" color="light">
+            <ion-label>Additional Info (optional)</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <div class="section-container rare">
+              <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
+                class="description-label">What kind of
+                tooth did you find? (Optional)</ion-label>
+              <ion-text class="rare-example" slot="start">e.g.: Color, Size, Type, etc.</ion-text>
+              <div class="description-input">
+                <ion-input (ionChange)="descriptionChange($event)" aria-label="What kind of plate did you find?"
+                  placeholder="Description" class="rare-description-textarea" [value]="description"></ion-input>
+                <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
+              </div>
+            </div>
+            <div class="section-container rare">
+              <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
+                class="description-label">How long were you searching?</ion-label>
+              <div class="description-input">
+                <ion-input (ionChange)="searchTimeChange($event)" aria-label="What kind of plate did you find?"
+                  placeholder="Length of time" class="rare-description-textarea" [value]="searchTime"
+                  type="text"></ion-input>
+                <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
+              </div>
+            </div>
+            <div class="section-container rare">
+              <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
+                class="description-label">Beach Name</ion-label>
+              <div class="description-input">
+                <ion-input (ionChange)="beachNameChange($event)" aria-label="What kind of plate did you find?"
+                  placeholder="Beach Name" class="rare-description-textarea" [value]="beachName"
+                  type="text"></ion-input>
+                <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
+              </div>
+            </div>
+            <div class="section-container rare">
+              <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
+                class="description-label">Beach Access / Mile Number</ion-label>
+              <div class="description-input">
+                <ion-input (ionChange)="beachAccessChange($event)" aria-label="What kind of plate did you find?"
+                  placeholder="Access or Mile Number" class="rare-description-textarea" [value]="beachAccess"
+                  type="text"></ion-input>
+                <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
+              </div>
+            </div>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
       <hr>
     </div>
     <ion-button *ngIf="isNew" (click)="dismiss(false, true)" color="primary" expand="block" fill="solid"
