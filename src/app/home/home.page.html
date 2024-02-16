@@ -18,7 +18,8 @@
       slot="start"></ion-icon> Add Tooth
   </ion-button>
   <div *ngIf="allTeeth">
-    <h5 style="text-align: center;">{{teethCount | number}} {{teethCount == 1 ? 'tooth' : 'teeth'}} collected</h5>
+    <h5 style="text-align: center;" (click)="goToStats()">{{teethCount | number}} {{teethCount == 1 ? 'tooth' :
+      'teeth'}} collected<ion-icon name="stats-chart" style="padding-left: 15px;"></ion-icon></h5>
     <div style="display: flex; align-items: center; margin-left: 10px;" *ngIf="this.allTeeth.length > 1">
       <ion-icon name="arrow-down" style="font-size: 25px;margin-right: 10px;" (click)="reorderList()"
         *ngIf="currentSort === 1"></ion-icon>
@@ -45,7 +46,7 @@
         {{tooth.description}}
       </ion-card-content>
     </ion-card>
-  </div>  
+  </div>
   <ion-button (click)="goToTips()" color="primary" expand="block" fill="default"
     style="margin-left: 20px; margin-right: 20px; margin-top: 10px; margin-bottom: 15px;"><ion-icon name="search"
       slot="start"></ion-icon> Need help finding shark teeth?

@@ -22,7 +22,7 @@ export class ToothModel {
             this.location = _data["location"] !== undefined ? _data["location"] : <any>null;
             this.locationText = _data["locationText"] !== undefined ? _data["locationText"] : <any>null;
             this.showEditLocation = _data["showEditLocation"] !== undefined ? _data["showEditLocation"] : <any>null;
-            this.searchTime = _data["searchTime"] !== undefined ? _data["searchTime"] : <any>null;
+            this.searchMinutes = _data["searchMinutes"] !== undefined ? _data["searchMinutes"] : <any>null;
             this.beachName = _data["beachName"] !== undefined ? _data["beachName"] : <any>null;
             this.beachAccess = _data["beachAccess"] !== undefined ? _data["beachAccess"] : <any>null;
 
@@ -42,7 +42,7 @@ export class ToothModel {
     location: CoordinatesPositionModel | null;
     locationText: string;
     showEditLocation: boolean;//used to undo the location
-    searchTime: string;
+    searchMinutes: number;
     beachName: string;
     beachAccess: string;
 

@@ -7,9 +7,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { TipsPageRoutingModule } from './tips-routing.module';
+import { StatsPageRoutingModule } from './stats-routing.module';
 
-import { TipsPage } from './tips.page';
+import { StatsPage } from './stats.page';
 import { HeaderModule } from '../header/header.module';
 
 @NgModule({
@@ -18,10 +18,10 @@ import { HeaderModule } from '../header/header.module';
     FormsModule,
     IonicModule,    
     ReactiveFormsModule,
-    TipsPageRoutingModule,
+    StatsPageRoutingModule,
     HeaderModule
   ],
-  declarations: [TipsPage],
+  declarations: [StatsPage],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })
-export class TipsPageModule {}
+export class StatsPageModule {}

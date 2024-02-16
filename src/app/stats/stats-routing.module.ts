@@ -4,12 +4,12 @@ Copyright 2024 Scott Lewis, All rights reserved.
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { TipsPage } from './tips.page';
+import { StatsPage } from './stats.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: TipsPage
+    component: StatsPage
   }
 ];
 
@@ -17,4 +17,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class TipsPageRoutingModule {}
+export class StatsPageRoutingModule {}

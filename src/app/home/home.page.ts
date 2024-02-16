@@ -88,7 +88,7 @@ export class HomePage implements OnInit, OnDestroy {
         locationText: tooth.locationText,
         showEditLocation: tooth.showEditLocation,
         isNew: false,
-        searchTime: tooth.searchTime,
+        searchMinutes: tooth.searchMinutes,
         beachName: tooth.beachName,
         beachAccess: tooth.beachAccess,
       },
@@ -101,8 +101,11 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   async goToTips() {
-    console.log("goToTips");
     this.router.navigate(['/tips']);
+  }
+
+  async goToStats() {
+    this.router.navigate(['/stats']);
   }
 
   async addTooth() {
@@ -131,7 +134,7 @@ export class HomePage implements OnInit, OnDestroy {
     newTooth.locationText = data.locationText;
     newTooth.showEditLocation = data.showEditLocation;
     newTooth.imageData = data.imageData;
-    newTooth.searchTime = data.searchTime;
+    newTooth.searchMinutes = data.searchMinutes;
     newTooth.beachName = data.beachName;
     newTooth.beachAccess = data.beachAccess;
     if (data.removed) {

@@ -1,0 +1,50 @@
+<!--
+Copyright 2024 Scott Lewis, All rights reserved.
+-->
+<ion-content>
+  <div style="text-align: left !important;position: absolute;">
+    <ion-button (click)="goBack()" fill="clear" color="dark">
+      <ion-icon name="chevron-back-sharp"></ion-icon>
+    </ion-button>
+  </div>
+  <div id="container" class="stats-page">
+    <h2 class="title">Your Stats</h2>
+      <ion-card class="total-teeth-card">
+        <ion-card-header>
+          Total Number of Teeth
+        </ion-card-header>
+        <ion-card-content>
+          <h2>{{ totalTeeth | number }}</h2>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="avg-teeth-per-find-card" *ngIf="averageTeethPerFind">
+        <ion-card-header>
+          Average Number of Teeth per Find
+        </ion-card-header>
+        <ion-card-content>
+          <h2>{{ averageTeethPerFind | number  }}</h2>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="searching-time-card" *ngIf="minMinutes">
+        <ion-card-header>
+          Minutes Searching
+        </ion-card-header>
+        <ion-card-content>
+          <h2>Average: {{ averageMinutes | number  }}</h2>
+          <h2>Min: {{ minMinutes | number  }}</h2>
+          <h2>Max: {{ maxMinutes | number }}</h2>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="most-teeth-location-card" *ngIf="locationWithMostTeeth">
+        <ion-card-header>
+          Location with the Most Teeth Found
+        </ion-card-header>
+        <ion-card-content>
+          <h2>{{ locationWithMostTeeth }}</h2>
+        </ion-card-content>
+      </ion-card>
+  </div>
+</ion-content>
