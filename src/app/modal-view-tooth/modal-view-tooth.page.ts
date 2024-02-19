@@ -13,6 +13,7 @@ import { GeocodeService } from '../geocode.service';
 import { format } from 'date-fns';
 import { Device } from '@capacitor/device';
 import { NgxGpAutocompleteDirective } from '@angular-magic/ngx-gp-autocomplete';
+import { FirebaseAuthService } from 'src/firebaseAuth.service';
 
 @Component({
   selector: 'app-modal-view-tooth',
@@ -45,6 +46,7 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
   public theme: string = "dark";
 
   public account: Account;
+  public isAuthenticated: boolean;
 
   public connectedNetwork: boolean = false;
 
@@ -53,11 +55,12 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
   @ViewChild('ngxPlaces') placesRef: NgxGpAutocompleteDirective;
 
   constructor(private logger: LoggerService, private modalController: ModalController, private alertController: AlertController,
-    public toastController: ToastController, private geocodeService: GeocodeService, private platform: Platform,
+    public toastController: ToastController, private geocodeService: GeocodeService, private platform: Platform, private firebaseAuthService: FirebaseAuthService,
     private coreUtilService: CoreUtilService, private storageService: StorageService) {
   }
   async ngOnInit() {
     this.account = await this.storageService.getAccount() ?? new Account();
+    this.isAuthenticated = (await this.firebaseAuthService.isAuthenticated());
 
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
     if (prefersDark && prefersDark.matches) {
@@ -197,42 +200,54 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
     }
   }
 
-  onImageError() {
+  onImageError(e: any) {
+    console.log("onImageError: ", e);
     this.imageFailed = true;
   }
 
   async takePicture() {
-    try {
-      const image = await Camera.getPhoto({
-        quality: 100,
-        resultType: CameraResultType.Uri,
-        // height: 150,
-        // width: 350,
-        direction: CameraDirection.Rear,
-      });
+    if (this.isAuthenticated) {
+      try {
+        const image = await Camera.getPhoto({
+          quality: 100,
+          resultType: CameraResultType.Uri,
+          direction: CameraDirection.Rear,
+        });
 
-      // image.webPath will contain a path that can be set as an image src.
-      // You can access the original file using image.path, which can be
-      // passed to the Filesystem API to read the raw data of the image,
-      // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-      this.imageData = image;
-
-      // console.log("Image result: ", JSON.stringify(image));
-
-      let deviceInfo = await Device.getInfo();
-      if (deviceInfo.platform == "web") {
-        let photoPath: any = image.webPath;
-        const response = await fetch(photoPath);
-        const blob = await response.blob();
-        this.imageData = blob;
-      } else {
-        this.imageData = image.path ?? "";
+        this.imageData = image;
+        let deviceInfo = await Device.getInfo();
+        if (deviceInfo.platform == "web") {
+          let photoPath: any = image.webPath;
+          const response = await fetch(photoPath);
+          const blob = await response.blob();
+          this.imageData = blob;
+        } else {
+          this.imageData = image.path ?? "";
+        }
+        this.imageUrl = image.webPath ?? "";
+        this.imageFailed = false;
+      } catch (err) {
+        console.error("takePicture error: ", err);
+        this.coreUtilService.presentToastError("Error taking picture");
       }
-      this.imageUrl = image.webPath ?? "";
+    }else{
+      try {
+        const image = await Camera.getPhoto({
+          quality: 100,
+          resultType: CameraResultType.DataUrl,
+          direction: CameraDirection.Rear,
+        });
 
-      //console.log("ImageUrl set: ", image.webPath, this.imageData, image);
-    } catch (err) {
-      console.error("takePicture error: ", err);
+        this.imageData = image;
+
+        console.log("Image result with base64 as not authenticated: ", image);
+        this.imageData = image.dataUrl ?? "";
+        this.imageUrl = image.dataUrl ?? "";
+        this.imageFailed = false;
+      } catch (err) {
+        console.error("takePicture error: ", err);
+        this.coreUtilService.presentToastError("Error taking picture");
+      }
     }
   }
 
