@@ -62,7 +62,7 @@ Copyright 2024 Scott Lewis, All rights reserved.
             class="description-label">Where did you find it?</ion-label>
           <div class="description-input">
             <input aria-label="Where did you find it?" class="rare-description-textarea" id="locationInput"
-              #placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" (input)="locationChange($event)"/>
+              #placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" (input)="locationChange($event)" [(ngModel)]="locationText"/>
             <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
           </div>
         </div>
