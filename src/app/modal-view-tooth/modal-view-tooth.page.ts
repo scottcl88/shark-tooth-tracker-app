@@ -1,9 +1,8 @@
 /**
 Copyright 2024 Scott Lewis, All rights reserved.
 **/
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { AlertController, IonDatetime, ModalController, Platform, ToastController } from '@ionic/angular';
-import { environment } from 'src/environments/environment';
 import { CoreUtilService } from '../core-utils';
 import { Account, CoordinatesPositionModel } from '../_models';
 import { StorageService } from '../storage.service';
@@ -12,15 +11,15 @@ import { Camera, CameraDirection, CameraResultType } from '@capacitor/camera';
 import { Geolocation } from '@capacitor/geolocation';
 import { GeocodeService } from '../geocode.service';
 import { format } from 'date-fns';
-import { decode } from "base64-arraybuffer";
 import { Device } from '@capacitor/device';
+import { NgxGpAutocompleteDirective } from '@angular-magic/ngx-gp-autocomplete';
 
 @Component({
   selector: 'app-modal-view-tooth',
   templateUrl: './modal-view-tooth.page.html',
   styleUrls: ['./modal-view-tooth.page.scss'],
 })
-export class ModalViewToothPage implements OnInit {
+export class ModalViewToothPage implements OnInit, AfterViewInit {
 
   @ViewChild(IonDatetime) datetime: IonDatetime;
 
@@ -51,14 +50,13 @@ export class ModalViewToothPage implements OnInit {
 
   public distanceColor: string = "black";
 
+  @ViewChild('ngxPlaces') placesRef: NgxGpAutocompleteDirective;
 
   constructor(private logger: LoggerService, private modalController: ModalController, private alertController: AlertController,
     public toastController: ToastController, private geocodeService: GeocodeService, private platform: Platform,
     private coreUtilService: CoreUtilService, private storageService: StorageService) {
   }
-
   async ngOnInit() {
-    console.log("")
     this.account = await this.storageService.getAccount() ?? new Account();
 
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -70,8 +68,6 @@ export class ModalViewToothPage implements OnInit {
     prefersDark.addEventListener('change', (mediaQuery) => this.toggleDarkTheme(mediaQuery.matches));
 
     this.toggleDarkTheme(prefersDark.matches);
-
-    // this.isoDate = this.foundDate.toISOString();
 
     let options: any = { timezone: Intl.DateTimeFormat().resolvedOptions().timeZone };
     const formattedDate = format(this.foundDate, "yyyy-MM-dd'T'HH:mm:ssXXX", options);
@@ -87,17 +83,62 @@ export class ModalViewToothPage implements OnInit {
       await this.takePicture();
     }
 
-    if(!this.teethCount || this.teethCount < 1){
+    if (!this.teethCount || this.teethCount < 1) {
       this.teethCount = 1;
     }
 
-    if(!this.showEditLocation && !this.location){
+    if (!this.showEditLocation && !this.location) {
       this.showEditLocation = true;
     }
   }
 
   async ngAfterViewInit() {
     this.isLoaded = true;
+  }
+
+  async handleAddressChange(placeResult: google.maps.places.PlaceResult) {
+    console.log("handleAddressChange: ", placeResult);
+    // Extract the city name, state name, latitude, and longitude
+    const addressComponents = placeResult.address_components || [];
+
+    let city = '';
+    let state = '';
+    let latitude = 0;
+    let longitude = 0;
+
+    for (const component of addressComponents) {
+      const types = component.types || [];
+
+      if (types.includes('locality')) {
+        // City name
+        city = component.long_name;
+      } else if (types.includes('administrative_area_level_1')) {
+        // State name
+        state = component.long_name;
+      }
+    }
+
+    // Latitude and Longitude
+    if (placeResult.geometry && placeResult.geometry.location) {
+      latitude = placeResult.geometry.location.lat();
+      longitude = placeResult.geometry.location.lng();
+    }
+
+    // Now you can use the extracted values
+    console.log('City:', city);
+    console.log('State:', state);
+    console.log('Latitude:', latitude);
+    console.log('Longitude:', longitude);
+
+    this.location = new CoordinatesPositionModel();
+    this.location.state = state;
+    this.location.city = city;
+    this.location.latitude = latitude ?? 0;
+    this.location.longitude = longitude ?? 0;
+    this.location.latitudeText = latitude?.toPrecision(5) ?? "";
+    this.location.longitudeText = longitude?.toPrecision(5) ?? "";
+    this.location.locationHref = `https://www.google.com/maps?q=${this.location.latitudeText},${this.location.longitudeText}`;
+    this.showEditLocation = false;
   }
 
   async recordLocation(doRequestLocation: boolean = false) {
@@ -227,17 +268,17 @@ export class ModalViewToothPage implements OnInit {
     this.teethCount = value;
   }
 
-  searchMinutesChange(e: any){
-   let value = e.detail.value;
-   this.searchMinutes = value;
+  searchMinutesChange(e: any) {
+    let value = e.detail.value;
+    this.searchMinutes = value;
   }
 
-  beachAccessChange(e: any){
+  beachAccessChange(e: any) {
     let value = e.detail.value;
     this.beachAccess = value;
   }
 
-  beachNameChange(e: any){
+  beachNameChange(e: any) {
     let value = e.detail.value;
     this.beachName = value;
   }
@@ -248,12 +289,13 @@ export class ModalViewToothPage implements OnInit {
   }
 
   locationChange(e: any) {
-    let value = e.detail.value;
+    let value = e.target.value;
     this.locationText = value;
+    this.showEditLocation = true;
+    console.log("locationChange locationText: ", this.locationText);
   }
 
   foundDateChange(e: any) {
-    console.log("foundDateChange: ", e);
     let value = e.detail.value;
     this.foundDate = new Date(value);
     console.log("new foundDate: ", this.foundDate);

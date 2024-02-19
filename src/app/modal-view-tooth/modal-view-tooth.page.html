@@ -56,17 +56,17 @@ Copyright 2024 Scott Lewis, All rights reserved.
         <ion-icon name="pencil" slot="end" style="font-size: 20px;" (click)="editLocation()"
           *ngIf="location"></ion-icon>
       </p>
-      <div *ngIf="showEditLocation" style="display: flex;align-items: center;">
-        <div class="section-container rare">
+      <div *ngIf="showEditLocation" style="display: flex;align-items: center;justify-content: center;">
+        <div class="section-container rare" style="margin-right: 0;">
           <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
             class="description-label">Where did you find it?</ion-label>
           <div class="description-input">
-            <ion-input (ionChange)="locationChange($event)" aria-label="Where did you find it?" placeholder="Location"
-              class="rare-description-textarea" [value]="locationText"></ion-input>
+            <input aria-label="Where did you find it?" class="rare-description-textarea" id="locationInput"
+              #placesRef="ngx-places" ngx-gp-autocomplete (onAddressChange)="handleAddressChange($event)" (input)="locationChange($event)"/>
             <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
           </div>
         </div>
-        <ion-icon name="location" slot="end" style="font-size: 24px;margin-left: -15px;margin-top: 15px;"
+        <ion-icon name="location" slot="end" style="font-size: 24px;margin-left: 0px;margin-top: 15px;"
           (click)="recordLocation(true)"></ion-icon>
       </div>
       <div class="undo-button" (click)="undoLocation()" *ngIf="showEditLocation && location">
@@ -94,9 +94,9 @@ Copyright 2024 Scott Lewis, All rights reserved.
               <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
                 class="description-label">How many minutes were you searching for?</ion-label>
               <div class="description-input">
-                <ion-input (ionChange)="searchMinutesChange($event)" aria-label="How many minutes were you searching for?"
-                  placeholder="# of minutes" class="rare-description-textarea" [value]="searchMinutes"
-                  type="text"></ion-input>
+                <ion-input (ionChange)="searchMinutesChange($event)"
+                  aria-label="How many minutes were you searching for?" placeholder="# of minutes"
+                  class="rare-description-textarea" [value]="searchMinutes" type="text"></ion-input>
                 <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
               </div>
             </div>
@@ -104,9 +104,8 @@ Copyright 2024 Scott Lewis, All rights reserved.
               <ion-label style="text-align: start; display: block; margin-bottom: 10px;" position="stacked"
                 class="description-label">Beach Name</ion-label>
               <div class="description-input">
-                <ion-input (ionChange)="beachNameChange($event)" aria-label="Beach Name"
-                  placeholder="Beach Name" class="rare-description-textarea" [value]="beachName"
-                  type="text"></ion-input>
+                <ion-input (ionChange)="beachNameChange($event)" aria-label="Beach Name" placeholder="Beach Name"
+                  class="rare-description-textarea" [value]="beachName" type="text"></ion-input>
                 <ion-icon name="pencil" slot="end" style="font-size: 20px;"></ion-icon>
               </div>
             </div>

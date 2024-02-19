@@ -255,3 +255,13 @@ hr {
   padding-left: 10px;
   padding-right: 10px;
 }
+
+#locationInput{
+  background: transparent;
+  border: none;
+  margin-left: 0px;
+  &:active, &:focus {
+    outline: none;
+    border: none;
+  }
+}

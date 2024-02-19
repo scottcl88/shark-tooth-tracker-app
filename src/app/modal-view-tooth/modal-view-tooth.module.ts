@@ -12,6 +12,7 @@ import { IonicModule } from '@ionic/angular';
 import { ModalViewToothPage } from './modal-view-tooth.page';
 import { HeaderModule } from '../header/header.module';
 import { DateFnsModule } from 'ngx-date-fns';
+import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { DateFnsModule } from 'ngx-date-fns';
     FormsModule,
     IonicModule,
     HeaderModule,    
-    DateFnsModule,    
+    DateFnsModule,   
+    NgxGpAutocompleteModule, 
   ],
   declarations: [ModalViewToothPage],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
