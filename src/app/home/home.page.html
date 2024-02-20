@@ -43,7 +43,7 @@
           *ngIf="tooth.showEditLocation && tooth.locationText">{{tooth.locationText}}</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
-        {{tooth.description}}
+        {{tooth.teethCount && tooth.teethCount > 0 ? tooth.teethCount : 1 | number }} {{tooth.teethCount && tooth.teethCount == 1 ? 'tooth' : 'teeth'}}
       </ion-card-content>
     </ion-card>
   </div>

@@ -33,15 +33,19 @@ export class StatsPage implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.allTeeth = await this.collectionService.getTeeth();
+    this.updateStats();
+    this.teethSubscription = this.collectionService.allTeeth$.subscribe(async (updatedTeeth) => {
+      this.allTeeth = updatedTeeth;
+      this.updateStats();
+    });
+  }
+
+  async updateStats() {
+    await this.coreUtilService.presentLoading();
     this.calculateMinutes();
     this.calculateAverageTeethPerFind();
     this.findLocationWithMostTeeth();
-    this.teethSubscription = this.collectionService.allTeeth$.subscribe((updatedTeeth) => {
-      this.allTeeth = updatedTeeth;
-      this.calculateMinutes();
-      this.calculateAverageTeethPerFind();
-      this.findLocationWithMostTeeth();
-    });
+    this.coreUtilService.dismissLoading();
   }
 
   //method that calculates minMinutes, maxMinutes, averageMinutes

@@ -32,7 +32,11 @@ export class HomePage implements OnInit, OnDestroy {
       this.allTeeth = updatedTeeth;
       this.teethCount = 0;
       this.allTeeth.forEach(tooth => {
-        this.teethCount += tooth.teethCount;
+        if (tooth.teethCount && tooth.teethCount > 0) {
+          this.teethCount += tooth.teethCount;
+        } else {
+          this.teethCount += 1;
+        }
       });
     });
     this.reorderList(false);
