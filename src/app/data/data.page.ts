@@ -9,7 +9,6 @@ import { StorageService } from '../storage.service';
 import { AlertController, ModalController, Platform, PopoverController } from '@ionic/angular';
 import { CoreUtilService } from '../core-utils';
 import { Subject } from 'rxjs';
-import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { FirebaseAuthService } from 'src/firebaseAuth.service';
 import { Account } from '../_models';
@@ -17,7 +16,12 @@ import { LoggerService } from '../logger.service';
 import { Location } from '@angular/common';
 import { CollectionService } from '../collection.service';
 import { ModalEmailPage } from '../modal-email/modal-email.page';
-import { EmailGameDataRequest, GameClient } from '../api';
+
+export class EmailGameDataRequest {
+  email: string;
+  jsonData: string;
+}
+
 
 @Component({
   selector: 'app-data',

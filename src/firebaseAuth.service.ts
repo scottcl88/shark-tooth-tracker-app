@@ -11,22 +11,20 @@ import {
 import { Capacitor } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
 import { initializeApp, getApp } from 'firebase/app';
-import { lastValueFrom, Observable, ReplaySubject, take } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { getDatabase, ref, set, child, get, update, onValue, push, DatabaseReference } from "firebase/database";
-import { RemoteConfig, fetchAndActivate, getRemoteConfig, getValue } from "firebase/remote-config";
+import { getDatabase, ref, child, get, update } from "firebase/database";
+import { RemoteConfig } from "firebase/remote-config";
 import { StorageService } from './app/storage.service';
 import { getAuth, indexedDBLocalPersistence, initializeAuth, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { Account } from './app/_models';
 import { LoggerService } from './app/logger.service';
-import { getAnalytics, setUserId, setUserProperties } from "firebase/analytics";
 import { Device } from '@capacitor/device';
 import { FirebaseStorage } from '@capacitor-firebase/storage';
 import { ToothModel } from './app/_models/toothModel';
-import { Functions } from '@angular/fire/functions';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { EmailGameDataRequest } from './app/api';
+import { EmailGameDataRequest } from './app/data/data.page';
 
 @Injectable({
   providedIn: 'root',
@@ -39,8 +37,6 @@ export class FirebaseAuthService {
   public remoteConfig: RemoteConfig;
 
   constructor(
-    private readonly platform: Platform,
-    private readonly ngZone: NgZone,
     private storageService: StorageService,
     private logger: LoggerService
   ) {
@@ -55,10 +51,6 @@ export class FirebaseAuthService {
       const app = initializeApp(environment.firebaseConfig);
 
       if (environment.production) {
-        const appCheck = initializeAppCheck(app, {
-          provider: new ReCaptchaV3Provider('6LeOZ2ApAAAAACGGMZ-HOdIhrftZuB23M90b93s8'),
-          isTokenAutoRefreshEnabled: true
-        });
       }
 
       if (Capacitor.isNativePlatform()) {
@@ -116,13 +108,6 @@ export class FirebaseAuthService {
   public async getIdToken(options?: GetIdTokenOptions): Promise<string> {
     const result = await FirebaseAuthentication.getIdToken(options);
     return result.token;
-  }
-  private initializeAppIfNecessary() {
-    try {
-      return getApp();
-    } catch {
-      return initializeApp(environment.firebaseConfig);
-    }
   }
   public async signIn(platform: string = ""): Promise<SignInResult> {
     if (!environment.enableAuth) {
@@ -210,7 +195,7 @@ export class FirebaseAuthService {
   }
 
   public async getToothImage(tooth: ToothModel): Promise<string> {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
       let result = await FirebaseStorage.getDownloadUrl(
         {
           path: `users/${this.currentUser?.uid}/teeth/${tooth.toothId}`,
@@ -282,7 +267,7 @@ export class FirebaseAuthService {
       try {
         const functions = getFunctions(getApp(), "us-central1");
         const sendExportDataEmail = httpsCallable(functions, 'sendExportDataEmail', { limitedUseAppCheckTokens: true });
-        await sendExportDataEmail(request);        
+        await sendExportDataEmail(request);
         resolve();
       } catch (err) {
         console.error("Error with callEmailDataFunction 2: ", err);
