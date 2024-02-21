@@ -51,6 +51,10 @@ export class FirebaseAuthService {
       const app = initializeApp(environment.firebaseConfig);
 
       if (environment.production) {
+        initializeAppCheck(app, {
+          provider: new ReCaptchaV3Provider('6LeOZ2ApAAAAACGGMZ-HOdIhrftZuB23M90b93s8'),
+          isTokenAutoRefreshEnabled: true
+        });
       }
 
       if (Capacitor.isNativePlatform()) {
@@ -108,6 +112,13 @@ export class FirebaseAuthService {
   public async getIdToken(options?: GetIdTokenOptions): Promise<string> {
     const result = await FirebaseAuthentication.getIdToken(options);
     return result.token;
+  }
+  private initializeAppIfNecessary() {
+    try {
+      return getApp();
+    } catch {
+      return initializeApp(environment.firebaseConfig);
+    }
   }
   public async signIn(platform: string = ""): Promise<SignInResult> {
     if (!environment.enableAuth) {
@@ -195,7 +206,7 @@ export class FirebaseAuthService {
   }
 
   public async getToothImage(tooth: ToothModel): Promise<string> {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
       let result = await FirebaseStorage.getDownloadUrl(
         {
           path: `users/${this.currentUser?.uid}/teeth/${tooth.toothId}`,
