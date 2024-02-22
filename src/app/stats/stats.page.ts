@@ -17,7 +17,7 @@ import { CollectionService } from '../collection.service';
   styleUrls: ['./stats.page.scss'],
 })
 export class StatsPage implements OnInit, OnDestroy {
-  private teethSubscription: Subscription;
+  public teethSubscription: Subscription;
   public allTeeth: ToothModel[] = [];
   public account: Account;
 

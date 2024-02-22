@@ -81,7 +81,7 @@ export class AppComponent implements OnInit {
       console.error("takePicture error: ", err);
     }
   }
-  private async addTooth(data: any) {
+  public async addTooth(data: any) {
     let newTooth = new ToothModel();
     newTooth.createdDate = new Date();
     newTooth.photoUrl = data.imageUrl;
