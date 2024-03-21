@@ -42,6 +42,7 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
   public searchMinutes: number;
   public beachName: string;
   public beachAccess: string;
+  private doSaveImage: boolean = false;
 
   public theme: string = "dark";
 
@@ -226,6 +227,7 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
         }
         this.imageUrl = image.webPath ?? "";
         this.imageFailed = false;
+        this.doSaveImage = true;
       } catch (err) {
         console.error("takePicture error: ", err);
         this.coreUtilService.presentToastError("Error taking picture");
@@ -244,6 +246,7 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
         this.imageData = image.dataUrl ?? "";
         this.imageUrl = image.dataUrl ?? "";
         this.imageFailed = false;
+        this.doSaveImage = true;
       } catch (err) {
         console.error("takePicture error: ", err);
         this.coreUtilService.presentToastError("Error taking picture");
@@ -362,7 +365,8 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
       showEditLocation: this.showEditLocation,
       searchMinutes: this.searchMinutes,
       beachName: this.beachName,
-      beachAccess: this.beachAccess
+      beachAccess: this.beachAccess,
+      doSaveImage: this.doSaveImage
     });
   }
 }

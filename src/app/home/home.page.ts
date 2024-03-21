@@ -26,14 +26,14 @@ export class HomePage implements OnInit, OnDestroy {
   async ngOnInit() {
     this.allTeeth = await this.collectionService.getTeeth();
     this.allTeeth.forEach(tooth => {
-      this.teethCount += tooth.teethCount;
+      this.teethCount += Number(tooth.teethCount);
     });
     this.teethSubscription = this.collectionService.allTeeth$.subscribe((updatedTeeth) => {
       this.allTeeth = updatedTeeth;
       this.teethCount = 0;
       this.allTeeth.forEach(tooth => {
         if (tooth.teethCount && tooth.teethCount > 0) {
-          this.teethCount += tooth.teethCount;
+          this.teethCount += Number(tooth.teethCount);
         } else {
           this.teethCount += 1;
         }
@@ -146,10 +146,10 @@ export class HomePage implements OnInit, OnDestroy {
     }
     if (data.toothId && data.toothId > 0) {
       newTooth.toothId = data.toothId;
-      await this.collectionService.saveTooth(newTooth);
+      await this.collectionService.saveTooth(newTooth, data.doSaveImage);
     } else {
       newTooth.toothId = this.collectionService.getNewToothId();
-      await this.collectionService.addTooth(newTooth);
+      await this.collectionService.addTooth(newTooth, data.doSaveImage);
     }
   }
 }

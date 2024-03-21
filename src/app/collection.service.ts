@@ -124,7 +124,7 @@ export class CollectionService {
     return largestToothId + 1;
   }
 
-  async addTooth(orgTooth: ToothModel) {
+  async addTooth(orgTooth: ToothModel, doSaveImage: boolean) {
     let tooth = new ToothModel(orgTooth);
     if (!tooth || (tooth.toothId ?? 0) <= 0) {
       this.logger.error("Invalid tooth or invalid toothId");
@@ -140,7 +140,9 @@ export class CollectionService {
     this.allTeeth.push(tooth);
     this.updateTeethSubject();
 
-    await this.saveImage(tooth);
+    if (doSaveImage) {
+      await this.saveImage(tooth);
+    }
     await this.doSave();
   }
 
@@ -163,7 +165,7 @@ export class CollectionService {
     }
   }
 
-  async saveTooth(orgTooth: ToothModel, doDismissLoading: boolean = true) {
+  async saveTooth(orgTooth: ToothModel, doSaveImage: boolean, doDismissLoading: boolean = true) {
     let tooth = new ToothModel(orgTooth);
     let foundToothIndex = this.allTeeth.findIndex(x => x.toothId == tooth.toothId);
     if (foundToothIndex < 0) {
@@ -175,7 +177,9 @@ export class CollectionService {
     this.allTeeth[foundToothIndex] = tooth;
     this.updateTeethSubject();
 
-    await this.saveImage(tooth);
+    if (doSaveImage) {
+      await this.saveImage(tooth);
+    }
     await this.doSave(doDismissLoading);
   }
 
