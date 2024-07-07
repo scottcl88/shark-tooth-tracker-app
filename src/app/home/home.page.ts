@@ -6,6 +6,8 @@ import { CollectionService } from '../collection.service';
 import { ToothModel } from '../_models/toothModel';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { ModalFeedbackPage } from '../modal-feedback/modal-feedback.page';
+import { RateApp } from 'capacitor-rate-app';
 
 @Component({
   selector: 'app-home',
@@ -20,6 +22,7 @@ export class HomePage implements OnInit, OnDestroy {
   public currentSort: number = 0;
   public listSortType: string = "dateFound";
   public teethCount: number = 0;
+  public showFeedbackButton: boolean = false;
 
   constructor(private modalController: ModalController, private router: Router, private collectionService: CollectionService) { }
 
@@ -40,6 +43,8 @@ export class HomePage implements OnInit, OnDestroy {
       });
     });
     this.reorderList(false);
+    
+    this.showFeedbackButton = this.teethCount >= 2;
   }
 
   ngOnDestroy() {
@@ -75,6 +80,19 @@ export class HomePage implements OnInit, OnDestroy {
   async imageError(e: any, tooth: ToothModel) {
     console.log("ImageError: ", e, tooth);
     tooth.hasImageError = true;
+  }
+
+  async showFeedbackModal() {
+    const modal = await this.modalController.create({
+      component: ModalFeedbackPage,
+      componentProps: {
+      },
+      id: "feedback-modal",
+      showBackdrop: true,
+      backdropDismiss: false,
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
   }
 
   async editTooth(tooth: ToothModel) {
@@ -151,5 +169,11 @@ export class HomePage implements OnInit, OnDestroy {
       newTooth.toothId = this.collectionService.getNewToothId();
       await this.collectionService.addTooth(newTooth, data.doSaveImage);
     }
+    
+    setTimeout(() => {
+      if (this.teethCount >= 3) {
+        RateApp.requestReview();
+      }
+    }, 3000);
   }
 }

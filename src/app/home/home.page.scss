@@ -8,3 +8,29 @@
         object-fit: scale-down;
     }
 }
+
+.feedbackContainer {
+    width: 40px;
+    height: 96px;
+    background-color: var(--secondary-color);
+    text-align: center; /* Center the text horizontally */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    left: 0;
+    top: 65%;
+    transform: translateY(-50%);
+    border: 1px solid #c2c2c2;
+    @media (prefers-color-scheme: dark) {
+      box-shadow: 0px 2px 8px rgb(130 130 130 / 75%);
+    }
+    @media (prefers-color-scheme: light) {
+      box-shadow: 0px 2px 8px rgba(86, 85, 85, 0.2);
+    }
+    z-index: 99999 !important;
+    span {
+      color: black;
+      writing-mode: vertical-rl;
+    }
+  }

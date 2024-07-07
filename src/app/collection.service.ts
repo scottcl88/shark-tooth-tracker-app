@@ -28,7 +28,6 @@ export class CollectionService {
   public allTeeth$ = this.allTeethSubject.asObservable();
 
   private hasLoaded: boolean = false;
-  private hasLoadedLicensePlates: boolean = false;
   private isAuthenticated: boolean = false;
   private retryAuth: boolean = false;
 

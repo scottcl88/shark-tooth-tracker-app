@@ -28,7 +28,10 @@
       <ion-text>Date Found</ion-text>
     </div>
   </div>
-  <div *ngFor="let tooth of this.allTeeth; index as i;">
+  <div *ngFor="let tooth of this.allTeeth; index as i;">    
+    <div class="feedbackContainer" (click)="showFeedbackModal()" *ngIf="showFeedbackButton">
+      <span>Feedback</span>
+    </div>
     <ion-card (click)="editTooth(tooth)">
       <ion-img [src]="tooth.photoUrl" class="cardPhoto" *ngIf="tooth.photoUrl && !tooth.hasImageError"
         alt="Picture of tooth" (ionError)="imageError($event, tooth)"></ion-img>

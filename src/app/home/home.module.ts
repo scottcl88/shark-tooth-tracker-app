@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 import { HomePageRoutingModule } from './home-routing.module';
 import { DateFnsModule } from 'ngx-date-fns';
+import { ModalFeedbackPageModule } from '../modal-feedback/modal-feedback.module';
 
 @NgModule({
   imports: [
@@ -13,6 +14,7 @@ import { DateFnsModule } from 'ngx-date-fns';
     FormsModule,
     HomePageRoutingModule,
     DateFnsModule,
+    ModalFeedbackPageModule
   ],
   declarations: [HomePage]
 })
