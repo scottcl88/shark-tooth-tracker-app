@@ -41,6 +41,7 @@ export class HomePage implements OnInit, OnDestroy {
           this.teethCount += 1;
         }
       });
+      this.showFeedbackButton = this.teethCount >= 2;
     });
     this.reorderList(false);
     
