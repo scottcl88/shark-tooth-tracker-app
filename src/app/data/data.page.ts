@@ -1,8 +1,8 @@
 /**
-Copyright 2024 Scott Lewis, All rights reserved.
+Copyright 2025 Scott Lewis, All rights reserved.
 **/
 /**
- * Copyright 2024 Scott Lewis, All rights reserved.
+ * Copyright 2025 Scott Lewis, All rights reserved.
  */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StorageService } from '../storage.service';
