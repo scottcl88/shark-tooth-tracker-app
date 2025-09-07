@@ -11,7 +11,6 @@ import { CookiePolicyPageRoutingModule } from './cookie-policy-routing.module';
 
 import { CookiePolicyPage } from './cookie-policy.page';
 import { HeaderModule } from '../header/header.module';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 @NgModule({
   imports: [
@@ -20,8 +19,7 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     IonicModule,    
     ReactiveFormsModule,
     CookiePolicyPageRoutingModule,
-    HeaderModule,
-    PdfViewerModule
+    HeaderModule
   ],
   declarations: [CookiePolicyPage],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]

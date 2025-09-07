@@ -11,7 +11,6 @@ import { PrivacyPolicyPageRoutingModule } from './privacy-policy-routing.module'
 
 import { PrivacyPolicyPage } from './privacy-policy.page';
 import { HeaderModule } from '../header/header.module';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 @NgModule({
   imports: [
@@ -20,8 +19,7 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     IonicModule,    
     ReactiveFormsModule,
     PrivacyPolicyPageRoutingModule,
-    HeaderModule,
-    PdfViewerModule
+    HeaderModule
   ],
   declarations: [PrivacyPolicyPage],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
