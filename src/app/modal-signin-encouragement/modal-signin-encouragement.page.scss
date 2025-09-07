@@ -1,0 +1,211 @@
+/**
+Copyright 2025 Scott Lewis, All rights reserved.
+**/
+
+.header {
+  ion-toolbar {
+    --background: var(--ion-color-primary);
+    --color: white;
+    
+    ion-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    
+    ion-button {
+      --color: white;
+    }
+  }
+}
+
+.content {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  
+  .content-container {
+    padding: 2rem 1.5rem;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.logo-section {
+  text-align: center;
+  margin-bottom: 2rem;
+  
+  .logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.benefits-section {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  
+  h2 {
+    color: var(--ion-color-primary);
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+  }
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  .benefit-icon {
+    color: var(--ion-color-primary);
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+  }
+  
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+    color: var(--ion-color-dark);
+  }
+  
+  p {
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+.warning-section {
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  align-items: flex-start;
+  
+  .warning-icon {
+    color: var(--ion-color-warning);
+    font-size: 1.25rem;
+    margin-right: 0.75rem;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ion-color-dark);
+    line-height: 1.4;
+    
+    strong {
+      color: var(--ion-color-warning-shade);
+    }
+  }
+}
+
+.button-section {
+  width: 100%;
+  max-width: 320px;
+  
+  ion-button {
+    margin-bottom: 0.75rem;
+    height: 48px;
+    font-weight: 500;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.sign-in-button {
+  font-size: 1rem;
+  
+  &.google-button {
+    --background: #4285f4;
+    --background-hover: #357ae8;
+    --color: white;
+  }
+  
+  &.apple-button {
+    --background: #000000;
+    --background-hover: #333333;
+    --color: white;
+  }
+}
+
+.guest-button {
+  --border-color: rgba(255, 255, 255, 0.8);
+  --color: white;
+  font-size: 0.95rem;
+}
+
+.maybe-later-button {
+  --color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  
+  &:hover {
+    --color: white;
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 480px) {
+  .content {
+    .content-container {
+      padding: 1.5rem 1rem;
+    }
+  }
+  
+  .benefits-section {
+    padding: 1.25rem;
+    
+    h2 {
+      font-size: 1.2rem;
+    }
+  }
+  
+  .benefit-item {
+    .benefit-icon {
+      font-size: 1.3rem;
+    }
+    
+    h3 {
+      font-size: 0.95rem;
+    }
+    
+    p {
+      font-size: 0.85rem;
+    }
+  }
+  
+  .warning-section {
+    padding: 0.875rem;
+    
+    p {
+      font-size: 0.85rem;
+    }
+  }
+}

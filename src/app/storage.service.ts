@@ -23,6 +23,9 @@ export class StorageService {
 
     const storage = await this.storage.create();
     this._storage = storage;
+    
+    // Restore data from backup if needed
+    await this.restoreFromBackup();
   }
 
   public async clearData() {
@@ -88,10 +91,83 @@ export class StorageService {
   }
 
   public set(key: string, value: any) {
-    this._storage!.set(key, value);
+    if (this._storage) {
+      this._storage.set(key, value);
+    } else {
+      console.warn('Storage not initialized, falling back to localStorage');
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (err) {
+        console.error('Failed to save to localStorage:', err);
+      }
+    }
   }
 
-  public get(key: string) {
-    return this._storage!.get(key);
+  public async get(key: string) {
+    if (this._storage) {
+      return await this._storage.get(key);
+    } else {
+      console.warn('Storage not initialized, falling back to localStorage');
+      try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : null;
+      } catch (err) {
+        console.error('Failed to read from localStorage:', err);
+        return null;
+      }
+    }
+  }
+
+  public async ensureDataPersistence() {
+    // Ensure critical data is backed up to both Ionic Storage and localStorage
+    if (this._storage) {
+      try {
+        const account = await this._storage.get('account');
+        const teeth = await this._storage.get('teeth');
+        const disableLogin = await this._storage.get('disableLogin');
+        
+        if (account) {
+          localStorage.setItem('backup_account', JSON.stringify(account));
+        }
+        if (teeth) {
+          localStorage.setItem('backup_teeth', JSON.stringify(teeth));
+        }
+        if (disableLogin !== null) {
+          localStorage.setItem('backup_disableLogin', JSON.stringify(disableLogin));
+        }
+        
+        console.debug('Data backup to localStorage completed');
+      } catch (err) {
+        console.error('Failed to backup data:', err);
+      }
+    }
+  }
+
+  public async restoreFromBackup() {
+    // Restore data from localStorage backup if Ionic Storage is empty
+    if (this._storage) {
+      try {
+        const account = await this._storage.get('account');
+        const teeth = await this._storage.get('teeth');
+        
+        if (!account) {
+          const backupAccount = localStorage.getItem('backup_account');
+          if (backupAccount) {
+            await this._storage.set('account', JSON.parse(backupAccount));
+            console.debug('Restored account from backup');
+          }
+        }
+        
+        if (!teeth) {
+          const backupTeeth = localStorage.getItem('backup_teeth');
+          if (backupTeeth) {
+            await this._storage.set('teeth', JSON.parse(backupTeeth));
+            console.debug('Restored teeth from backup');
+          }
+        }
+      } catch (err) {
+        console.error('Failed to restore from backup:', err);
+      }
+    }
   }
 }

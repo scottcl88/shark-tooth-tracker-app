@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { FirebaseAuthService } from 'src/firebaseAuth.service';
 import { ModalSignInPage } from './modal-signin/modal-signin.page';
+import { ModalSignInEncouragementPage } from './modal-signin-encouragement/modal-signin-encouragement.page';
 import { StorageService } from './storage.service';
 import { ModalController } from '@ionic/angular';
 import { Camera, CameraDirection, CameraResultType } from '@capacitor/camera';
@@ -45,20 +46,44 @@ export class AppComponent implements OnInit {
       console.debug("disableLogin is true, skipping login");
       return;
     }
+    
     this.isAuthenticated = (await this.firebaseAuthService.isAuthenticated());
     if (this.isAuthenticated) {
       console.debug("already authenticated, skipping login");
       return;
     }
-    const modal = await this.modalController.create({
-      component: ModalSignInPage,
-      componentProps: {
-      },
-    });
-    await modal.present();
-    const { data } = await modal.onDidDismiss();
-    if (data.continueAsGuest) {
-      await this.storageService.setDisableLogin(true);
+    
+    // Check if we should show sign-in encouragement
+    const shouldShowReminder = await this.collectionService.shouldShowSignInReminder();
+    if (shouldShowReminder) {
+      const modal = await this.modalController.create({
+        component: ModalSignInEncouragementPage,
+        componentProps: {
+        },
+      });
+      await modal.present();
+      const { data } = await modal.onDidDismiss();
+      
+      if (data?.continueAsGuest) {
+        await this.storageService.setDisableLogin(true);
+      } else if (data?.signedIn) {
+        this.isAuthenticated = true;
+      } else if (data?.remindLater) {
+        // Set a reminder to show again later
+        this.storageService.set('remindSignInLater', Date.now() + (24 * 60 * 60 * 1000)); // 24 hours
+      }
+    } else {
+      // Show regular sign-in modal for first-time users
+      const modal = await this.modalController.create({
+        component: ModalSignInPage,
+        componentProps: {
+        },
+      });
+      await modal.present();
+      const { data } = await modal.onDidDismiss();
+      if (data.continueAsGuest) {
+        await this.storageService.setDisableLogin(true);
+      }
     }
   }
 

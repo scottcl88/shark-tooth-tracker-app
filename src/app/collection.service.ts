@@ -13,6 +13,7 @@ import { HttpClient } from "@angular/common/http";
 import { LoggerService } from "./logger.service";
 import { Device } from "@capacitor/device";
 import { ModalSignInPage } from "./modal-signin/modal-signin.page";
+import { ModalSignInEncouragementPage } from "./modal-signin-encouragement/modal-signin-encouragement.page";
 import { GeocodeService } from "./geocode.service";
 import { ToothModel } from "./_models/toothModel";
 import { Subject } from "rxjs";
@@ -50,15 +51,22 @@ export class CollectionService {
 
     let disabledLogin = await this.storageService.getDisableLogin();
 
+    // Always check for existing authentication first
     this.isAuthenticated = await this.firebaseAuthService.isAuthenticated();
 
     if (!this.isAuthenticated && !disabledLogin) {
+      // Only show sign-in modal if not authenticated and login not disabled
       if (isAccountNull) {
-        await this.doSignIn();
+        await this.doSignInEncouragement();
       } else {
-        await this.firebaseAuthService.signIn();
+        // Try silent sign-in first for existing users
+        try {
+          await this.firebaseAuthService.signIn();
+          this.isAuthenticated = await this.firebaseAuthService.isAuthenticated();
+        } catch (err) {
+          console.log("Silent sign-in failed, will show encouragement modal later");
+        }
       }
-      this.isAuthenticated = await this.firebaseAuthService.isAuthenticated();
     }
 
     let currentUser = await this.firebaseAuthService.getCurrentUser();
@@ -164,6 +172,94 @@ export class CollectionService {
     }
   }
 
+  async doSignInEncouragement() {
+    this.hasLoaded = false;
+    if (!environment.enableAuth) {
+      console.debug("environment enableAuth is false");
+      return;
+    }
+    console.log("Tooth Service: doSignInEncouragement called");
+    const modal = await this.modalController.create({
+      component: ModalSignInEncouragementPage,
+      componentProps: {
+      },
+    });
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+    
+    if (data?.continueAsGuest) {
+      await this.storageService.setDisableLogin(true);
+    } else if (data?.signedIn) {
+      this.isAuthenticated = true;
+    } else if (data?.remindLater) {
+      // Set a reminder to show again later
+      this.storageService.set('remindSignInLater', Date.now() + (24 * 60 * 60 * 1000)); // 24 hours
+    }
+  }
+
+  async migrateGuestDataToAccount(): Promise<boolean> {
+    try {
+      if (!this.isAuthenticated) {
+        console.warn("Cannot migrate data - user not authenticated");
+        return false;
+      }
+
+      // Get local data
+      const localTeeth = await this.storageService.get("teeth");
+      if (localTeeth && this.allTeeth.length > 0) {
+        console.log("Migrating guest data to authenticated account...");
+        
+        // Save current data to Firebase
+        await this.firebaseAuthService.doSaveTeethToFirebase(this.allTeeth);
+        
+        // Save images if any
+        for (const tooth of this.allTeeth) {
+          if (tooth.imageData) {
+            try {
+              await this.saveImage(tooth);
+            } catch (err) {
+              console.warn(`Failed to migrate image for tooth ${tooth.toothId}:`, err);
+            }
+          }
+        }
+        
+        console.log("Successfully migrated guest data to account");
+        return true;
+      }
+      return false;
+    } catch (err: any) {
+      this.logger.error("Error migrating guest data:", err);
+      return false;
+    }
+  }
+
+  async shouldShowSignInReminder(): Promise<boolean> {
+    const remindTime = await this.storageService.get('remindSignInLater');
+    const guestStartTime = await this.storageService.get('guestModeStartTime');
+    const remindSignIn = await this.storageService.get('remindSignIn');
+    const disabledLogin = await this.storageService.getDisableLogin();
+    
+    if (disabledLogin || this.isAuthenticated) {
+      return false;
+    }
+    
+    // Show reminder if user has been using guest mode for a while
+    if (guestStartTime) {
+      const daysSinceStart = (Date.now() - new Date(guestStartTime).getTime()) / (1000 * 60 * 60 * 24);
+      if (daysSinceStart >= 3) { // Show after 3 days of guest usage
+        return true;
+      }
+    }
+    
+    // Show if remind time has passed
+    if (remindTime && Date.now() > remindTime) {
+      return true;
+    }
+    
+    // Show if remind flag is set
+    return !!remindSignIn;
+  }
+
   async saveTooth(orgTooth: ToothModel, doSaveImage: boolean, doDismissLoading: boolean = true) {
     let tooth = new ToothModel(orgTooth);
     let foundToothIndex = this.allTeeth.findIndex(x => x.toothId == tooth.toothId);
@@ -207,7 +303,6 @@ export class CollectionService {
   private async doSave(doDismissLoading: boolean = true) {
     console.log("doSave called");
     let teethJson: any[] = [];
-    // this.allTeeth.forEach(x => teethJson.push(x.toJSON()));
     let dataStr = JSON.stringify(this.allTeeth);
     let dataObj = { title: "teeth", data: dataStr };
 
@@ -224,6 +319,7 @@ export class CollectionService {
     if (this.isAuthenticated) {
       try {
         await this.firebaseAuthService.doSaveTeethToFirebase(this.allTeeth);
+        console.log("Successfully saved teeth to Firebase");
       } catch (err: any) {
         this.logger.error("collectionService-doSave - Failed to saveTooth to firebase: ", err);
         this.storageService.set("teeth", dataObj);
@@ -231,7 +327,12 @@ export class CollectionService {
       }
     } else {
       this.storageService.set("teeth", dataObj);
+      console.log("Saved teeth to local storage (not authenticated)");
     }
+    
+    // Always backup data to ensure persistence
+    await this.storageService.ensureDataPersistence();
+    
     this.hasLoaded = false;
     if (doDismissLoading) {
       this.coreUtilService.dismissLoading();

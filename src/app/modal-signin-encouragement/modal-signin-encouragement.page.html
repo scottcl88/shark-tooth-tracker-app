@@ -1,0 +1,97 @@
+<!--
+Copyright 2025 Scott Lewis, All rights reserved.
+-->
+<ion-header class="header">
+  <ion-toolbar>
+    <ion-title>Save Your Shark Tooth Collection!</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="maybeLater()" fill="clear">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="content">
+  <div class="content-container">
+    <div class="logo-section">
+      <img src="assets/icon/favicon-196x196.png" alt="Logo" class="logo">
+    </div>
+    
+    <div class="benefits-section">
+      <h2>Why Create an Account?</h2>
+      
+      <div class="benefit-item">
+        <ion-icon name="cloud-outline" class="benefit-icon"></ion-icon>
+        <div>
+          <h3>Never Lose Your Collection</h3>
+          <p>Your shark tooth collection is safely backed up to the cloud</p>
+        </div>
+      </div>
+      
+      <div class="benefit-item">
+        <ion-icon name="phone-portrait-outline" class="benefit-icon"></ion-icon>
+        <div>
+          <h3>Access on Multiple Devices</h3>
+          <p>View and edit your collection on any device, anywhere</p>
+        </div>
+      </div>
+      
+      <div class="benefit-item">
+        <ion-icon name="images-outline" class="benefit-icon"></ion-icon>
+        <div>
+          <h3>Photo Backup</h3>
+          <p>Your precious shark tooth photos are automatically saved</p>
+        </div>
+      </div>
+      
+      <div class="benefit-item">
+        <ion-icon name="bar-chart-outline" class="benefit-icon"></ion-icon>
+        <div>
+          <h3>Enhanced Features</h3>
+          <p>Get detailed statistics and advanced tracking features</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="warning-section">
+      <ion-icon name="warning-outline" class="warning-icon"></ion-icon>
+      <p><strong>Guest Mode Warning:</strong> If you continue as a guest, your data might be lost if you clear your browser data or uninstall the app.</p>
+    </div>
+    
+    <div class="button-section">
+      <ion-button 
+        expand="block" 
+        class="sign-in-button google-button" 
+        (click)="signInWithGoogle()">
+        <ion-icon name="logo-google" slot="start"></ion-icon>
+        Sign in with Google
+      </ion-button>
+      
+      <ion-button 
+        expand="block" 
+        class="sign-in-button apple-button" 
+        (click)="signInWithApple()"
+        *ngIf="platform === 'ios'">
+        <ion-icon name="logo-apple" slot="start"></ion-icon>
+        Sign in with Apple
+      </ion-button>
+      
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        class="guest-button" 
+        (click)="continueAsGuest()">
+        Continue as Guest
+      </ion-button>
+      
+      <ion-button 
+        expand="block" 
+        fill="clear" 
+        class="maybe-later-button" 
+        (click)="maybeLater()">
+        Maybe Later
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

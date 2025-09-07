@@ -66,9 +66,42 @@ export class FirebaseAuthService {
         console.log("capacitor is not native, getAuth")
         getAuth();
       }
+      
+      // Initialize current user from existing session
+      await this.initializeCurrentUser();
+      
       console.log("Firebase service finished initializing");
     } catch (err: any) {
       this.logger.error("Error on firebase initialize: " + err + " ||| " + JSON.stringify(err), err);
+    }
+  }
+
+  private async initializeCurrentUser(): Promise<void> {
+    try {
+      const currentUserResult = await FirebaseAuthentication.getCurrentUser();
+      this.currentUser = currentUserResult.user;
+      this.currentUserSubject.next(this.currentUser);
+      
+      if (this.currentUser) {
+        console.log("Existing user session found:", this.currentUser.email);
+        // Update stored account with current user info
+        let accountStorage: Account = await this.storageService.get("account");
+        if (accountStorage) {
+          accountStorage.email = this.currentUser?.email ?? "";
+          accountStorage.isVerified = this.currentUser?.emailVerified ?? false;
+          accountStorage.name = this.currentUser?.displayName ?? "";
+          accountStorage.isAnonymous = this.currentUser?.isAnonymous ?? false;
+          accountStorage.providerId = this.currentUser?.providerId ?? "";
+          accountStorage.tenantId = this.currentUser?.tenantId ?? "";
+          accountStorage.userId = this.currentUser?.uid ?? "";
+          accountStorage.photoUrl = this.currentUser?.photoUrl ?? "";
+          await this.storageService.setAccount(accountStorage);
+        }
+      } else {
+        console.log("No existing user session found");
+      }
+    } catch (err: any) {
+      console.log("Error initializing current user:", err);
     }
   }
 
@@ -88,22 +121,19 @@ export class FirebaseAuthService {
 
   public async isAuthenticated(): Promise<boolean> {
     return new Promise<boolean>(async (resolve: any) => {
-      if (this.currentUser) {
-        try {
-          let currentUserResult = await FirebaseAuthentication.getCurrentUser();
-          console.log("Firebase isAuthenticated currentUserResult: ", JSON.stringify(currentUserResult));
-          this.currentUser = currentUserResult.user;
-          console.log("Firebase isAuthenticated current user set: ", JSON.stringify(this.currentUser));
-          if (this.currentUser) {
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        } catch (err) {
-          console.log("Firebase isAuthenticated getCurrentUser error: ", err, JSON.stringify(err));
+      try {
+        let currentUserResult = await FirebaseAuthentication.getCurrentUser();
+        console.log("Firebase isAuthenticated currentUserResult: ", JSON.stringify(currentUserResult));
+        this.currentUser = currentUserResult.user;
+        console.log("Firebase isAuthenticated current user set: ", JSON.stringify(this.currentUser));
+        if (this.currentUser) {
+          this.currentUserSubject.next(this.currentUser);
+          resolve(true);
+        } else {
           resolve(false);
         }
-      } else {
+      } catch (err) {
+        console.log("Firebase isAuthenticated getCurrentUser error: ", err, JSON.stringify(err));
         resolve(false);
       }
     });
