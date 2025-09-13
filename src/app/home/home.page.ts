@@ -1,13 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { ModalViewToothPageModule } from '../modal-view-tooth/modal-view-tooth.module';
 import { ModalViewToothPage } from '../modal-view-tooth/modal-view-tooth.page';
 import { CollectionService } from '../collection.service';
 import { ToothModel } from '../_models/toothModel';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { ModalFeedbackPage } from '../modal-feedback/modal-feedback.page';
-import { RateApp } from 'capacitor-rate-app';
+import { InAppReview } from '@capacitor-community/in-app-review';
 
 @Component({
   selector: 'app-home',
@@ -44,7 +43,7 @@ export class HomePage implements OnInit, OnDestroy {
       this.showFeedbackButton = this.teethCount >= 2;
     });
     this.reorderList(false);
-    
+
     this.showFeedbackButton = this.teethCount >= 2;
   }
 
@@ -170,10 +169,10 @@ export class HomePage implements OnInit, OnDestroy {
       newTooth.toothId = this.collectionService.getNewToothId();
       await this.collectionService.addTooth(newTooth, data.doSaveImage);
     }
-    
-    setTimeout(() => {
+
+    setTimeout(async () => {
       if (this.teethCount >= 3) {
-        RateApp.requestReview();
+        await InAppReview.requestReview();
       }
     }, 3000);
   }

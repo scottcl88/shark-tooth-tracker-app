@@ -35,8 +35,6 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Optional. Used to take or choose a picture of your found shark tooth.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Optional. Your location is used to mark where you found a shark tooth when added.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Optional. Your location is used to mark where you found a shark tooth when added.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
