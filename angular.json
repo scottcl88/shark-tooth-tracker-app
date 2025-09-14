@@ -26,6 +26,11 @@
                 "output": "assets"
               },
               {
+                "glob": "**/*",
+                "input": "src/.well-known",
+                "output": ".well-known/"
+              },
+              {
                 "glob": "**/*.svg",
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
@@ -48,7 +53,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumError": "10kb"
                 }
               ],
               "fileReplacements": [
@@ -78,7 +83,8 @@
           "options": {
             "ssl": true,
             "sslCert": ".ionic/ssl/localhost.crt",
-            "sslKey": ".ionic/ssl/localhost.key"
+            "sslKey": ".ionic/ssl/localhost.key",
+            "buildTarget": "app:build"
           },
           "configurations": {
             "production": {
@@ -112,6 +118,11 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/.well-known",
+                "output": ".well-known/"
               },
               {
                 "glob": "**/*.svg",
