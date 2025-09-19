@@ -7,7 +7,6 @@ import { StorageService } from "./storage.service";
 import { FirebaseAuthService } from "src/firebaseAuth.service";
 import { Account } from "./_models";
 import { ModalController, Platform } from "@ionic/angular";
-import { formatISO, min } from "date-fns";
 import { environment } from "src/environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { LoggerService } from "./logger.service";
@@ -25,7 +24,7 @@ export class CollectionService {
 
   private allTeeth: ToothModel[] = [];
 
-  private allTeethSubject = new Subject<Array<any>>();
+  private readonly allTeethSubject = new Subject<Array<any>>();
   public allTeeth$ = this.allTeethSubject.asObservable();
 
   private hasLoaded: boolean = false;
@@ -63,8 +62,8 @@ export class CollectionService {
         try {
           await this.firebaseAuthService.signIn();
           this.isAuthenticated = await this.firebaseAuthService.isAuthenticated();
-        } catch (err) {
-          console.log("Silent sign-in failed, will show encouragement modal later");
+        } catch (err: any) {
+          this.logger.error("Silent sign-in failed, will show encouragement modal later", err);
         }
       }
     }
@@ -200,7 +199,7 @@ export class CollectionService {
   async migrateGuestDataToAccount(): Promise<boolean> {
     try {
       if (!this.isAuthenticated) {
-        console.warn("Cannot migrate data - user not authenticated");
+        this.logger.warn("Cannot migrate data - user not authenticated");
         return false;
       }
 
@@ -217,13 +216,13 @@ export class CollectionService {
           if (tooth.imageData) {
             try {
               await this.saveImage(tooth);
-            } catch (err) {
-              console.warn(`Failed to migrate image for tooth ${tooth.toothId}:`, err);
+            } catch (err: any) {
+              this.logger.warn(`Failed to migrate image for tooth ${tooth.toothId}:`, err);
             }
           }
         }
-        
-        console.log("Successfully migrated guest data to account");
+
+        this.logger.debug("Successfully migrated guest data to account");
         return true;
       }
       return false;
@@ -319,7 +318,9 @@ export class CollectionService {
     if (this.isAuthenticated) {
       try {
         await this.firebaseAuthService.doSaveTeethToFirebase(this.allTeeth);
-        console.log("Successfully saved teeth to Firebase");
+        this.logger.debug("Successfully saved teeth to Firebase");
+        // Also persist a local cache to ensure availability if Firebase load fails
+        this.storageService.set("teeth", dataObj);
       } catch (err: any) {
         this.logger.error("collectionService-doSave - Failed to saveTooth to firebase: ", err);
         this.storageService.set("teeth", dataObj);
@@ -327,7 +328,7 @@ export class CollectionService {
       }
     } else {
       this.storageService.set("teeth", dataObj);
-      console.log("Saved teeth to local storage (not authenticated)");
+      this.logger.debug("Saved teeth to local storage (not authenticated)");
     }
     
     // Always backup data to ensure persistence
@@ -386,7 +387,10 @@ export class CollectionService {
                 this.updateTeethSubject();
               });
             } else {
-              collectionData.teeth.forEach(async (g: any) => {
+              // Firebase RTDB may return arrays as objects keyed by indices; normalize to array
+              const rawTeeth = collectionData.teeth;
+              const items: any[] = Array.isArray(rawTeeth) ? rawTeeth : Object.values(rawTeeth);
+              items.forEach(async (g: any) => {
                 let newTooth = new ToothModel(g);
                 newTooth.init(g);
                 let downloadUrl = await this.firebaseAuthService.getToothImage(newTooth);

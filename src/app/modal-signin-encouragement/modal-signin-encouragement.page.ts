@@ -7,6 +7,7 @@ import { FirebaseAuthService } from 'src/firebaseAuth.service';
 import { Device } from '@capacitor/device';
 import { StorageService } from '../storage.service';
 import { CollectionService } from '../collection.service';
+import { LoggerService } from '../logger.service';
 
 @Component({
   selector: 'app-modal-signin-encouragement',
@@ -17,10 +18,11 @@ export class ModalSignInEncouragementPage implements OnInit {
   public platform: string = '';
   
   constructor(
-    private modalController: ModalController,
-    private firebaseAuthService: FirebaseAuthService,
-    private storageService: StorageService,
-    private collectionService: CollectionService
+    private readonly modalController: ModalController,
+    private readonly firebaseAuthService: FirebaseAuthService,
+    private readonly storageService: StorageService,
+    private readonly collectionService: CollectionService,
+    private readonly logger: LoggerService
   ) { }
 
   async ngOnInit() {
@@ -40,8 +42,8 @@ export class ModalSignInEncouragementPage implements OnInit {
       }
       
       this.dismiss({ signedIn: true, continueAsGuest: false, dataMigrated: migrated });
-    } catch (error) {
-      console.error('Google sign-in error:', error);
+    } catch (error: any) {
+      this.logger.error('Google sign-in error:', error);
       // Still dismiss but indicate sign-in failed
       this.dismiss({ signedIn: false, continueAsGuest: false });
     }
@@ -59,8 +61,8 @@ export class ModalSignInEncouragementPage implements OnInit {
       }
       
       this.dismiss({ signedIn: true, continueAsGuest: false, dataMigrated: migrated });
-    } catch (error) {
-      console.error('Apple sign-in error:', error);
+    } catch (error: any) {
+      this.logger.error('Apple sign-in error:', error);
       // Still dismiss but indicate sign-in failed
       this.dismiss({ signedIn: false, continueAsGuest: false });
     }

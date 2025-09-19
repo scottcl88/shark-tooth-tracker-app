@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
 import { ToothModel } from './_models/toothModel';
 import { CollectionService } from './collection.service';
+import { LoggerService } from './logger.service';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,8 @@ export class AppComponent implements OnInit {
   public showPhotoFab: boolean = true;
   public routerEventSubscription: Subscription;
   public isAuthenticated: boolean = false;
-  constructor(public router: Router, private firebaseAuthService: FirebaseAuthService, private collectionService: CollectionService, private storageService: StorageService, private modalController: ModalController) { }
+  constructor(public router: Router, private readonly firebaseAuthService: FirebaseAuthService, private readonly collectionService: CollectionService,
+     private readonly storageService: StorageService, private readonly modalController: ModalController, private readonly logger: LoggerService) { }
   async ngOnInit() {
     this.routerEventSubscription = this.router.events.subscribe(async (event) => {
       if (event instanceof NavigationEnd) {
@@ -102,8 +104,8 @@ export class AppComponent implements OnInit {
         await this.addTooth(data);
         await this.router.navigate(['/tabs/home']);
       }
-    } catch (err) {
-      console.error("takePicture error: ", err);
+    } catch (err: any) {
+      this.logger.error("takePicture error: ", err);
     }
   }
   public async addTooth(data: any) {

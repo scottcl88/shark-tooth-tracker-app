@@ -37,7 +37,7 @@ export class LoggerService {
         forwardErrorsToLogs: true,
         sessionSampleRate: 100,
         version: this.package.version,
-        service: this.package.name,
+        service: this.package.name,        
         env: "dev"
       })
     }

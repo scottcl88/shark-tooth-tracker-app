@@ -228,8 +228,8 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
         this.imageUrl = image.webPath ?? "";
         this.imageFailed = false;
         this.doSaveImage = true;
-      } catch (err) {
-        console.error("takePicture error: ", err);
+      } catch (err: any) {
+        this.logger.error("takePicture error: ", err);
         this.coreUtilService.presentToastError("Error taking picture");
       }
     }else{
@@ -247,8 +247,8 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
         this.imageUrl = image.dataUrl ?? "";
         this.imageFailed = false;
         this.doSaveImage = true;
-      } catch (err) {
-        console.error("takePicture error: ", err);
+      } catch (err: any) {
+        this.logger.error("takePicture error: ", err);
         this.coreUtilService.presentToastError("Error taking picture");
       }
     }

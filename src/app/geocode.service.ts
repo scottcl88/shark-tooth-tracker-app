@@ -4,6 +4,7 @@ Copyright 2025 Scott Lewis, All rights reserved.
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { LoggerService } from './logger.service';
 
 export class GeocodeResult {
   state: string;
@@ -14,7 +15,7 @@ export class GeocodeResult {
   providedIn: 'root',
 })
 export class GeocodeService {
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient, private readonly logger: LoggerService) { }
 
   async init() {
   }
@@ -65,7 +66,7 @@ export class GeocodeService {
           resolve(res);
         },
         error: (err: any) => {
-          console.error("Failed getCoordinates", err);
+          this.logger.error("Failed getCoordinates", err);
           resolve(null);
         }
       });
@@ -106,8 +107,8 @@ export class GeocodeService {
           result.city = cityName;
 
           resolve(result);
-        }, error: (err) => {
-          console.error('Error fetching location data:', err);
+        }, error: (err: any) => {
+          this.logger.error('Error fetching location data:', err);
           resolve(result);
         }
       });

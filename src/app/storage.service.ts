@@ -94,11 +94,11 @@ export class StorageService {
     if (this._storage) {
       this._storage.set(key, value);
     } else {
-      console.warn('Storage not initialized, falling back to localStorage');
+      this.loggerService.warn('Storage not initialized, falling back to localStorage');
       try {
         localStorage.setItem(key, JSON.stringify(value));
-      } catch (err) {
-        console.error('Failed to save to localStorage:', err);
+      } catch (err: any) {
+        this.loggerService.error('Failed to save to localStorage:', err);
       }
     }
   }
@@ -107,12 +107,12 @@ export class StorageService {
     if (this._storage) {
       return await this._storage.get(key);
     } else {
-      console.warn('Storage not initialized, falling back to localStorage');
+      this.loggerService.warn('Storage not initialized, falling back to localStorage');
       try {
         const item = localStorage.getItem(key);
         return item ? JSON.parse(item) : null;
-      } catch (err) {
-        console.error('Failed to read from localStorage:', err);
+      } catch (err: any) {
+        this.loggerService.error('Failed to read from localStorage:', err);
         return null;
       }
     }
@@ -137,8 +137,8 @@ export class StorageService {
         }
         
         console.debug('Data backup to localStorage completed');
-      } catch (err) {
-        console.error('Failed to backup data:', err);
+      } catch (err: any) {
+        this.loggerService.error('Failed to backup data:', err);
       }
     }
   }
@@ -165,8 +165,8 @@ export class StorageService {
             console.debug('Restored teeth from backup');
           }
         }
-      } catch (err) {
-        console.error('Failed to restore from backup:', err);
+      } catch (err: any) {
+        this.loggerService.error('Failed to restore from backup:', err);
       }
     }
   }

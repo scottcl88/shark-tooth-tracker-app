@@ -90,7 +90,7 @@ export class ModalFeedbackPage implements OnInit {
         this.submitDisabled = true;
         this.isComplete = true;
       }, error: (err) => {
-        console.error("Failed on submitted feedback", err);
+        this.logger.error("Failed on submitted feedback", err);
         this.submitDisabled = true;
         this.isComplete = true;
       },

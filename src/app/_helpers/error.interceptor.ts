@@ -5,16 +5,11 @@ import { catchError, takeUntil } from 'rxjs/operators';
 import { Account } from '../_models';
 
 @Injectable()
-export class ErrorInterceptor implements HttpInterceptor, OnInit, OnDestroy {
-    private ngUnsubscribe = new Subject();
+export class ErrorInterceptor implements HttpInterceptor, OnDestroy {
+    private readonly ngUnsubscribe = new Subject();
     public account: Account | null;
 
-    constructor() {
-        this.ngOnInit();
-    }
-
-    ngOnInit(): void {      
-    }
+    constructor() { }
 
     ngOnDestroy(): void {
         this.ngUnsubscribe.next(null);

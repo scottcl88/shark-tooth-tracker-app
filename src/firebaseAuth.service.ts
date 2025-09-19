@@ -266,8 +266,8 @@ export class FirebaseAuthService {
             }
           }
         );
-      } catch (err) {
-        console.error("Error with uploadToothImage_Web: ", err);
+      } catch (err: any) {
+        this.logger.error("Error with uploadToothImage_Web: ", err);
         reject(err);
       }
     });
@@ -296,8 +296,8 @@ export class FirebaseAuthService {
             }
           }
         );
-      } catch (err) {
-        console.error("Error with uploadFile: ", err);
+      } catch (err: any) {
+        this.logger.error("Error with uploadFile: ", err);
         reject(err);
       }
     });
@@ -310,8 +310,8 @@ export class FirebaseAuthService {
         const sendExportDataEmail = httpsCallable(functions, 'sendExportDataEmail', { limitedUseAppCheckTokens: true });
         await sendExportDataEmail(request);
         resolve();
-      } catch (err) {
-        console.error("Error with callEmailDataFunction 2: ", err);
+      } catch (err: any) {
+        this.logger.error("Error with callEmailDataFunction 2: ", err);
         reject(err);
       }
     });
@@ -326,8 +326,8 @@ export class FirebaseAuthService {
       const updates: any = {};
       updates[`users/${this.currentUser?.uid}/teeth`] = goodJsonObj;
       await update(ref(db), updates);
-    } catch (err) {
-      console.error("doSaveTeethToFirebase in firebaseAuth: ", err);
+    } catch (err: any) {
+      this.logger.error("doSaveTeethToFirebase in firebaseAuth: ", err);
     }
   }
 
@@ -338,8 +338,8 @@ export class FirebaseAuthService {
       const updates: any = {};
       updates[`users/${this.currentUser?.uid}/profile`] = dataObj;
       await update(ref(db), updates);
-    } catch (err) {
-      console.error("doSaveProfileToFirebase in firebaseAuth: ", err);
+    } catch (err: any) {
+      this.logger.error("doSaveProfileToFirebase in firebaseAuth: ", err);
     }
   }
 
