@@ -14,6 +14,7 @@ import { ModalSignInPage } from "./modal-signin/modal-signin.page";
 import { ModalSignInEncouragementPage } from "./modal-signin-encouragement/modal-signin-encouragement.page";
 import { ToothModel } from "./_models/toothModel";
 import { Subject } from "rxjs";
+import { FirestoreService } from "src/firestore.service";
 
 @Injectable({
   providedIn: 'root',
@@ -31,9 +32,12 @@ export class CollectionService {
 
   private readonly doSaveAfterInit: boolean = false;
 
+  private useFirestore: boolean = true;
+
   public currentToothChanged = new EventEmitter<void>();
 
-  constructor(private readonly storageService: StorageService, private readonly coreUtilService: CoreUtilService, private readonly firebaseAuthService: FirebaseAuthService,
+  constructor(private readonly storageService: StorageService, private readonly coreUtilService: CoreUtilService,
+    private readonly firebaseAuthService: FirebaseAuthService, private readonly firestoreService: FirestoreService,
     private readonly logger: LoggerService, private readonly modalController: ModalController) {
 
   }
@@ -75,7 +79,11 @@ export class CollectionService {
       accountStorage.tenantId = currentUser?.tenantId ?? "";
       accountStorage.userId = currentUser?.uid ?? "";
       accountStorage.photoUrl = currentUser?.photoUrl ?? "";
-      await this.firebaseAuthService.doSaveProfileToFirebase(accountStorage);
+      if (this.useFirestore) {
+        await this.firestoreService.doSaveProfileToFirebase(accountStorage);
+      } else {
+        await this.firebaseAuthService.doSaveProfileToFirebase(accountStorage);
+      }
     }
     await this.storageService.setAccount(accountStorage);
 
@@ -206,7 +214,11 @@ export class CollectionService {
         console.log("Migrating guest data to authenticated account...");
 
         // Save current data to Firebase
-        await this.firebaseAuthService.doSaveTeethToFirebase(this.allTeeth);
+        if (this.useFirestore) {
+          await this.firestoreService.doSaveTeethToFirebase(this.allTeeth);
+        } else {
+          await this.firebaseAuthService.doSaveTeethToFirebase(this.allTeeth);
+        }
 
         // Save images if any
         for (const tooth of this.allTeeth) {
@@ -314,7 +326,11 @@ export class CollectionService {
 
     if (this.isAuthenticated) {
       try {
-        await this.firebaseAuthService.doSaveTeethToFirebase(this.allTeeth);
+        if (this.useFirestore) {
+          await this.firestoreService.doSaveTeethToFirebase(this.allTeeth);
+        } else {
+          await this.firebaseAuthService.doSaveTeethToFirebase(this.allTeeth);
+        }
         this.logger.debug("Successfully saved teeth to Firebase");
         // Also persist a local cache to ensure availability if Firebase load fails
         this.storageService.set("teeth", dataObj);
@@ -370,7 +386,7 @@ export class CollectionService {
       this.allTeeth = [];
       if (this.isAuthenticated) {
         try {
-          let collectionData = await this.firebaseAuthService.loadCollection();
+          let collectionData = this.useFirestore ? await this.firestoreService.loadCollection() : await this.firebaseAuthService.loadCollection();
           console.log("collectionData loaded: ", collectionData);
           if (collectionData?.teeth) {
             if (collectionData.teeth.data && (typeof collectionData.teeth.data === 'string' || collectionData.teeth.data instanceof String)) {

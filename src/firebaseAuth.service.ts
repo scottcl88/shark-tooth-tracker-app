@@ -1,7 +1,7 @@
 /**
 Copyright 2025 Scott Lewis, All rights reserved.
 **/
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   FirebaseAuthentication,
   GetIdTokenOptions,
@@ -9,7 +9,6 @@ import {
   User,
 } from '@capacitor-firebase/authentication';
 import { Capacitor } from '@capacitor/core';
-import { Platform } from '@ionic/angular';
 import { initializeApp, getApp } from 'firebase/app';
 import { Observable, ReplaySubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -31,14 +30,14 @@ import { EmailGameDataRequest } from './app/data/data.page';
 })
 export class FirebaseAuthService {
   private currentUser?: User | null;
-  private currentUserSubject = new ReplaySubject<User | null>(1);
+  private readonly currentUserSubject = new ReplaySubject<User | null>(1);
   private loadedData: any = {};
 
   public remoteConfig: RemoteConfig;
 
   constructor(
-    private storageService: StorageService,
-    private logger: LoggerService
+    private readonly storageService: StorageService,
+    private readonly logger: LoggerService
   ) {
   }
 
@@ -143,13 +142,7 @@ export class FirebaseAuthService {
     const result = await FirebaseAuthentication.getIdToken(options);
     return result.token;
   }
-  private initializeAppIfNecessary() {
-    try {
-      return getApp();
-    } catch {
-      return initializeApp(environment.firebaseConfig);
-    }
-  }
+  
   public async signIn(platform: string = ""): Promise<SignInResult> {
     if (!environment.enableAuth) {
       console.debug("environment enableAuth is false");

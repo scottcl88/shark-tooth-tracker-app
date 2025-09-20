@@ -20,6 +20,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { CollectionService } from './collection.service';
 import { NgxGpAutocompleteModule } from '@angular-magic/ngx-gp-autocomplete';
 import { ModalViewToothPageModule } from './modal-view-tooth/modal-view-tooth.module';
+import { FirestoreService } from 'src/firestore.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -38,14 +39,14 @@ import { ModalViewToothPageModule } from './modal-view-tooth/modal-view-tooth.mo
     ModalSignInEncouragementPageModule,
     ModalViewToothPageModule,
     NgxGpAutocompleteModule.forRoot({
-        loaderOptions: {
-            apiKey: 'AIzaSyBRDTBIiPMYYBvp6bIOsPXf-Id9uXkLh4M',
-            libraries: ['places']
-        }
+      loaderOptions: {
+        apiKey: 'AIzaSyBRDTBIiPMYYBvp6bIOsPXf-Id9uXkLh4M',
+        libraries: ['places']
+      }
     })
   ], providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [StorageService, FirebaseAuthService, CollectionService, LoggerService, GeocodeService] },
+    { provide: APP_INITIALIZER, useFactory: appInitializer, multi: true, deps: [StorageService, FirebaseAuthService, FirestoreService, CollectionService, LoggerService, GeocodeService] },
     provideHttpClient(withInterceptorsFromDi()),
   ]
 })

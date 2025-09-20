@@ -29,6 +29,7 @@
     "@capacitor-community/in-app-review": "^7.0.0",
     "@capacitor-firebase/app": "^7.3.1",
     "@capacitor-firebase/authentication": "^7.3.1",
+    "@capacitor-firebase/firestore": "^7.3.1",
     "@capacitor-firebase/storage": "^7.3.1",
     "@capacitor/android": "^7.4.3",
     "@capacitor/app": "^7.1.0",
