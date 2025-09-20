@@ -23,7 +23,7 @@ export class HomePage implements OnInit, OnDestroy {
   public teethCount: number = 0;
   public showFeedbackButton: boolean = false;
 
-  constructor(private modalController: ModalController, private router: Router, private collectionService: CollectionService) { }
+  constructor(private readonly modalController: ModalController, private readonly router: Router, private readonly collectionService: CollectionService) { }
 
   async ngOnInit() {
     this.allTeeth = await this.collectionService.getTeeth();
@@ -42,7 +42,7 @@ export class HomePage implements OnInit, OnDestroy {
       });
       this.showFeedbackButton = this.teethCount >= 2;
     });
-    this.reorderList(false);
+    this.reorderList(true);
 
     this.showFeedbackButton = this.teethCount >= 2;
   }
@@ -52,7 +52,6 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   reorderList(doNext: boolean = true) {
-    console.log("reorder list")
     if (doNext) {
       this.currentSort++;
     }
@@ -68,7 +67,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.sortList();
   }
 
-  sortList(doNext: boolean = true) {
+  sortList() {
     if (this.listSortType == "dateFound" && this.currentSort == 0) {
       this.allTeeth.sort((a, b) => (new Date(a.foundDate).getTime()) - (new Date(b.foundDate).getTime()));
     }
@@ -140,7 +139,7 @@ export class HomePage implements OnInit, OnDestroy {
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();
-    if (data && data.saved) {
+    if (data?.saved) {
       await this.saveTooth(data);
     }
   }

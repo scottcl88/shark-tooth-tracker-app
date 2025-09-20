@@ -1,11 +1,8 @@
 /**
 Copyright 2025 Scott Lewis, All rights reserved.
 **/
-import { Injectable, inject } from "@angular/core";
-import { Router } from "@angular/router";
+import { Injectable } from "@angular/core";
 import { AlertController, LoadingController, ToastController } from "@ionic/angular";
-import { StorageService } from "./storage.service";
-import { Account } from "./_models";
 import { Geolocation } from "@capacitor/geolocation";
 
 @Injectable({
@@ -15,8 +12,7 @@ export class CoreUtilService {
   private loadingElement: any;
   private isLoadingShown: boolean = false;
 
-  constructor(private router: Router, private alertController: AlertController, private storageService: StorageService,
-    private loadingController: LoadingController, private toastController: ToastController) {
+  constructor(private readonly alertController: AlertController, private readonly loadingController: LoadingController, private readonly toastController: ToastController) {
 
   }
 

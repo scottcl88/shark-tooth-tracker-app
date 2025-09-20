@@ -6,14 +6,12 @@ import { CoreUtilService } from "./core-utils";
 import { StorageService } from "./storage.service";
 import { FirebaseAuthService } from "src/firebaseAuth.service";
 import { Account } from "./_models";
-import { ModalController, Platform } from "@ionic/angular";
+import { ModalController } from "@ionic/angular";
 import { environment } from "src/environments/environment";
-import { HttpClient } from "@angular/common/http";
 import { LoggerService } from "./logger.service";
 import { Device } from "@capacitor/device";
 import { ModalSignInPage } from "./modal-signin/modal-signin.page";
 import { ModalSignInEncouragementPage } from "./modal-signin-encouragement/modal-signin-encouragement.page";
-import { GeocodeService } from "./geocode.service";
 import { ToothModel } from "./_models/toothModel";
 import { Subject } from "rxjs";
 
@@ -31,13 +29,12 @@ export class CollectionService {
   private isAuthenticated: boolean = false;
   private retryAuth: boolean = false;
 
-  private doSaveAfterInit: boolean = false;
-
+  private readonly doSaveAfterInit: boolean = false;
 
   public currentToothChanged = new EventEmitter<void>();
 
-  constructor(private storageService: StorageService, private coreUtilService: CoreUtilService, private firebaseAuthService: FirebaseAuthService,
-    private platform: Platform, private logger: LoggerService, private httpClient: HttpClient, private modalController: ModalController, private geocodeService: GeocodeService) {
+  constructor(private readonly storageService: StorageService, private readonly coreUtilService: CoreUtilService, private readonly firebaseAuthService: FirebaseAuthService,
+    private readonly logger: LoggerService, private readonly modalController: ModalController) {
 
   }
   async init() {
@@ -123,7 +120,7 @@ export class CollectionService {
   getNewToothId() {
     let largestToothId = 0;
     this.allTeeth?.forEach(g => {
-      if (g && g.toothId && g.toothId > largestToothId) {
+      if (g?.toothId && g.toothId > largestToothId) {
         largestToothId = g.toothId;
       }
     });
@@ -185,7 +182,7 @@ export class CollectionService {
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();
-    
+
     if (data?.continueAsGuest) {
       await this.storageService.setDisableLogin(true);
     } else if (data?.signedIn) {
@@ -207,10 +204,10 @@ export class CollectionService {
       const localTeeth = await this.storageService.get("teeth");
       if (localTeeth && this.allTeeth.length > 0) {
         console.log("Migrating guest data to authenticated account...");
-        
+
         // Save current data to Firebase
         await this.firebaseAuthService.doSaveTeethToFirebase(this.allTeeth);
-        
+
         // Save images if any
         for (const tooth of this.allTeeth) {
           if (tooth.imageData) {
@@ -237,11 +234,11 @@ export class CollectionService {
     const guestStartTime = await this.storageService.get('guestModeStartTime');
     const remindSignIn = await this.storageService.get('remindSignIn');
     const disabledLogin = await this.storageService.getDisableLogin();
-    
+
     if (disabledLogin || this.isAuthenticated) {
       return false;
     }
-    
+
     // Show reminder if user has been using guest mode for a while
     if (guestStartTime) {
       const daysSinceStart = (Date.now() - new Date(guestStartTime).getTime()) / (1000 * 60 * 60 * 24);
@@ -249,12 +246,12 @@ export class CollectionService {
         return true;
       }
     }
-    
+
     // Show if remind time has passed
     if (remindTime && Date.now() > remindTime) {
       return true;
     }
-    
+
     // Show if remind flag is set
     return !!remindSignIn;
   }
@@ -330,10 +327,10 @@ export class CollectionService {
       this.storageService.set("teeth", dataObj);
       this.logger.debug("Saved teeth to local storage (not authenticated)");
     }
-    
+
     // Always backup data to ensure persistence
     await this.storageService.ensureDataPersistence();
-    
+
     this.hasLoaded = false;
     if (doDismissLoading) {
       this.coreUtilService.dismissLoading();
@@ -375,7 +372,7 @@ export class CollectionService {
         try {
           let collectionData = await this.firebaseAuthService.loadCollection();
           console.log("collectionData loaded: ", collectionData);
-          if (collectionData && collectionData.teeth) {
+          if (collectionData?.teeth) {
             if (collectionData.teeth.data && (typeof collectionData.teeth.data === 'string' || collectionData.teeth.data instanceof String)) {
               let parseObj = JSON.parse(collectionData.teeth.data);
               parseObj.forEach(async (g: any) => {

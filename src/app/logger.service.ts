@@ -17,7 +17,6 @@ export type StatusType = (typeof StatusType)[keyof typeof StatusType];
   providedIn: 'root',
 })
 export class LoggerService {
-  private account: Account = new Account();
   public package: any = require('../../package.json');
   constructor() {
     if (environment.production) {
@@ -37,7 +36,7 @@ export class LoggerService {
         forwardErrorsToLogs: true,
         sessionSampleRate: 100,
         version: this.package.version,
-        service: this.package.name,        
+        service: this.package.name,
         env: "dev"
       })
     }
@@ -47,12 +46,12 @@ export class LoggerService {
     this.debug("loggerService init");
   }
 
-  setForwardConsoleLogs(enable: boolean) {
-    if (enable) {
-      datadogLogs.setGlobalContext({ forwardConsoleLogs: 'all' });
-    } else {
-      datadogLogs.setGlobalContext({ forwardConsoleLogs: [] });
-    }
+  enableForwardConsoleLogs() {
+    datadogLogs.setGlobalContext({ forwardConsoleLogs: 'all' });
+  }
+
+  disableForwardConsoleLogs() {
+    datadogLogs.setGlobalContext({ forwardConsoleLogs: [] });
   }
 
   setLevel(minLogLevel: number) {
@@ -81,7 +80,6 @@ export class LoggerService {
   }
 
   setAccount(newAccount: Account) {
-    this.account = newAccount;
     datadogLogs.setUser({ id: newAccount.userId, name: newAccount.name, email: newAccount.email });
   }
 
