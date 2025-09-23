@@ -15,6 +15,7 @@ import { ModalSignInEncouragementPage } from "./modal-signin-encouragement/modal
 import { ToothModel } from "./_models/toothModel";
 import { Subject } from "rxjs";
 import { FirestoreService } from "src/firestore.service";
+import { Router } from "@angular/router";
 
 @Injectable({
   providedIn: 'root',
@@ -32,14 +33,24 @@ export class CollectionService {
 
   private readonly doSaveAfterInit: boolean = false;
 
-  private useFirestore: boolean = true;
+  private readonly useFirestore: boolean = true;
+
+  private isOnLegalPage: boolean = false;
 
   public currentToothChanged = new EventEmitter<void>();
 
   constructor(private readonly storageService: StorageService, private readonly coreUtilService: CoreUtilService,
     private readonly firebaseAuthService: FirebaseAuthService, private readonly firestoreService: FirestoreService,
-    private readonly logger: LoggerService, private readonly modalController: ModalController) {
-
+    private readonly logger: LoggerService, private readonly modalController: ModalController, private readonly router: Router) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof Router) {
+        if (event.url != "/cookie-policy" && event.url != "/privacy-policy" && event.url != "/terms-of-use") {
+          this.isOnLegalPage = false;
+        } else {
+          this.isOnLegalPage = true;
+        }
+      }
+    });
   }
   async init() {
     let isAccountNull = false;
@@ -163,6 +174,10 @@ export class CollectionService {
       console.debug("environment enableAuth is false");
       return;
     }
+    if (this.isOnLegalPage) {
+      console.debug("On legal page, skipping login encouragement");
+      return;
+    }
     console.log("Tooth Service: doSignIn called");
     const modal = await this.modalController.create({
       component: ModalSignInPage,
@@ -180,6 +195,10 @@ export class CollectionService {
     this.hasLoaded = false;
     if (!environment.enableAuth) {
       console.debug("environment enableAuth is false");
+      return;
+    }
+    if (this.isOnLegalPage) {
+      console.debug("On legal page, skipping login encouragement");
       return;
     }
     console.log("Tooth Service: doSignInEncouragement called");

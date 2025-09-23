@@ -59,9 +59,14 @@ export class AppComponent implements OnInit {
       return;
     }
 
+    if (this.isOnLegalPage) {
+      console.debug("On legal page, skipping login");
+      return;
+    }
+
     // Check if we should show sign-in encouragement
     const shouldShowReminder = await this.collectionService.shouldShowSignInReminder();
-    if (shouldShowReminder && !this.isOnLegalPage) {
+    if (shouldShowReminder) {
       const modal = await this.modalController.create({
         component: ModalSignInEncouragementPage,
         componentProps: {
