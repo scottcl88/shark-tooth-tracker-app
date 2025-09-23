@@ -22,8 +22,9 @@ export class AppComponent implements OnInit {
   public showPhotoFab: boolean = true;
   public routerEventSubscription: Subscription;
   public isAuthenticated: boolean = false;
+  private isOnLegalPage: boolean = false;
   constructor(public router: Router, private readonly firebaseAuthService: FirebaseAuthService, private readonly collectionService: CollectionService,
-     private readonly storageService: StorageService, private readonly modalController: ModalController, private readonly logger: LoggerService) { }
+    private readonly storageService: StorageService, private readonly modalController: ModalController, private readonly logger: LoggerService) { }
   async ngOnInit() {
     this.routerEventSubscription = this.router.events.subscribe(async (event) => {
       if (event instanceof NavigationEnd) {
@@ -34,6 +35,9 @@ export class AppComponent implements OnInit {
         }
         if (event.url != "/cookie-policy" && event.url != "/privacy-policy" && event.url != "/terms-of-use") {
           await this.doSignIn();
+          this.isOnLegalPage = false;
+        } else {
+          this.isOnLegalPage = true;
         }
       }
     });
@@ -48,16 +52,16 @@ export class AppComponent implements OnInit {
       console.debug("disableLogin is true, skipping login");
       return;
     }
-    
+
     this.isAuthenticated = (await this.firebaseAuthService.isAuthenticated());
     if (this.isAuthenticated) {
       console.debug("already authenticated, skipping login");
       return;
     }
-    
+
     // Check if we should show sign-in encouragement
     const shouldShowReminder = await this.collectionService.shouldShowSignInReminder();
-    if (shouldShowReminder) {
+    if (shouldShowReminder && !this.isOnLegalPage) {
       const modal = await this.modalController.create({
         component: ModalSignInEncouragementPage,
         componentProps: {
@@ -65,7 +69,7 @@ export class AppComponent implements OnInit {
       });
       await modal.present();
       const { data } = await modal.onDidDismiss();
-      
+
       if (data?.continueAsGuest) {
         await this.storageService.setDisableLogin(true);
       } else if (data?.signedIn) {
@@ -116,7 +120,7 @@ export class AppComponent implements OnInit {
     newTooth.description = data.description;
     newTooth.foundDate = data.foundDate;
     newTooth.location = data.location;
-    newTooth.locationText = data.locationText;    
+    newTooth.locationText = data.locationText;
     newTooth.showEditLocation = data.showEditLocation;
     newTooth.toothId = this.collectionService.getNewToothId();
     await this.collectionService.addTooth(newTooth, data.doSaveImage);
