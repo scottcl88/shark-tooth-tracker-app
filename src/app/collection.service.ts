@@ -35,22 +35,28 @@ export class CollectionService {
 
   private readonly useFirestore: boolean = true;
 
-  private isOnLegalPage: boolean = false;
+  // Routes where auth prompts should be suppressed
+  private readonly legalRoutes = new Set<string>([
+    '/cookie-policy',
+    '/privacy-policy',
+    '/terms-of-use',
+  ]);
 
   public currentToothChanged = new EventEmitter<void>();
 
   constructor(private readonly storageService: StorageService, private readonly coreUtilService: CoreUtilService,
     private readonly firebaseAuthService: FirebaseAuthService, private readonly firestoreService: FirestoreService,
-    private readonly logger: LoggerService, private readonly modalController: ModalController, private readonly router: Router) {
-    this.router.events.subscribe((event) => {
-      if (event instanceof Router) {
-        if (event.url != "/cookie-policy" && event.url != "/privacy-policy" && event.url != "/terms-of-use") {
-          this.isOnLegalPage = false;
-        } else {
-          this.isOnLegalPage = true;
-        }
-      }
-    });
+    private readonly logger: LoggerService, private readonly modalController: ModalController, private readonly router: Router) { }
+
+  // Helper: determine if current URL path is one of the legal routes
+  private isOnLegalRoute(): boolean {
+    try {
+      const currentUrl = this.router?.url ?? '';
+      const pathOnly = currentUrl.split('?')[0].split('#')[0];
+      return this.legalRoutes.has(pathOnly);
+    } catch {
+      return false;
+    }
   }
   async init() {
     let isAccountNull = false;
@@ -174,8 +180,9 @@ export class CollectionService {
       console.debug("environment enableAuth is false");
       return;
     }
-    if (this.isOnLegalPage) {
-      console.debug("On legal page, skipping login encouragement");
+    // Check current URL directly (don't rely on router event timing)
+    if (this.isOnLegalRoute()) {
+      console.debug("On legal page (by URL), skipping login");
       return;
     }
     console.log("Tooth Service: doSignIn called");
@@ -186,7 +193,7 @@ export class CollectionService {
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();
-    if (data.continueAsGuest) {
+    if (data?.continueAsGuest) {
       await this.storageService.setDisableLogin(true);
     }
   }
@@ -197,8 +204,9 @@ export class CollectionService {
       console.debug("environment enableAuth is false");
       return;
     }
-    if (this.isOnLegalPage) {
-      console.debug("On legal page, skipping login encouragement");
+    // Check current URL directly (don't rely on router event timing)
+    if (this.isOnLegalRoute()) {
+      console.debug("On legal page (by URL), skipping login encouragement");
       return;
     }
     console.log("Tooth Service: doSignInEncouragement called");
@@ -231,24 +239,8 @@ export class CollectionService {
       const localTeeth = await this.storageService.get("teeth");
       if (localTeeth && this.allTeeth.length > 0) {
         console.log("Migrating guest data to authenticated account...");
-
-        // Save current data to Firebase
-        if (this.useFirestore) {
-          await this.firestoreService.doSaveTeethToFirebase(this.allTeeth);
-        } else {
-          await this.firebaseAuthService.doSaveTeethToFirebase(this.allTeeth);
-        }
-
-        // Save images if any
-        for (const tooth of this.allTeeth) {
-          if (tooth.imageData) {
-            try {
-              await this.saveImage(tooth);
-            } catch (err: any) {
-              this.logger.warn(`Failed to migrate image for tooth ${tooth.toothId}:`, err);
-            }
-          }
-        }
+        await this.saveAllTeethToBackend();
+        await this.migrateAllImagesIfAny();
 
         this.logger.debug("Successfully migrated guest data to account");
         return true;
@@ -257,6 +249,26 @@ export class CollectionService {
     } catch (err: any) {
       this.logger.error("Error migrating guest data:", err);
       return false;
+    }
+  }
+
+  private async saveAllTeethToBackend(): Promise<void> {
+    if (this.useFirestore) {
+      await this.firestoreService.doSaveTeethToFirebase(this.allTeeth);
+    } else {
+      await this.firebaseAuthService.doSaveTeethToFirebase(this.allTeeth);
+    }
+  }
+
+  private async migrateAllImagesIfAny(): Promise<void> {
+    for (const tooth of this.allTeeth) {
+      if (tooth.imageData) {
+        try {
+          await this.saveImage(tooth);
+        } catch (err: any) {
+          this.logger.warn(`Failed to migrate image for tooth ${tooth.toothId}:`, err);
+        }
+      }
     }
   }
 
@@ -387,62 +399,75 @@ export class CollectionService {
 
   async loadCollectionData(): Promise<void> {
     return new Promise(async (resolve: any) => {
-      if (this.hasLoaded) {
-        if (this.allTeeth.length > 0) {
-          resolve();
-          return;
-        }
+      if (this.hasLoaded && this.allTeeth.length > 0) {
+        resolve();
+        return;
       }
-      if (this.retryAuth) {
-        try {
-          await this.doSignIn();
-          this.isAuthenticated = await this.firebaseAuthService.isAuthenticated();
-          this.retryAuth = false;
-        } catch (err: any) {
-          this.logger.error("collectionService-loadCollectionData - Failed to called isAuthenticated: " + JSON.stringify(err), err);
-        }
-      }
+
+      await this.ensureAuthIfRetry();
+
       this.allTeeth = [];
       if (this.isAuthenticated) {
-        try {
-          let collectionData = this.useFirestore ? await this.firestoreService.loadCollection() : await this.firebaseAuthService.loadCollection();
-          console.log("collectionData loaded: ", collectionData);
-          if (collectionData?.teeth) {
-            if (collectionData.teeth.data && (typeof collectionData.teeth.data === 'string' || collectionData.teeth.data instanceof String)) {
-              let parseObj = JSON.parse(collectionData.teeth.data);
-              parseObj.forEach(async (g: any) => {
-                let newTooth = new ToothModel(g);
-                newTooth.init(g);
-                let downloadUrl = await this.firebaseAuthService.getToothImage(newTooth);
-                newTooth.photoUrl = downloadUrl;
-                this.allTeeth.push(newTooth);
-                this.updateTeethSubject();
-              });
-            } else {
-              // Firebase RTDB may return arrays as objects keyed by indices; normalize to array
-              const rawTeeth = collectionData.teeth;
-              const items: any[] = Array.isArray(rawTeeth) ? rawTeeth : Object.values(rawTeeth);
-              items.forEach(async (g: any) => {
-                let newTooth = new ToothModel(g);
-                newTooth.init(g);
-                let downloadUrl = await this.firebaseAuthService.getToothImage(newTooth);
-                newTooth.photoUrl = downloadUrl;
-                this.allTeeth.push(newTooth);
-                this.updateTeethSubject();
-              });
-            }
-          }
-        } catch (err: any) {
-          this.logger.error("collectionService-loadCollectionData - Failed to load from google: " + JSON.stringify(err), err);
-          this.retryAuth = true;
-          await this.doLoadFromStorage();
-        }
+        await this.loadFromRemoteOrFallback();
       } else {
         await this.doLoadFromStorage();
       }
+
       this.hasLoaded = true;
       resolve();
     });
+  }
+
+  private async ensureAuthIfRetry(): Promise<void> {
+    if (!this.retryAuth) return;
+    try {
+      await this.doSignIn();
+      this.isAuthenticated = await this.firebaseAuthService.isAuthenticated();
+      this.retryAuth = false;
+    } catch (err: any) {
+      this.logger.error("collectionService-loadCollectionData - Failed to called isAuthenticated: " + JSON.stringify(err), err);
+    }
+  }
+
+  private async loadFromRemoteOrFallback(): Promise<void> {
+    try {
+      const collectionData = this.useFirestore
+        ? await this.firestoreService.loadCollection()
+        : await this.firebaseAuthService.loadCollection();
+      console.log("collectionData loaded: ", collectionData);
+      await this.populateTeethFromCollection(collectionData);
+    } catch (err: any) {
+      this.logger.error("collectionService-loadCollectionData - Failed to load from google: " + JSON.stringify(err), err);
+      this.retryAuth = true;
+      await this.doLoadFromStorage();
+    }
+  }
+
+  private async populateTeethFromCollection(collectionData: any): Promise<void> {
+    if (!collectionData?.teeth) return;
+
+    const teethContainer = collectionData.teeth;
+    if (teethContainer.data && (typeof teethContainer.data === 'string' || teethContainer.data instanceof String)) {
+      const parseObj = JSON.parse(teethContainer.data as string);
+      await this.addTeethFromArray(parseObj);
+      return;
+    }
+
+    // Firebase RTDB may return arrays as objects keyed by indices; normalize to array
+    const rawTeeth = teethContainer;
+    const items: any[] = Array.isArray(rawTeeth) ? rawTeeth : Object.values(rawTeeth);
+    await this.addTeethFromArray(items);
+  }
+
+  private async addTeethFromArray(items: any[]): Promise<void> {
+    for (const g of items) {
+      const newTooth = new ToothModel(g);
+      newTooth.init(g);
+      const downloadUrl = await this.firebaseAuthService.getToothImage(newTooth);
+      newTooth.photoUrl = downloadUrl;
+      this.allTeeth.push(newTooth);
+      this.updateTeethSubject();
+    }
   }
 
 }

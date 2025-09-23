@@ -5,7 +5,7 @@ import { ModalSignInPage } from './modal-signin/modal-signin.page';
 import { ModalSignInEncouragementPage } from './modal-signin-encouragement/modal-signin-encouragement.page';
 import { StorageService } from './storage.service';
 import { ModalController } from '@ionic/angular';
-import { Camera, CameraDirection, CameraResultType } from '@capacitor/camera';
+// Removed unused Camera imports
 import { ModalViewToothPage } from './modal-view-tooth/modal-view-tooth.page';
 import { Subscription } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
@@ -22,7 +22,12 @@ export class AppComponent implements OnInit {
   public showPhotoFab: boolean = true;
   public routerEventSubscription: Subscription;
   public isAuthenticated: boolean = false;
-  private isOnLegalPage: boolean = false;
+  // Routes where auth prompts should be suppressed
+  private readonly legalRoutes = new Set<string>([
+    '/cookie-policy',
+    '/privacy-policy',
+    '/terms-of-use',
+  ]);
   constructor(public router: Router, private readonly firebaseAuthService: FirebaseAuthService, private readonly collectionService: CollectionService,
     private readonly storageService: StorageService, private readonly modalController: ModalController, private readonly logger: LoggerService) { }
   async ngOnInit() {
@@ -35,9 +40,6 @@ export class AppComponent implements OnInit {
         }
         if (event.url != "/cookie-policy" && event.url != "/privacy-policy" && event.url != "/terms-of-use") {
           await this.doSignIn();
-          this.isOnLegalPage = false;
-        } else {
-          this.isOnLegalPage = true;
         }
       }
     });
@@ -45,6 +47,11 @@ export class AppComponent implements OnInit {
   async doSignIn() {
     if (!environment.enableAuth) {
       console.debug("environment enableAuth is false");
+      return;
+    }
+    // Do not rely on router events timing; check current URL directly
+    if (this.isOnLegalRoute()) {
+      console.debug("On legal page (by URL), skipping login");
       return;
     }
     let disableLogin = await this.storageService.getDisableLogin();
@@ -56,11 +63,6 @@ export class AppComponent implements OnInit {
     this.isAuthenticated = (await this.firebaseAuthService.isAuthenticated());
     if (this.isAuthenticated) {
       console.debug("already authenticated, skipping login");
-      return;
-    }
-
-    if (this.isOnLegalPage) {
-      console.debug("On legal page, skipping login");
       return;
     }
 
@@ -98,6 +100,17 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // Helper: determine if current URL path is one of the legal routes
+  private isOnLegalRoute(): boolean {
+    try {
+      const currentUrl = this.router?.url ?? '';
+      const pathOnly = currentUrl.split('?')[0].split('#')[0];
+      return this.legalRoutes.has(pathOnly);
+    } catch {
+      return false;
+    }
+  }
+
   async takePicture() {
     try {
       const modal = await this.modalController.create({
@@ -108,7 +121,7 @@ export class AppComponent implements OnInit {
       });
       await modal.present();
       const { data } = await modal.onDidDismiss();
-      if (data && data.saved) {
+      if (data?.saved) {
         console.log("App component adding tooth: ", data);
         await this.addTooth(data);
         await this.router.navigate(['/tabs/home']);
@@ -129,7 +142,5 @@ export class AppComponent implements OnInit {
     newTooth.showEditLocation = data.showEditLocation;
     newTooth.toothId = this.collectionService.getNewToothId();
     await this.collectionService.addTooth(newTooth, data.doSaveImage);
-    //this.allTeeth = await this.collectionService.getTeeth();
-    //console.log("AllTeeth: ", this.allTeeth);
   }
 }
