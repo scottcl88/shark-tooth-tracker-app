@@ -104,7 +104,9 @@ export class AppComponent implements OnInit {
   private isOnLegalRoute(): boolean {
     try {
       const currentUrl = this.router?.url ?? '';
+      console.debug("Current URL for legal route check 2: ", currentUrl);
       const pathOnly = currentUrl.split('?')[0].split('#')[0];
+      console.debug("Path only for legal route check 2: ", pathOnly, this.legalRoutes, this.legalRoutes.has(pathOnly));
       return this.legalRoutes.has(pathOnly);
     } catch {
       return false;
