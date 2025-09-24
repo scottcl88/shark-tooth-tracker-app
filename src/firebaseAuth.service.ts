@@ -16,7 +16,8 @@ import { getDatabase, ref, child, get, update } from "firebase/database";
 import { RemoteConfig } from "firebase/remote-config";
 import { StorageService } from './app/storage.service';
 import { getAuth, indexedDBLocalPersistence, initializeAuth, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import { FirebaseAppCheck, InitializeOptions } from '@capacitor-firebase/app-check';
+import { ReCaptchaV3Provider } from "firebase/app-check";
 import { Account } from './app/_models';
 import { LoggerService } from './app/logger.service';
 import { Device } from '@capacitor/device';
@@ -50,10 +51,11 @@ export class FirebaseAuthService {
       const app = initializeApp(environment.firebaseConfig);
 
       if (environment.production) {
-        initializeAppCheck(app, {
-          provider: new ReCaptchaV3Provider('6LeOZ2ApAAAAACGGMZ-HOdIhrftZuB23M90b93s8'),
+        const options: InitializeOptions = {
+          provider: Capacitor.getPlatform() === 'web' ? new ReCaptchaV3Provider('6Lc79dMrAAAAAFtgsgSipJgJp1IcomyxcPM_yJxM') : undefined,
           isTokenAutoRefreshEnabled: true
-        });
+        };
+        await FirebaseAppCheck.initialize(options);
       }
 
       if (Capacitor.isNativePlatform()) {
@@ -65,10 +67,10 @@ export class FirebaseAuthService {
         console.log("capacitor is not native, getAuth")
         getAuth();
       }
-      
+
       // Initialize current user from existing session
       await this.initializeCurrentUser();
-      
+
       console.log("Firebase service finished initializing");
     } catch (err: any) {
       this.logger.error("Error on firebase initialize: " + err + " ||| " + JSON.stringify(err), err);
@@ -80,7 +82,7 @@ export class FirebaseAuthService {
       const currentUserResult = await FirebaseAuthentication.getCurrentUser();
       this.currentUser = currentUserResult.user;
       this.currentUserSubject.next(this.currentUser);
-      
+
       if (this.currentUser) {
         console.log("Existing user session found:", this.currentUser.email);
         // Update stored account with current user info
@@ -142,7 +144,7 @@ export class FirebaseAuthService {
     const result = await FirebaseAuthentication.getIdToken(options);
     return result.token;
   }
-  
+
   public async signIn(platform: string = ""): Promise<SignInResult> {
     if (!environment.enableAuth) {
       console.debug("environment enableAuth is false");
