@@ -9,6 +9,7 @@ import { ModalController } from '@ionic/angular';
 import { ModalViewToothPage } from './modal-view-tooth/modal-view-tooth.page';
 import { Subscription } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { ToothModel } from './_models/toothModel';
 import { CollectionService } from './collection.service';
 import { LoggerService } from './logger.service';
@@ -29,7 +30,7 @@ export class AppComponent implements OnInit {
     '/terms-of-use',
   ]);
   constructor(public router: Router, private readonly firebaseAuthService: FirebaseAuthService, private readonly collectionService: CollectionService,
-    private readonly storageService: StorageService, private readonly modalController: ModalController, private readonly logger: LoggerService) { }
+    private readonly storageService: StorageService, private readonly modalController: ModalController, private readonly logger: LoggerService, private readonly location: Location) { }
   async ngOnInit() {
     this.routerEventSubscription = this.router.events.subscribe(async (event) => {
       if (event instanceof NavigationEnd) {
@@ -103,11 +104,22 @@ export class AppComponent implements OnInit {
   // Helper: determine if current URL path is one of the legal routes
   private isOnLegalRoute(): boolean {
     try {
-      const currentUrl = this.router?.url ?? '';
-      console.debug("Current URL for legal route check 2: ", currentUrl);
-      const pathOnly = currentUrl.split('?')[0].split('#')[0];
-      console.debug("Path only for legal route check 2: ", pathOnly, this.legalRoutes, this.legalRoutes.has(pathOnly));
-      return this.legalRoutes.has(pathOnly);
+      const routerUrl = this.router?.url ?? '';
+      const pathFromRouter = routerUrl.split('?')[0].split('#')[0];
+      const pathFromLocation = this.location?.path() ?? '';
+      const pathFromWindow = typeof window !== 'undefined' ? (window.location?.pathname ?? '') : '';
+      const hashFromWindow = typeof window !== 'undefined' ? (window.location?.hash ?? '') : '';
+      console.debug('Checking legal routes with paths:', { routerUrl, pathFromRouter, pathFromLocation, pathFromWindow, hashFromWindow });
+      const candidates = [pathFromRouter, pathFromLocation, pathFromWindow, hashFromWindow.replace(/^#/, '')]
+        .filter(Boolean)
+        .map(p => p.startsWith('/') ? p : `/${p}`);
+
+      const isLegal = candidates.some(p => this.legalRoutes.has(p));
+      if (!isLegal) {
+        console.debug('Legal route check candidates:', candidates, 'no match');
+      }
+      console.debug('Legal route check candidates (service):', candidates, 'isLegal:', isLegal);
+      return isLegal;
     } catch {
       return false;
     }
