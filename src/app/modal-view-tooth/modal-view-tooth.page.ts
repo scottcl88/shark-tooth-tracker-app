@@ -1,7 +1,7 @@
 /**
 Copyright 2025 Scott Lewis, All rights reserved.
 **/
-import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { AlertController, IonDatetime, ModalController, Platform, ToastController } from '@ionic/angular';
 import { CoreUtilService } from '../core-utils';
 import { Account, CoordinatesPositionModel } from '../_models';
@@ -55,23 +55,33 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
 
   @ViewChild('ngxPlaces') placesRef: NgxGpAutocompleteDirective;
 
-  constructor(private logger: LoggerService, private modalController: ModalController, private alertController: AlertController,
-    public toastController: ToastController, private geocodeService: GeocodeService, private platform: Platform, private firebaseAuthService: FirebaseAuthService,
-    private coreUtilService: CoreUtilService, private storageService: StorageService) {
+  constructor(private readonly logger: LoggerService, private readonly modalController: ModalController, private readonly alertController: AlertController,
+    public readonly toastController: ToastController, private readonly geocodeService: GeocodeService, private readonly platform: Platform, private readonly firebaseAuthService: FirebaseAuthService,
+    private readonly coreUtilService: CoreUtilService, private readonly storageService: StorageService) {
   }
   async ngOnInit() {
     this.account = await this.storageService.getAccount() ?? new Account();
     this.isAuthenticated = (await this.firebaseAuthService.isAuthenticated());
 
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-    if (prefersDark && prefersDark.matches) {
+    if (prefersDark?.matches) {
       this.distanceColor = "white";
     }
 
     // Listen for changes to the prefers-color-scheme media query
-    prefersDark.addEventListener('change', (mediaQuery) => this.toggleDarkTheme(mediaQuery.matches));
+    prefersDark.addEventListener('change', (mediaQuery) => {
+      if (mediaQuery.matches) {
+        this.applyDarkTheme();
+      } else {
+        this.applyLightTheme();
+      }
+    });
 
-    this.toggleDarkTheme(prefersDark.matches);
+    if (prefersDark.matches) {
+      this.applyDarkTheme();
+    } else {
+      this.applyLightTheme();
+    }
 
     let options: any = { timezone: Intl.DateTimeFormat().resolvedOptions().timeZone };
     const formattedDate = format(this.foundDate, "yyyy-MM-dd'T'HH:mm:ssXXX", options);
@@ -80,7 +90,7 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
 
     if (this.isNew) {
       await this.recordLocation();
-      this.showEditLocation = this.location ? false : true;
+      this.showEditLocation = !this.location;
       this.teethCount = 1;
     }
     if (this.autoTakePic) {
@@ -123,7 +133,7 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
     }
 
     // Latitude and Longitude
-    if (placeResult.geometry && placeResult.geometry.location) {
+    if (placeResult.geometry?.location) {
       latitude = placeResult.geometry.location.lat();
       longitude = placeResult.geometry.location.lng();
     }
@@ -179,7 +189,7 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
           this.location = null;
           this.logger.error(`recordLocation-getCurrentPosition 2 error. Coordinates are null`);
         }
-        this.showEditLocation = this.location ? false : true;
+        this.showEditLocation = !this.location;
       } catch (err: any) {
         this.logger.error(`recordLocation-getCurrentPosition 1 err`, err);
         await this.coreUtilService.presentToastError("Please enable location services");
@@ -190,15 +200,14 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
     }
   }
 
-  // Add or remove the "dark" class on the document body
-  toggleDarkTheme(isDark: boolean) {
-    if (isDark) {
-      this.theme = "dark";
-      this.distanceColor = "white";
-    } else {
-      this.theme = "light";
-      this.distanceColor = "black";
-    }
+  private applyDarkTheme() {
+    this.theme = "dark";
+    this.distanceColor = "white";
+  }
+
+  private applyLightTheme() {
+    this.theme = "light";
+    this.distanceColor = "black";
   }
 
   onImageError(e: any) {
@@ -232,7 +241,7 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
         this.logger.error("takePicture error: ", err);
         this.coreUtilService.presentToastError("Error taking picture");
       }
-    }else{
+    } else {
       try {
         const image = await Camera.getPhoto({
           quality: 100,
@@ -254,30 +263,11 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
     }
   }
 
-  // private async readAsBase64(cameraPhoto: any) {
-  //   const response = await fetch(cameraPhoto);
-  //   const blob = await response.blob();
-  //   return await this.convertBlobToBase64(blob) as string;
-  // }
-
-  // convertBlobToBase64 = (blob: Blob) =>
-  //   new Promise(
-  //     (resolve, reject) => {
-  //       const reader = new FileReader;
-  //       reader.onerror = reject;
-  //       reader.onload = () => {
-  //         resolve(reader.result);
-  //       };
-  //       reader.readAsDataURL(blob);
-  //     });
-
   editLocation() {
-    // this.location = null;
     this.showEditLocation = true;
   }
 
   undoLocation() {
-    // this.locationText = "";
     this.showEditLocation = false;
   }
 
@@ -346,7 +336,6 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
   }
 
   cancel() {
-    // this.isoDate = formatISO(this.glp.createdDateTime);
     this.isDirty = false;
   }
 
