@@ -354,7 +354,6 @@ export class CollectionService {
 
   private async doSave(doDismissLoading: boolean = true) {
     console.log("doSave called");
-    let teethJson: any[] = [];
     let dataStr = JSON.stringify(this.allTeeth);
     let dataObj = { title: "teeth", data: dataStr };
 
@@ -413,6 +412,7 @@ export class CollectionService {
   async loadCollectionData(): Promise<void> {
     return new Promise(async (resolve: any) => {
       if (this.hasLoaded && this.allTeeth.length > 0) {
+        this.logger.debug("Collection data already loaded, skipping");
         resolve();
         return;
       }
@@ -421,8 +421,10 @@ export class CollectionService {
 
       this.allTeeth = [];
       if (this.isAuthenticated) {
+        this.logger.debug("Loading collection data from remote");
         await this.loadFromRemoteOrFallback();
       } else {
+        this.logger.debug("Loading collection data from local storage (not authenticated)");
         await this.doLoadFromStorage();
       }
 
@@ -447,7 +449,7 @@ export class CollectionService {
       const collectionData = this.useFirestore
         ? await this.firestoreService.loadCollection()
         : await this.firebaseAuthService.loadCollection();
-      console.log("collectionData loaded: ", collectionData);
+      this.logger.debug("collectionData loaded: ", collectionData);
       await this.populateTeethFromCollection(collectionData);
     } catch (err: any) {
       this.logger.error("collectionService-loadCollectionData - Failed to load from google: " + JSON.stringify(err), err);

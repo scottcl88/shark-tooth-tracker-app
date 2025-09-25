@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { ModalFeedbackPage } from '../modal-feedback/modal-feedback.page';
 import { InAppReview } from '@capacitor-community/in-app-review';
+import { LoggerService } from '../logger.service';
 
 @Component({
   selector: 'app-home',
@@ -23,10 +24,11 @@ export class HomePage implements OnInit, OnDestroy {
   public teethCount: number = 0;
   public showFeedbackButton: boolean = false;
 
-  constructor(private readonly modalController: ModalController, private readonly router: Router, private readonly collectionService: CollectionService) { }
+  constructor(private readonly modalController: ModalController, private readonly logger: LoggerService, private readonly router: Router, private readonly collectionService: CollectionService) { }
 
   async ngOnInit() {
     this.allTeeth = await this.collectionService.getTeeth();
+    this.logger.debug("Initial teeth loaded in home page: ", this.allTeeth);
     this.allTeeth.forEach(tooth => {
       this.teethCount += Number(tooth.teethCount);
     });

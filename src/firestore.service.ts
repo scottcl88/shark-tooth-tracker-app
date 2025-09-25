@@ -59,6 +59,7 @@ export class FirestoreService {
           reference: `users/${this.currentUser?.uid}/teeth`,
         });
         let data = collectionData.snapshots;
+        this.logger.debug("loadCollection data: ", data);
         resolve(data);
       } catch (err: any) {
         this.logger.errorWithContext("loadCollection in firebaseAuth Firestore: ", err);
