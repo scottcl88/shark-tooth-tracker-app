@@ -346,6 +346,7 @@ export class FirebaseAuthService {
     return new Promise<any>(async (resolve: any) => {
       this.currentUser = (await FirebaseAuthentication.getCurrentUser()).user;
       const dbRef = ref(getDatabase());
+      this.logger.debug("Loading collection for user from firebase realtime db");
       get(child(dbRef, `users/${this.currentUser?.uid}`)).then((snapshot) => {
         if (snapshot.exists()) {
           this.loadedData = snapshot.val();

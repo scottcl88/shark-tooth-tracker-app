@@ -47,7 +47,7 @@ export class CollectionService {
 
   constructor(private readonly storageService: StorageService, private readonly coreUtilService: CoreUtilService,
     private readonly firebaseAuthService: FirebaseAuthService, private readonly firestoreService: FirestoreService,
-  private readonly logger: LoggerService, private readonly modalController: ModalController, private readonly router: Router, private readonly location: Location) { }
+    private readonly logger: LoggerService, private readonly modalController: ModalController, private readonly router: Router, private readonly location: Location) { }
 
   // Helper: determine if current URL path is one of the legal routes
   private isOnLegalRoute(): boolean {
@@ -449,7 +449,8 @@ export class CollectionService {
       const collectionData = this.useFirestore
         ? await this.firestoreService.loadCollection()
         : await this.firebaseAuthService.loadCollection();
-      this.logger.debug("collectionData loaded: ", collectionData);
+      this.logger.debug("collectionData loaded 1");
+      this.logger.debug("collectionData loaded 2: ", collectionData);
       await this.populateTeethFromCollection(collectionData);
     } catch (err: any) {
       this.logger.error("collectionService-loadCollectionData - Failed to load from google: " + JSON.stringify(err), err);
@@ -459,19 +460,49 @@ export class CollectionService {
   }
 
   private async populateTeethFromCollection(collectionData: any): Promise<void> {
-    if (!collectionData?.teeth) return;
+    try {
+      // New Firestore (Capacitor) shape: array of document snapshots OR object with snapshots prop
+      if (Array.isArray(collectionData)) {
+        this.logger.debug("Detected Firestore snapshot array", { count: collectionData.length });
+        await this.populateFromFirestoreSnapshots(collectionData);
+        if (this.allTeeth.length === 0) {
+          this.logger.debug("Firestore snapshot array empty; falling back to local cache");
+          await this.doLoadFromStorage();
+        }
+        return;
+      }
+      if (collectionData?.snapshots && Array.isArray(collectionData.snapshots)) {
+        const snaps = collectionData.snapshots;
+        this.logger.debug("Detected Firestore snapshots property", { count: snaps.length });
+        await this.populateFromFirestoreSnapshots(snaps);
+        if (this.allTeeth.length === 0) {
+          this.logger.debug("Firestore snapshots empty; falling back to local cache");
+          await this.doLoadFromStorage();
+        }
+        return;
+      }
 
-    const teethContainer = collectionData.teeth;
-    if (teethContainer.data && (typeof teethContainer.data === 'string' || teethContainer.data instanceof String)) {
-      const parseObj = JSON.parse(teethContainer.data as string);
-      await this.addTeethFromArray(parseObj);
-      return;
+      // Legacy structure (Realtime DB or wrapped object): expect teeth property
+      if (!collectionData?.teeth) {
+        this.logger.debug("No teeth property in collectionData (legacy path) - populateTeethFromCollection", { keys: Object.keys(collectionData || {}) });
+        return;
+      }
+
+      this.logger.debug("Populating teeth from legacy collection data - populateTeethFromCollection");
+      const teethContainer = collectionData.teeth;
+      if (teethContainer?.data && (typeof teethContainer.data === 'string' || teethContainer.data instanceof String)) {
+        const parseObj = JSON.parse(teethContainer.data as string);
+        await this.addTeethFromArray(parseObj);
+        return;
+      }
+
+      // Firebase RTDB may return arrays as objects keyed by indices; normalize to array
+      const rawTeeth = teethContainer;
+      const items: any[] = Array.isArray(rawTeeth) ? rawTeeth : Object.values(rawTeeth);
+      await this.addTeethFromArray(items);
+    } catch (err: any) {
+      this.logger.error("populateTeethFromCollection error", err);
     }
-
-    // Firebase RTDB may return arrays as objects keyed by indices; normalize to array
-    const rawTeeth = teethContainer;
-    const items: any[] = Array.isArray(rawTeeth) ? rawTeeth : Object.values(rawTeeth);
-    await this.addTeethFromArray(items);
   }
 
   private async addTeethFromArray(items: any[]): Promise<void> {
@@ -482,6 +513,37 @@ export class CollectionService {
       newTooth.photoUrl = downloadUrl;
       this.allTeeth.push(newTooth);
       this.updateTeethSubject();
+    }
+  }
+
+  // Handle Firestore document snapshots (Capacitor plugin)
+  private async populateFromFirestoreSnapshots(snapshots: any[]): Promise<void> {
+    for (const snap of snapshots) {
+      try {
+        // Different plugins may expose data as plain object or through data() fn
+        const raw = typeof snap?.data === 'function' ? snap.data() : (snap?.data || snap);
+        if (!raw) {
+          continue;
+        }
+        const newTooth = new ToothModel(raw);
+        newTooth.init(raw);
+        newTooth.firestoreId = snap?.id || snap?.reference?.id || raw.firestoreId || null;
+        // Ensure toothId exists (older saves may not have one) – fallback to incremental
+  if (newTooth.toothId <= 0) {
+          newTooth.toothId = this.getNewToothId();
+        }
+        try {
+          const downloadUrl = await this.firebaseAuthService.getToothImage(newTooth);
+          newTooth.photoUrl = downloadUrl;
+        } catch (imgErr: any) {
+          this.logger.warn("Failed to fetch tooth image (continuing)", imgErr);
+          newTooth.hasImageError = true as any;
+        }
+        this.allTeeth.push(newTooth);
+        this.updateTeethSubject();
+      } catch (docErr: any) {
+        this.logger.error("Error processing Firestore tooth snapshot", docErr);
+      }
     }
   }
 

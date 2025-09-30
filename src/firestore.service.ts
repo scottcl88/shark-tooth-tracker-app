@@ -59,7 +59,19 @@ export class FirestoreService {
           reference: `users/${this.currentUser?.uid}/teeth`,
         });
         let data = collectionData.snapshots;
-        this.logger.debug("loadCollection data: ", data);
+        this.logger.debug("loadCollection raw snapshots received", { count: Array.isArray(data) ? data.length : 'n/a', hasSnapshotsProp: !!collectionData?.snapshots });
+        if (Array.isArray(data)) {
+          data.forEach((s: any, idx: number) => {
+            try {
+              const id = s?.id || s?.reference?.id;
+              const hasDataFn = typeof s?.data === 'function';
+              const keys = hasDataFn ? Object.keys(s.data() || {}) : Object.keys(s?.data || {});
+              this.logger.debug("Snapshot detail", { idx, id, hasDataFn, keyCount: keys.length });
+            } catch (innerErr: any) {
+              this.logger.warn("Failed to inspect snapshot", innerErr);
+            }
+          });
+        }
         resolve(data);
       } catch (err: any) {
         this.logger.errorWithContext("loadCollection in firebaseAuth Firestore: ", err);
@@ -72,7 +84,10 @@ export class FirestoreService {
     return new Promise(async (resolve, reject) => {
       try {
         for (const tooth of teeth) {
-          await this.doSaveToothToFirebase(tooth);
+          const id = await this.doSaveToothToFirebase(tooth);
+          if (!tooth.firestoreId && id) {
+            tooth.firestoreId = id;
+          }
         }
         resolve();
       } catch (err: any) {
