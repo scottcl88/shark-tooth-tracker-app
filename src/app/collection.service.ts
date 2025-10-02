@@ -321,6 +321,11 @@ export class CollectionService {
     }
     await this.coreUtilService.presentLoading("Saving");
 
+    // Preserve Firestore document id when the modal doesn’t send it
+    if (!tooth.firestoreId && this.allTeeth[foundToothIndex]?.firestoreId) {
+      tooth.firestoreId = this.allTeeth[foundToothIndex].firestoreId;
+    }
+
     this.allTeeth[foundToothIndex] = tooth;
     this.updateTeethSubject();
 

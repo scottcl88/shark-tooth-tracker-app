@@ -102,6 +102,7 @@ export class HomePage implements OnInit, OnDestroy {
       component: ModalViewToothPage,
       componentProps: {
         toothId: tooth.toothId,
+        firestoreId: tooth.firestoreId, // pass through for update vs add
         createdDate: tooth.createdDate,
         imageUrl: tooth.photoUrl,
         description: tooth.description,
@@ -160,9 +161,11 @@ export class HomePage implements OnInit, OnDestroy {
     newTooth.searchMinutes = data.searchMinutes;
     newTooth.beachName = data.beachName;
     newTooth.beachAccess = data.beachAccess;
+    newTooth.firestoreId = data.firestoreId; // keep existing Firestore doc id if present
     if (data.removed) {
       newTooth.deletedDate = new Date();
     }
+
     if (data.toothId && data.toothId > 0) {
       newTooth.toothId = data.toothId;
       await this.collectionService.saveTooth(newTooth, data.doSaveImage);

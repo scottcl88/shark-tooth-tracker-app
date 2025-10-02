@@ -21,7 +21,6 @@ import { FirebaseAuthService } from 'src/firebaseAuth.service';
   styleUrls: ['./modal-view-tooth.page.scss'],
 })
 export class ModalViewToothPage implements OnInit, AfterViewInit {
-
   @ViewChild(IonDatetime) datetime: IonDatetime;
 
   public isNew: boolean = true;
@@ -38,6 +37,7 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
   public isLoaded: boolean = false;
   public autoTakePic: boolean = false;
   public toothId: number;
+  public firestoreId?: string | null; // add this
   public showEditLocation: boolean = false;
   public searchMinutes: number;
   public beachName: string;
@@ -344,6 +344,7 @@ export class ModalViewToothPage implements OnInit, AfterViewInit {
       removed: removed,
       saved: saved,
       toothId: this.toothId,
+      firestoreId: this.firestoreId, // include id so edits update instead of add
       imageUrl: this.imageUrl,
       imageData: this.imageData,
       description: this.description ?? "",
