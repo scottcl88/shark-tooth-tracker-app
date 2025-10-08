@@ -23,11 +23,13 @@ export class HomePage implements OnInit, OnDestroy {
   public listSortType: string = "dateFound";
   public teethCount: number = 0;
   public showFeedbackButton: boolean = false;
+  public isLoading: boolean = false;
 
   constructor(private readonly modalController: ModalController, private readonly logger: LoggerService, private readonly router: Router, private readonly collectionService: CollectionService) { }
 
   async ngOnInit() {
-    this.allTeeth = await this.collectionService.getTeeth();
+  this.isLoading = true;
+  this.allTeeth = await this.collectionService.getTeeth();
     this.logger.debug("Initial teeth loaded in home page: ", this.allTeeth);
     this.allTeeth.forEach(tooth => {
       this.teethCount += Number(tooth.teethCount);
@@ -44,7 +46,8 @@ export class HomePage implements OnInit, OnDestroy {
       });
       this.showFeedbackButton = this.teethCount >= 2;
     });
-    this.reorderList(true);
+  this.reorderList(true);
+  this.isLoading = false;
 
     this.showFeedbackButton = this.teethCount >= 2;
   }
@@ -71,11 +74,16 @@ export class HomePage implements OnInit, OnDestroy {
 
   sortList() {
     if (this.listSortType == "dateFound" && this.currentSort == 0) {
-      this.allTeeth.sort((a, b) => (new Date(a.foundDate).getTime()) - (new Date(b.foundDate).getTime()));
+      this.allTeeth.sort((a, b) => (this.getTime(a.foundDate) - this.getTime(b.foundDate)));
     }
     else if (this.listSortType == "dateFound" && this.currentSort == 1) {
-      this.allTeeth.sort((a, b) => (new Date(b.foundDate).getTime()) - (new Date(a.foundDate).getTime()));
+      this.allTeeth.sort((a, b) => (this.getTime(b.foundDate) - this.getTime(a.foundDate)));
     }
+  }
+
+  private getTime(d: Date | null): number {
+    if (!d) return 0;
+    return d.getTime ? d.getTime() : 0;
   }
 
   async imageError(e: any, tooth: ToothModel) {
@@ -93,7 +101,10 @@ export class HomePage implements OnInit, OnDestroy {
       backdropDismiss: false,
     });
     await modal.present();
-    const { data } = await modal.onDidDismiss();
+      const result = await modal.onDidDismiss();
+      if (result?.data) {
+        await this.saveTooth(result.data);
+      }
   }
 
   async editTooth(tooth: ToothModel) {

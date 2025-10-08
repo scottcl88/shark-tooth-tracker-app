@@ -29,6 +29,7 @@ export class CollectionService {
   public allTeeth$ = this.allTeethSubject.asObservable();
 
   private hasLoaded: boolean = false;
+  private isLoading: boolean = false;
   private isAuthenticated: boolean = false;
   private retryAuth: boolean = false;
 
@@ -416,11 +417,14 @@ export class CollectionService {
 
   async loadCollectionData(): Promise<void> {
     return new Promise(async (resolve: any) => {
+      if (this.isLoading) { this.logger.debug("loadCollectionData already in progress"); resolve(); return; }
       if (this.hasLoaded && this.allTeeth.length > 0) {
         this.logger.debug("Collection data already loaded, skipping");
         resolve();
         return;
       }
+      this.isLoading = true;
+      await this.coreUtilService.presentLoading("Loading shark teeth...");
 
       await this.ensureAuthIfRetry();
 
@@ -434,6 +438,8 @@ export class CollectionService {
       }
 
       this.hasLoaded = true;
+      this.isLoading = false;
+      this.coreUtilService.dismissLoading();
       resolve();
     });
   }
@@ -524,32 +530,57 @@ export class CollectionService {
   // Handle Firestore document snapshots (Capacitor plugin)
   private async populateFromFirestoreSnapshots(snapshots: any[]): Promise<void> {
     for (const snap of snapshots) {
-      try {
-        // Different plugins may expose data as plain object or through data() fn
-        const raw = typeof snap?.data === 'function' ? snap.data() : (snap?.data || snap);
-        if (!raw) {
-          continue;
-        }
-        const newTooth = new ToothModel(raw);
-        newTooth.init(raw);
-        newTooth.firestoreId = snap?.id || snap?.reference?.id || raw.firestoreId || null;
-        // Ensure toothId exists (older saves may not have one) – fallback to incremental
-  if (newTooth.toothId <= 0) {
-          newTooth.toothId = this.getNewToothId();
-        }
-        try {
-          const downloadUrl = await this.firebaseAuthService.getToothImage(newTooth);
-          newTooth.photoUrl = downloadUrl;
-        } catch (imgErr: any) {
-          this.logger.warn("Failed to fetch tooth image (continuing)", imgErr);
-          newTooth.hasImageError = true as any;
-        }
-        this.allTeeth.push(newTooth);
-        this.updateTeethSubject();
-      } catch (docErr: any) {
-        this.logger.error("Error processing Firestore tooth snapshot", docErr);
-      }
+      await this.processFirestoreSnapshot(snap);
     }
+  }
+
+  private extractRawSnapshotData(snap: any): any {
+    let raw = typeof snap?.data === 'function' ? snap.data() : (snap?.data || snap);
+    if (raw && Object.keys(raw).length > 0) return raw;
+    const deep = snap?.reference?.data || snap?.document?.data || snap?._document?.data;
+    if (typeof deep === 'function') {
+      try { return deep(); } catch { return raw; }
+    }
+    if (deep && typeof deep === 'object') return deep;
+    return raw;
+  }
+
+  private async processFirestoreSnapshot(snap: any): Promise<void> {
+    try {
+      const raw = this.extractRawSnapshotData(snap);
+      if (!raw || Object.keys(raw).length === 0) {
+        this.logger.warn("Empty Firestore snapshot raw object; skipping", { id: snap?.id || snap?.reference?.id });
+        return;
+      }
+      const newTooth = new ToothModel(raw);
+      newTooth.init(raw);
+      newTooth.firestoreId = snap?.id || snap?.reference?.id || raw.firestoreId || null;
+      if (newTooth.toothId <= 0) {
+        newTooth.toothId = this.getNewToothId();
+      }
+      await this.tryPopulateImage(newTooth);
+      this.fillMissingSimpleFields(newTooth, raw);
+      this.allTeeth.push(newTooth);
+      this.updateTeethSubject();
+    } catch (err: any) {
+      this.logger.error("Error processing Firestore tooth snapshot", err);
+    }
+  }
+
+  private async tryPopulateImage(tooth: ToothModel): Promise<void> {
+    try {
+      const downloadUrl = await this.firebaseAuthService.getToothImage(tooth);
+      tooth.photoUrl = downloadUrl;
+    } catch (imgErr: any) {
+      this.logger.warn("Failed to fetch tooth image (continuing)", imgErr);
+      tooth.hasImageError = true as any;
+    }
+  }
+
+  private fillMissingSimpleFields(tooth: ToothModel, raw: any) {
+    if (!tooth.description && raw?.description) tooth.description = raw.description;
+    if (!tooth.locationText && raw?.locationText) tooth.locationText = raw.locationText;
+    if (!tooth.beachName && raw?.beachName) tooth.beachName = raw.beachName;
   }
 
 }

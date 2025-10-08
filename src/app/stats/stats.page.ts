@@ -52,11 +52,13 @@ export class StatsPage implements OnInit, OnDestroy {
   calculateMinutes() {
     let totalMinutes = 0;
     this.allTeeth.forEach(tooth => {
-      totalMinutes += tooth.searchMinutes;
+      if (tooth.searchMinutes != null) {
+        totalMinutes += tooth.searchMinutes;
+      }
     });
     this.averageMinutes = totalMinutes / this.allTeeth.length;
-    this.minMinutes = Math.min(...this.allTeeth.map(o => o.searchMinutes));
-    this.maxMinutes = Math.max(...this.allTeeth.map(o => o.searchMinutes));
+    this.minMinutes = Math.min(...this.allTeeth.map(o => o.searchMinutes).filter((minutes): minutes is number => minutes !== null));
+    this.maxMinutes = Math.max(...this.allTeeth.map(o => o.searchMinutes).filter((minutes): minutes is number => minutes !== null));
   }
 
   //method that calculates averageTeethPerFind

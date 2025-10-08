@@ -4,7 +4,7 @@ export class ToothModel {
 
     constructor(data?: ToothModel) {
         if (data) {
-            for (var property in data) {
+            for (const property in data) {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
@@ -13,22 +13,43 @@ export class ToothModel {
         }
     }
     init(_data?: any) {
-        if (_data) {
-            this.toothId = _data["toothId"] !== undefined ? _data["toothId"] : <any>null;
-            this.photoUrl = _data["photoUrl"] !== undefined ? _data["photoUrl"] : <any>null;
-            this.description = _data["description"] !== undefined ? _data["description"] : <any>null;
-            this.teethCount = _data["teethCount"] !== undefined ? _data["teethCount"] : <any>null;
-            this.foundDate = _data["foundDate"] ? new Date(_data["foundDate"].toString()) : <any>null;
-            this.location = _data["location"] !== undefined ? _data["location"] : <any>null;
-            this.locationText = _data["locationText"] !== undefined ? _data["locationText"] : <any>null;
-            this.showEditLocation = _data["showEditLocation"] !== undefined ? _data["showEditLocation"] : <any>null;
-            this.searchMinutes = _data["searchMinutes"] !== undefined ? _data["searchMinutes"] : <any>null;
-            this.beachName = _data["beachName"] !== undefined ? _data["beachName"] : <any>null;
-            this.beachAccess = _data["beachAccess"] !== undefined ? _data["beachAccess"] : <any>null;
+        if (!_data) return;
+        const pick = (key: string) => _data[key] !== undefined ? _data[key] : null;
+        this.toothId = pick("toothId");
+        this.photoUrl = pick("photoUrl");
+        this.description = pick("description");
+        this.teethCount = pick("teethCount");
+        this.foundDate = this.safeParseDate(pick("foundDate"));
+        this.location = pick("location");
+        this.locationText = pick("locationText");
+        this.showEditLocation = pick("showEditLocation");
+        this.searchMinutes = pick("searchMinutes");
+        this.beachName = pick("beachName");
+        this.beachAccess = pick("beachAccess");
+        this.createdDate = this.safeParseDate(pick("createdDate"));
+        this.modifiedDate = this.safeParseDate(pick("modifiedDate"));
+        this.deletedDate = this.safeParseDate(pick("deletedDate"));
+    }
 
-            this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>null;
-            this.modifiedDate = _data["modifiedDate"] ? new Date(_data["modifiedDate"].toString()) : <any>null;
-            this.deletedDate = _data["deletedDate"] ? new Date(_data["deletedDate"].toString()) : <any>null;
+    private safeParseDate(input: any): Date | null {
+        if (!input) return null;
+        try {
+            // Firestore Timestamp objects may have seconds/nanoseconds or toDate()
+            if (typeof input === 'object') {
+                if (typeof input.toDate === 'function') {
+                    const d = input.toDate();
+                    return isNaN(d?.getTime()) ? null : d;
+                }
+                if (input.seconds !== undefined) {
+                    const ms = (input.seconds * 1000) + Math.floor((input.nanoseconds || 0) / 1_000_000);
+                    const d = new Date(ms);
+                    return isNaN(d.getTime()) ? null : d;
+                }
+            }
+            const d = new Date(input.toString());
+            return isNaN(d.getTime()) ? null : d;
+        } catch {
+            return null;
         }
     }
 
@@ -39,11 +60,11 @@ export class ToothModel {
     hasImageError: boolean;//used to hide image on error for home screen
     description: string;
     teethCount: number;
-    foundDate: Date;
+    foundDate: Date | null;
     location: CoordinatesPositionModel | null;
     locationText: string;
     showEditLocation: boolean;//used to undo the location
-    searchMinutes: number;
+    searchMinutes: number | null;
     beachName: string;
     beachAccess: string;
 
