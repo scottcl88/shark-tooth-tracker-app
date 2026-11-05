@@ -25,7 +25,7 @@
     "@angular/forms": "^18.2.14",
     "@angular/google-maps": "^17.1.0",
     "@angular/platform-browser": "^18.2.14",
-    "@angular/platform-browser-dynamic": "^18.2.14",
+    "@angular/platform-browser-dynamic": "^22.2.4",
     "@angular/router": "^18.2.14",
     "@capacitor-community/in-app-review": "^7.0.0",
     "@capacitor-firebase/app": "^7.3.1",
