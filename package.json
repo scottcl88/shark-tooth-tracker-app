@@ -34,7 +34,7 @@
     "@capacitor-firebase/firestore": "^7.3.1",
     "@capacitor-firebase/storage": "^7.3.1",
     "@capacitor/android": "^7.4.3",
-    "@capacitor/app": "^7.1.0",
+    "@capacitor/app": "^8.1.2",
     "@capacitor/camera": "^7.0.2",
     "@capacitor/core": "^7.4.3",
     "@capacitor/device": "^7.0.2",
