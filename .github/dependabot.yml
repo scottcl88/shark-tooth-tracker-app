@@ -4,11 +4,58 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "saturday"
+    labels:
+      - "dependencies"
+      - "automated-dependency-updates"
+    allow-multiple-prs: false
+    rebase-strategy: "auto"
+    # Only update packages that won't break Angular 18.x compatibility
+    ignore-diff-tags:
+      - "@angular/*"  # Don't auto-update Angular core, let us review manually
+      - "@capacitor-firebase/*"  # Review Firebase packages for breaking changes
+    open-all-prs: false  # Require manual review before merging
+
   - package-ecosystem: "gradle"
     directory: "/android/app"
     schedule:
       interval: "weekly"
+      day: "saturday"
+    labels:
+      - "android-dependencies"
+    open-all-prs: true  # Android Gradle deps less critical to Angular version
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "saturday"
+    labels:
+      - "actions-dependencies"
+    open-all-prs: true
+
+---
+
+# Manual Review Notes (2026-11-21)
+
+## Angular Version Compatibility
+- **Current:** Angular 18.2.14 LTS + Ionic 8.2.5 + Capacitor 7.4.3
+- **Breaking Change Alert:** `npm audit fix --force` upgrades to Angular 22.x — NOT ACCEPTABLE
+- **Manual Merge Required For:**
+  - `@angular/platform-browser-dynamic` (#5) - Breaking change, needs testing
+  - `@angular/forms` (#4) - Potential breaking changes
+  - `@angular/google-maps` (#3) - Already on v17.x, check compatibility
+
+## Safe-to-Merge Packages (No Angular core impact)
+- `@types/node` — TypeScript types only
+- `actions/checkout` — CI workflow action
+- `@capacitor/app`, `@capacitor/camera`, etc. — Native plugins (mostly safe)
+- `rxjs`, `zone.js` — Well-tested versions
+
+## Critical Vulnerability Review Queue
+See `npm audit` output for severity. High/Moderate/Low vulnerabilities accepted per SECURITY.md policy unless:
+1. CVE affects production runtime security directly
+2. Fix requires no manual intervention
+3. Tested and verified in staging environment
+
+---
